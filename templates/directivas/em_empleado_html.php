@@ -49,13 +49,14 @@ class em_empleado_html extends html_controler {
         return $inputs_asignados;
     }
 
-    private function genera_inputs_modifica(controlador_em_empleado $controler, PDO $link): array|stdClass
+    private function genera_inputs_modifica(controlador_em_empleado $controler,PDO $link,
+                                            stdClass $params = new stdClass()): array|stdClass
     {
-        $inputs = $this->init_modifica(link: $link, row_upd: $controler->row_upd);
+        $inputs = $this->init_modifica(link: $link, row_upd: $controler->row_upd, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
-        }
 
+        }
         $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
@@ -83,7 +84,7 @@ class em_empleado_html extends html_controler {
         return $alta_inputs;
     }
 
-    private function init_modifica(PDO $link, stdClass $row_upd): array|stdClass
+    private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
     {
 
         $selects = $this->selects_modifica(link: $link, row_upd: $row_upd);
@@ -91,21 +92,22 @@ class em_empleado_html extends html_controler {
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: new stdClass(), value_vacio: true);
+        $texts = $this->texts_alta(row_upd: $row_upd, value_vacio: false, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
 
         $alta_inputs = new stdClass();
-        $alta_inputs->selects = $selects;
         $alta_inputs->texts = $texts;
-
+        $alta_inputs->selects = $selects;
         return $alta_inputs;
     }
 
-    public function inputs_em_empleado(controlador_em_empleado $controlador_em_empleado): array|stdClass
+    public function inputs_em_empleado(controlador_em_empleado $controlador,
+                                       stdClass $params = new stdClass()): array|stdClass
     {
-        $inputs = $this->genera_inputs_modifica(controler: $controlador_em_empleado, link: $controlador_em_empleado->link);
+        $inputs = $this->genera_inputs_modifica(controler: $controlador,
+            link: $controlador->link, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
         }
@@ -425,9 +427,29 @@ class em_empleado_html extends html_controler {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio): array|stdClass
+    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
+
+        $cols_codigo         = $params->codigo->cols ?? 6;
+        $disabled_codigo     = $params->codigo->disabled ?? false;
+
+        $in_codigo = $this->input_codigo(cols: $cols_codigo, row_upd: $row_upd, value_vacio: $value_vacio,
+            disabled: $disabled_codigo);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo);
+        }
+        $texts->codigo = $in_codigo;
+
+        $cols_codigo_bis     = $params->codigo_bis->cols ?? 6;
+        $disabled_codigo_bis = $params->codigo_bis->disabled ?? false;
+
+        $in_codigo_bis = $this->input_codigo_bis(cols: $cols_codigo_bis,row_upd:  $row_upd,value_vacio:  $value_vacio,
+            disabled:$disabled_codigo_bis);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_codigo);
+        }
+        $texts->codigo_bis = $in_codigo_bis;
 
         $in_nombre= $this->input_nombre(cols: 12,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){

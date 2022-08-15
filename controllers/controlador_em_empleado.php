@@ -13,13 +13,7 @@ use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\cat_sat_moneda_html;
-use html\com_cliente_html;
-use html\com_producto_html;
-use html\com_sucursal_html;
 use html\em_empleado_html;
-use models\com_cliente;
-use models\com_producto;
-use models\com_sucursal;
 use models\em_empleado;
 use PDO;
 use stdClass;
@@ -50,6 +44,30 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         return $r_alta;
+    }
+
+    public function fiscales(bool $header, bool $ws = false): array|stdClass
+    {
+        $base = $this->base();
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
+                header: $header,ws:$ws);
+        }
+
+        return $base;
+
+    }
+
+    public function imss(bool $header, bool $ws = false): array|stdClass
+    {
+        $base = $this->base();
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
+                header: $header,ws:$ws);
+        }
+
+        return $base;
+
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,

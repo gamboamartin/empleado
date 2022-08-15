@@ -134,7 +134,7 @@ class limpieza{
     {
         $keys_foraneas = array('dp_pais_id','dp_estado_id','dp_municipio_id','dp_cp_id','dp_colonia_postal_id',
             'dp_calle_pertenece_id','org_empresa_dp_calle_pertenece_entre1_id',
-            'org_empresa_dp_calle_pertenece_entre2_id','org_tipo_empresa_id');
+            'org_empresa_dp_calle_pertenece_entre2_id','org_tipo_empresa_id','cat_sat_regimen_fiscal_id');
 
 
         $init = $this->init_foraneas(keys_foraneas: $keys_foraneas,org_empresa:  $org_empresa);

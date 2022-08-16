@@ -418,8 +418,9 @@ class em_empleado_html extends html_controler {
     {
         $modelo = new em_empleado(link: $link);
 
+        $extra_params_keys[] = 'em_empleado_rfc';
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo,label: 'Empleado',required: true);
+            modelo: $modelo, extra_params_keys:$extra_params_keys,label: 'Empleado',required: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }

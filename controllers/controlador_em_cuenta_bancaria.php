@@ -12,23 +12,9 @@ use gamboamartin\errores\errores;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
-use html\cat_sat_moneda_html;
-use html\com_cliente_html;
-use html\com_producto_html;
-use html\com_sucursal_html;
+
 use html\em_cuenta_bancaria_html;
-use html\em_empleado_html;
-use html\nom_par_deduccion_html;
-use html\nom_par_percepcion_html;
-use html\nom_percepcion_html;
-use models\com_cliente;
-use models\com_producto;
-use models\com_sucursal;
 use models\em_cuenta_bancaria;
-use models\em_empleado;
-use models\nom_par_deduccion;
-use models\nom_par_percepcion;
-use models\nom_percepcion;
 use PDO;
 use stdClass;
 

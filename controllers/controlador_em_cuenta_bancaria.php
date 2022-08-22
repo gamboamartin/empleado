@@ -92,7 +92,7 @@ class controlador_em_cuenta_bancaria extends system {
         return $data;
     }
 
-    private function get_cuentas_bancarias (bool $header, bool $ws = true): array|stdClass
+    public function get_cuentas_bancarias (bool $header, bool $ws = true): array|stdClass
     {
         $keys['em_empleado'] = array("id");
 

@@ -2,6 +2,7 @@
 namespace models;
 use base\orm\modelo;
 use PDO;
+use stdClass;
 
 class em_cuenta_bancaria extends modelo{
 
@@ -13,4 +14,6 @@ class em_cuenta_bancaria extends modelo{
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);
     }
+
+
 }

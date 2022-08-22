@@ -92,4 +92,15 @@ class controlador_em_cuenta_bancaria extends system {
         return $data;
     }
 
+    private function get_cuentas_bancarias (bool $header, bool $ws = true): array|stdClass
+    {
+        $keys['em_empleado'] = array("id");
+
+        $salida = $this->get_out(header: $header,keys: $keys, ws: $ws);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar salida',data:  $salida,header: $header,ws: $ws);
+        }
+        return $salida;
+    }
+
 }

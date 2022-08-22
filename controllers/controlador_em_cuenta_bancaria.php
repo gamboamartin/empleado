@@ -80,7 +80,13 @@ class controlador_em_cuenta_bancaria extends system {
 
     public function get_cuentas_bancarias (bool $header, bool $ws = true): array|stdClass
     {
-        $keys['em_empleado'] = array("id");
+        $keys['em_cuenta_bancaria'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis',
+            'num_cuenta', 'clabe');
+
+        $keys['em_empleado'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis',
+            'nombre', 'ap','am','rfc','curp','nss');
+
+        $keys['bn_banco'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis');
 
         $salida = $this->get_out(header: $header,keys: $keys, ws: $ws);
         if(errores::$error){

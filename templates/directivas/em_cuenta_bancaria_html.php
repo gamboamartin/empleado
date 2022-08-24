@@ -9,6 +9,7 @@ use gamboamartin\nomina\controllers\controlador_nom_par_deduccion;
 use gamboamartin\nomina\controllers\controlador_nom_par_percepcion;
 use gamboamartin\nomina\controllers\controlador_nom_percepcion;
 use gamboamartin\system\html_controler;
+use gamboamartin\template\html;
 use models\bn_sucursal;
 use models\cat_sat_tipo_percepcion_nom;
 use models\com_sucursal;
@@ -196,12 +197,13 @@ class em_cuenta_bancaria_html extends html_controler {
         return $selects;
     }
 
-    public function select_em_cuenta_bancaria_id(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
+    public function select_em_cuenta_bancaria_id(int $cols, bool $con_registros, int $id_selected, PDO $link,
+                                                 array $filtro): array|string
     {
         $modelo = new em_cuenta_bancaria(link: $link);
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo,label: 'Cuenta bancaria',required: true);
+            modelo: $modelo,filtro: $filtro, label: 'Cuenta bancaria',required: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }

@@ -198,7 +198,7 @@ class em_cuenta_bancaria_html extends html_controler {
     }
 
     public function select_em_cuenta_bancaria_id(int $cols, bool $con_registros, int $id_selected, PDO $link,
-                                                 array $filtro): array|string
+                                                 array $filtro = array()): array|string
     {
         $modelo = new em_cuenta_bancaria(link: $link);
 

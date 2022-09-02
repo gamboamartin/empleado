@@ -466,6 +466,14 @@ class em_empleado_html extends html_controler {
     {
         $selects = new stdClass();
 
+        if(!isset($row_upd->em_empleado_id)){
+            $row_upd->em_empleado_id = -1;
+        }
+
+        if(!isset($row_upd->bn_sucursal_id)){
+            $row_upd->bn_sucursal_id = -1;
+        }
+
         $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
             cols: 6, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
         if(errores::$error){

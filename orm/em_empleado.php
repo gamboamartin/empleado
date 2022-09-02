@@ -7,7 +7,7 @@ class em_empleado extends modelo{
 
     public function __construct(PDO $link){
         $tabla = __CLASS__;
-        $columnas = array($tabla=>false, 'im_resgistro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
+        $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla);
         $campos_obligatorios = array();
 

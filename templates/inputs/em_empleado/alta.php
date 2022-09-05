@@ -2,7 +2,6 @@
 <?php use config\views; ?>
 <?php echo $controlador->inputs->codigo; ?>
 <?php echo $controlador->inputs->codigo_bis; ?>
-<?php echo $controlador->inputs->descripcion; ?>
 <?php echo $controlador->inputs->nombre; ?>
 <?php echo $controlador->inputs->ap; ?>
 <?php echo $controlador->inputs->am; ?>

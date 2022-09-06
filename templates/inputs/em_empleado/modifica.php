@@ -15,7 +15,6 @@
 <?php echo $controlador->inputs->nss; ?>
 <?php echo $controlador->inputs->select->im_registro_patronal_id; ?>
 <?php echo $controlador->inputs->fecha_inicio_rel_laboral; ?>
-<?php echo $controlador->inputs->cuenta_bancaria; ?>
 <?php echo $controlador->inputs->salario_diario; ?>
 <?php echo $controlador->inputs->salario_diario_integrado; ?>
 <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>

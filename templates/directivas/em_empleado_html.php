@@ -465,7 +465,8 @@ class em_empleado_html extends html_controler {
 
 
 
-    public function select_em_empleado_id(int $cols, bool $con_registros, int $id_selected, PDO $link): array|string
+    public function select_em_empleado_id(int $cols, bool $con_registros, int $id_selected, PDO $link,
+                                          array $filtro = array()): array|string
     {
         $modelo = new em_empleado(link: $link);
 
@@ -479,7 +480,7 @@ class em_empleado_html extends html_controler {
         $extra_params_keys[] = 'em_empleado_org_puesto_id';
 
         $select = $this->select_catalogo(cols:$cols,con_registros:$con_registros,id_selected:$id_selected,
-            modelo: $modelo, extra_params_keys:$extra_params_keys,label: 'Empleado',required: true);
+            modelo: $modelo, extra_params_keys:$extra_params_keys,filtro: $filtro,label: 'Empleado',required: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select', data: $select);
         }

@@ -553,7 +553,9 @@ class em_empleado_html extends html_controler {
         }
         $texts->nss = $in_nss;
 
-        $in_fecha_inicio_rel_laboral = $this->input_fecha_inicio_rel_laboral(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $row_upd->fecha_inicio_rel_laboral = date('Y-m-d');
+
+        $in_fecha_inicio_rel_laboral = $this->input_fecha_inicio_rel_laboral(cols: 6,row_upd:  $row_upd,value_vacio: false);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha_inicio_rel_laboral);
         }

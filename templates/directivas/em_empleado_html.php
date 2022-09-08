@@ -210,8 +210,8 @@ class em_empleado_html extends html_controler {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'am',place_holder: 'Apellido materno',
-            row_upd: $row_upd, value_vacio: $value_vacio);
+        $html =$this->directivas->input_text(disable: $disabled,name: 'am',place_holder: 'Apellido materno',
+            required: false, row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
         }

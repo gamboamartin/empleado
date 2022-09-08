@@ -32,12 +32,6 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al validar registro',data: $valida);
         }
 
-        if(!isset($registro['alias'])){
-            $registro['alias'] = $registro['nombre'];
-        }
-
-        $this->registro['alias'] = $registro['alias'];
-
         if(!isset($registro['am'])){
             $registro['am'] = '';
         }
@@ -48,6 +42,12 @@ class em_empleado extends modelo{
         }
 
         $this->registro['descripcion'] = $registro['descripcion'];
+
+        if(!isset($registro['alias'])){
+            $registro['alias'] = $registro['descripcion'];
+        }
+
+        $this->registro['alias'] = $registro['alias'];
 
         if (!isset($registro['descripcion_select'])) {
             $registro['descripcion_select'] = $registro['nombre'].' '.$registro['ap'].' ';

@@ -26,7 +26,7 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al inicializar registro',data: $registro);
         }
 
-        $keys = array('nombre','ap','rfc');
+        $keys = array('nombre','ap');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro',data: $valida);

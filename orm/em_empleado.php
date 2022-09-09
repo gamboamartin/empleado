@@ -11,9 +11,7 @@ class em_empleado extends modelo{
         $tabla = __CLASS__;
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla);
-        $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis','ap',
-            'telefono','dp_calle_pertenece_id','cat_sat_regimen_fiscal_id','im_registro_patronal_id','curp',
-            'nss','fecha_inicio_rel_laboral','org_puesto_id','salario_diario','salario_diario_integrado');
+        $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis');
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas);

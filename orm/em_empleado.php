@@ -72,6 +72,8 @@ class em_empleado extends modelo{
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
     {
 
+        $registro['codigo_bis'] = $registro['codigo'];
+
         $registro['descripcion_select'] = $registro['nombre'].' '.$registro['ap'].' ';
         $registro['descripcion_select'] .= $registro['am'].' '.$registro['rfc'];
 

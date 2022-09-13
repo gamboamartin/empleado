@@ -33,13 +33,12 @@ class em_empleado_html extends em_html {
 
     private function asigna_inputs_cuenta_bancaria(controlador_em_empleado $controler, stdClass $inputs): array|stdClass
     {
-        $controler->inputs->select = new stdClass();
-        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
-        $controler->inputs->select->bn_sucursal_id = $inputs->selects->bn_sucursal_id;
-        $controler->inputs->num_cuenta = $inputs->texts->num_cuenta;
-        $controler->inputs->clabe = $inputs->texts->clabe;
+        $inputs_ = $this->asigna_inputs_base(controler: $controler,inputs:  $inputs);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs_);
+        }
 
-        return $controler->inputs;
+        return $inputs_;
     }
 
     public function genera_inputs_alta(controlador_em_empleado $controler, PDO $link): array|stdClass

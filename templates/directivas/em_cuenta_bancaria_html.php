@@ -1,27 +1,13 @@
 <?php
 namespace html;
 
-use gamboamartin\comercial\controllers\controlador_emempleado;
 use gamboamartin\empleado\controllers\controlador_em_cuenta_bancaria;
-use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
-use gamboamartin\nomina\controllers\controlador_nom_par_deduccion;
-use gamboamartin\nomina\controllers\controlador_nom_par_percepcion;
-use gamboamartin\nomina\controllers\controlador_nom_percepcion;
-use gamboamartin\system\html_controler;
-use gamboamartin\template\html;
-use models\bn_sucursal;
-use models\cat_sat_tipo_percepcion_nom;
-use models\com_sucursal;
 use models\em_cuenta_bancaria;
-use models\em_empleado;
-use models\nom_par_deduccion;
-use models\nom_par_percepcion;
-use models\nom_percepcion;
 use PDO;
 use stdClass;
 
-class em_cuenta_bancaria_html extends html_controler {
+class em_cuenta_bancaria_html extends em_html {
 
     private function asigna_inputs(controlador_em_cuenta_bancaria $controler, stdClass $inputs): array|stdClass
     {
@@ -84,26 +70,7 @@ class em_cuenta_bancaria_html extends html_controler {
         return $alta_inputs;
     }
 
-    public function input_clabe(int $cols, stdClass $row_upd, bool $value_vacio, bool $disable = false): array|string
-    {
-        $valida = $this->directivas->valida_cols(cols: $cols);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
-        }
 
-        $html =$this->directivas->input_text_required(disable: $disable,name: 'clabe',place_holder: 'Clabe',
-            row_upd: $row_upd, value_vacio: $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input', data: $html);
-        }
-
-        $div = $this->directivas->html->div_group(cols: $cols,html:  $html);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
-        }
-
-        return $div;
-    }
 
     public function input_num_cuenta(int $cols, stdClass $row_upd, bool $value_vacio, bool $disable = false): array|string
     {
@@ -210,7 +177,7 @@ class em_cuenta_bancaria_html extends html_controler {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    protected function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
 

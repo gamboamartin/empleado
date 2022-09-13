@@ -3,13 +3,11 @@ namespace html;
 
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
-use gamboamartin\system\html_controler;
-use models\base\limpieza;
 use models\em_empleado;
 use PDO;
 use stdClass;
 
-class em_empleado_html extends html_controler {
+class em_empleado_html extends em_html {
 
     private function asigna_inputs(controlador_em_empleado $controler, stdClass $inputs): array|stdClass
     {
@@ -609,26 +607,7 @@ class em_empleado_html extends html_controler {
         return $texts;
     }
 
-    public function input_clabe(int $cols, stdClass $row_upd, bool $value_vacio, bool $disable = false): array|string
-    {
-        $valida = $this->directivas->valida_cols(cols: $cols);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
-        }
 
-        $html =$this->directivas->input_text_required(disable: $disable,name: 'clabe',place_holder: 'Clabe',
-            row_upd: $row_upd, value_vacio: $value_vacio);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar input', data: $html);
-        }
-
-        $div = $this->directivas->html->div_group(cols: $cols,html:  $html);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al integrar div', data: $div);
-        }
-
-        return $div;
-    }
 
     public function input_num_cuenta(int $cols, stdClass $row_upd, bool $value_vacio, bool $disable = false): array|string
     {

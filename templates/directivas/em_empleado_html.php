@@ -161,6 +161,14 @@ class em_empleado_html extends html_controler {
         return $inputs;
     }
 
+    /**
+     * Genera un input de tipo nombre
+     * @param int $cols N columnas css
+     * @param stdClass $row_upd registro en proceso
+     * @param bool $value_vacio si vacio deja el input limpio
+     * @param bool $disabled si disabled el input queda deshabiliado
+     * @return array|string
+     */
     public function input_nombre(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);
@@ -487,7 +495,7 @@ class em_empleado_html extends html_controler {
         return $select;
     }
 
-    private function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    protected function texts_alta(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
     {
         $texts = new stdClass();
 

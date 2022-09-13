@@ -19,9 +19,9 @@ class em_cuenta_bancaria_html extends em_html {
         return $inputs_;
     }
 
-    public function genera_inputs_alta(controlador_em_cuenta_bancaria $controler, PDO $link): array|stdClass
+    public function genera_inputs_alta(controlador_em_cuenta_bancaria $controler, array $keys_selects, PDO $link): array|stdClass
     {
-        $inputs = $this->init_alta(link: $link);
+        $inputs = $this->init_alta(keys_selects: $keys_selects,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 
@@ -50,9 +50,9 @@ class em_cuenta_bancaria_html extends em_html {
         return $inputs_asignados;
     }
 
-    private function init_alta(PDO $link): array|stdClass
+    private function init_alta(array $keys_selects, PDO $link): array|stdClass
     {
-        $selects = $this->selects_alta(link: $link);
+        $selects = $this->selects_alta(keys_selects: $keys_selects, link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
@@ -121,26 +121,8 @@ class em_cuenta_bancaria_html extends em_html {
         return $inputs;
     }
 
-    private function selects_alta(PDO $link): array|stdClass
-    {
-        $selects = new stdClass();
 
-        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->em_empleado_id = $select;
 
-        $select = (new bn_sucursal_html(html:$this->html_base))->select_bn_sucursal_id(
-            cols: 6, con_registros:true, id_selected:-1,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->bn_sucursal_id = $select;
-
-        return $selects;
-    }
 
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {

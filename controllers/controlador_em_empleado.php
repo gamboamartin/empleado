@@ -39,7 +39,23 @@ class controlador_em_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(controler: $this, link: $this->link);
+        $keys_selects = array();
+        $keys_selects['dp_calle_pertenece'] = new stdClass();
+        $keys_selects['dp_calle_pertenece']->label = 'Calle';
+
+        $keys_selects['cat_sat_regimen_fiscal'] = new stdClass();
+        $keys_selects['cat_sat_regimen_fiscal']->label = 'Regimen Fiscal';
+
+        $keys_selects['im_registro_patronal'] = new stdClass();
+        $keys_selects['im_registro_patronal']->label = 'Registro Patronal Fiscal';
+        $keys_selects['im_registro_patronal']->cols = 6;
+
+        $keys_selects['org_puesto'] = new stdClass();
+        $keys_selects['org_puesto']->label = 'Puesto';
+
+
+        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(
+            controler: $this, keys_selects: $keys_selects, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

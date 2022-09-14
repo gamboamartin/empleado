@@ -30,6 +30,14 @@ class controlador_em_empleado extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Empleados';
+
+        $keys_rows_lista = $this->keys_rows_lista();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $init);
+            print_r($error);
+            die('Error');
+        }
+        $this->keys_row_lista = $keys_rows_lista;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -101,6 +109,35 @@ class controlador_em_empleado extends system {
 
         return $base;
 
+    }
+
+    private function keys_rows_lista(): array
+    {
+        $keys_rows_lista = array();
+        $keys = array('em_empleado_id','em_empleado_codigo','em_empleado_nombre','em_empleado_ap','em_empleado_am','em_empleado_rfc');
+
+        foreach ($keys as $campo) {
+            $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
+            if (errores::$error){
+                return $this->errores->error(mensaje: "error al inicializar key",data: $keys_rows_lista);
+            }
+        }
+
+        return $keys_rows_lista;
+    }
+
+    private function key_row_lista_init(string $campo, array $keys_rows_lista): array
+    {
+        $data = new stdClass();
+        $data->campo = $campo;
+
+        $campo = str_replace(array("em_empleado", "em_", "_"), '', $campo);
+        $campo = ucfirst(strtolower($campo));
+
+        $data->name_lista = $campo;
+        $keys_rows_lista[] = $data;
+
+        return $keys_rows_lista;
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,

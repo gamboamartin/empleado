@@ -105,8 +105,11 @@ class controlador_em_empleado extends system {
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
+        $params =  new stdClass();
+        $params->codigo = new stdClass();
+        $params->codigo->cols = 8;
 
-        $base = $this->base();
+        $base = $this->base(params: $params);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
                 header: $header,ws:$ws);

@@ -16,6 +16,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->cat_sat_regimen_fiscal_id = $inputs->selects->cat_sat_regimen_fiscal_id;
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
+        $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;
         $controler->inputs->am = $inputs->texts->am;
@@ -95,7 +96,10 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
         }
 
-        $texts = $this->texts_alta(row_upd: new stdClass(), value_vacio: true);
+        $params =  new stdClass();
+        $params->nombre = new stdClass();
+        $params->nombre->cols = 6;
+        $texts = $this->texts_alta(row_upd: new stdClass(), value_vacio: true, params: $params);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
         }
@@ -482,7 +486,9 @@ class em_empleado_html extends em_html {
         }
         $texts->codigo_bis = $in_codigo_bis;
 
-        $in_nombre= $this->input_nombre(cols: 12,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        $cols_nombre     = $params->nombre->cols ?? 12;
+
+        $in_nombre= $this->input_nombre(cols: $cols_nombre,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_nombre);
         }

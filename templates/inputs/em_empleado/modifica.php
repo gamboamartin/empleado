@@ -16,4 +16,4 @@
 <?php echo $controlador->inputs->fecha_inicio_rel_laboral; ?>
 <?php echo $controlador->inputs->salario_diario; ?>
 <?php echo $controlador->inputs->salario_diario_integrado; ?>
-<?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
+<?php include (new views())->ruta_templates.'botons/submit/modifica_bd.php';?>

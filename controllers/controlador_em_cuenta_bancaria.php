@@ -14,7 +14,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 
 use html\em_cuenta_bancaria_html;
-use models\em_cuenta_bancaria;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
 use PDO;
 use stdClass;
 

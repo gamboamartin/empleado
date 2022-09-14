@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
 use PDO;
@@ -8,7 +8,7 @@ use stdClass;
 class em_empleado extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'em_empleado';
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla);
         $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis');

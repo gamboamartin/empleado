@@ -1,22 +1,14 @@
 <?php
-namespace tests\controllers;
+namespace tests\templates\directivas;
 
-use controllers\controlador_cat_sat_tipo_persona;
+
+
 use gamboamartin\empleado\controllers\controlador_em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\template_1\html;
 use gamboamartin\test\liberator;
 use gamboamartin\test\test;
 use html\em_empleado_html;
-use html\nom_conf_factura_html;
-use JsonException;
-use models\em_cuenta_bancaria;
-use models\fc_cfd_partida;
-use models\fc_factura;
-use models\fc_partida;
-use models\nom_nomina;
-use models\nom_par_deduccion;
-use models\nom_par_percepcion;
 use stdClass;
 
 

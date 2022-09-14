@@ -1,10 +1,11 @@
 <?php
 namespace html;
 
+
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\template\directivas;
-use models\em_empleado;
+use gamboamartin\empleado\models\em_empleado;
 use PDO;
 use stdClass;
 

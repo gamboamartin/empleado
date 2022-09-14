@@ -4,7 +4,7 @@ namespace html;
 use gamboamartin\empleado\controllers\controlador_em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\template\directivas;
-use models\em_cuenta_bancaria;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
 use PDO;
 use stdClass;
 

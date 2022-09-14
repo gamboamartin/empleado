@@ -16,7 +16,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\cat_sat_moneda_html;
 use html\em_empleado_html;
-use models\em_empleado;
+use gamboamartin\empleado\models\em_empleado;
 use PDO;
 use stdClass;
 

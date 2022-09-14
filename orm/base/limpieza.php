@@ -1,5 +1,5 @@
 <?php
-namespace models\base;
+namespace gamboamartin\empleado\models\base;
 use base\controller\controler;
 use gamboamartin\errores\errores;
 use gamboamartin\validacion\validacion;

@@ -36,7 +36,7 @@ class em_empleado extends modelo{
 
         if (!isset($registro['descripcion'])) {
             $registro['descripcion'] = $registro['nombre'].' '.$registro['ap'].' ';
-            $registro['descripcion'] .= $registro['am'].' '.$registro['rfc'];
+            $registro['descripcion'] .= $registro['am'];
         }
 
         $this->registro['descripcion'] = $registro['descripcion'];
@@ -49,7 +49,7 @@ class em_empleado extends modelo{
 
         if (!isset($registro['descripcion_select'])) {
             $registro['descripcion_select'] = $registro['nombre'].' '.$registro['ap'].' ';
-            $registro['descripcion_select'] .= $registro['am'].' '.$registro['rfc'];
+            $registro['descripcion_select'] .= $registro['am'];
         }
 
         $this->registro['descripcion_select'] = $registro['descripcion_select'];

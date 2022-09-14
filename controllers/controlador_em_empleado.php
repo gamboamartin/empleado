@@ -16,7 +16,7 @@ use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\cat_sat_moneda_html;
 use html\em_empleado_html;
-use models\em_empleado;
+use gamboamartin\empleado\models\em_empleado;
 use PDO;
 use stdClass;
 
@@ -42,6 +42,7 @@ class controlador_em_empleado extends system {
         $keys_selects = array();
         $keys_selects['dp_calle_pertenece'] = new stdClass();
         $keys_selects['dp_calle_pertenece']->label = 'Calle';
+
 
         $keys_selects['cat_sat_regimen_fiscal'] = new stdClass();
         $keys_selects['cat_sat_regimen_fiscal']->label = 'Regimen Fiscal';

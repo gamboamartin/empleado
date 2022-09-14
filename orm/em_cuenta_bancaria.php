@@ -1,5 +1,5 @@
 <?php
-namespace models;
+namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use PDO;
 
@@ -7,7 +7,7 @@ use PDO;
 class em_cuenta_bancaria extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = __CLASS__;
+        $tabla = 'em_cuenta_bancaria';
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla,'bn_sucursal'=>$tabla,'bn_banco'=>'bn_sucursal');
         $campos_obligatorios = array('bn_sucursal_id','em_empleado_id','descripcion_select');
 

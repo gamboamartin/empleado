@@ -1,4 +1,4 @@
-<?php /** @var  \gamboamartin\empleado\controllers\controlador_em_cuenta_bancaria $controlador  controlador en ejecucion */ ?>
+<?php /** @var  \gamboamartin\empleado\models\controlador_em_cuenta_bancaria $controlador  controlador en ejecucion */ ?>
 <?php use config\views; ?>
 <?php echo $controlador->inputs->id; ?>
 <?php echo $controlador->inputs->codigo; ?>

@@ -13,8 +13,8 @@
   "autoload": {
     "psr-4": {
       "gamboamartin\\empleado\\controllers\\": "controllers",
+      "gamboamartin\\empleado\\models\\": "orm",
       "config\\": "config/",
-      "models\\": "orm",
       "tests\\": "tests/",
       "links\\": "links/",
       "html\\": "templates/directivas/"

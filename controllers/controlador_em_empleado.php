@@ -43,6 +43,7 @@ class controlador_em_empleado extends system {
         $keys_selects['dp_calle_pertenece'] = new stdClass();
         $keys_selects['dp_calle_pertenece']->label = 'Calle';
 
+
         $keys_selects['cat_sat_regimen_fiscal'] = new stdClass();
         $keys_selects['cat_sat_regimen_fiscal']->label = 'Regimen Fiscal';
 

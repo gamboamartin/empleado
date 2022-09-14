@@ -3,6 +3,7 @@ namespace html;
 
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
+use gamboamartin\template\directivas;
 use models\em_empleado;
 use PDO;
 use stdClass;
@@ -433,12 +434,28 @@ class em_empleado_html extends em_html {
         return $selects;
     }
 
-
-
-
-    public function select_em_empleado_id(int $cols, bool $con_registros, int $id_selected, PDO $link,
+    /**
+     * Genera un input de tipo empleado
+     * @param int $cols N columnas css
+     * @param bool $con_registros si con registros deja el input con rows para options
+     * @param int $id_selected identificador selected
+     * @param PDO $link conexion a la bd
+     * @param array $filtro filtro para obtencion de datos
+     * @param bool $disabled si disabled el input queda disabled
+     * @return array|string
+     */
+    public function select_em_empleado_id(int $cols, bool $con_registros, mixed $id_selected, PDO $link,
                                           array $filtro = array(), bool $disabled = false): array|string
     {
+
+        $valida = (new directivas(html:$this->html_base))->valida_cols(cols:$cols);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cols', data: $valida);
+        }
+        if(is_null($id_selected)){
+            $id_selected = -1;
+        }
+
         $modelo = new em_empleado(link: $link);
 
         $extra_params_keys[] = 'em_empleado_id';

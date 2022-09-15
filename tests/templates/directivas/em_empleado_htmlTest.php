@@ -22,6 +22,32 @@ class em_empleado_htmlTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_input_ap(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $html = new html();
+        $html = new em_empleado_html($html);
+
+        //$html = new liberator($html);
+
+        $cols = 1;
+        $row_upd = new stdClass();
+        $value_vacio = false;
+        $resultado = $html->input_ap($cols, $row_upd, $value_vacio);
+        $this->assertIsString($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals("<div class='control-group col-sm-1'><label class='control-label' for='ap'>Apellido paterno</label><div class='controls'><input type='text' name='ap' value='' class='form-control'  required id='ap' placeholder='Apellido paterno' /></div></div>", $resultado);
+
+        errores::$error = false;
+    }
+
 
     public function test_input_nombre(): void
     {

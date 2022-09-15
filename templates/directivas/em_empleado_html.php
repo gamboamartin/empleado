@@ -171,6 +171,7 @@ class em_empleado_html extends em_html {
      * @param bool $value_vacio si vacio deja el input limpio
      * @param bool $disabled si disabled el input queda deshabiliado
      * @return array|string
+     * @version 0.50.6
      */
     public function input_nombre(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false): array|string
     {
@@ -193,6 +194,15 @@ class em_empleado_html extends em_html {
         return $div;
     }
 
+    /**
+     * Genera un input de tipo ap
+     * @param int $cols N columnas css
+     * @param stdClass $row_upd registro en proceso
+     * @param bool $value_vacio si vacio deja el input sin value
+     * @param bool $disabled si disabled el input queda con el atributo disabled
+     * @return array|string
+     * @version 0.50.6
+     */
     public function input_ap(int $cols, stdClass $row_upd, bool $value_vacio, bool $disabled = false): array|string
     {
         $valida = $this->directivas->valida_cols(cols: $cols);

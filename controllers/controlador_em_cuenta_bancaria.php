@@ -41,6 +41,7 @@ class controlador_em_cuenta_bancaria extends system {
         $keys_selects['em_empleado'] = new stdClass();
         $keys_selects['em_empleado']->label = 'Empleado';
         $keys_selects['em_empleado']->cols = 6;
+        $keys_selects['em_empleado']->name_model = 'gamboamartin\\empleado\\models\\em_empleado';
 
         $keys_selects['bn_sucursal'] = new stdClass();
         $keys_selects['bn_sucursal']->label = 'Sucursal Bancaria';

@@ -33,7 +33,7 @@ class controlador_em_empleado extends system {
 
         $keys_rows_lista = $this->keys_rows_lista();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $init);
+            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $keys_rows_lista);
             print_r($error);
             die('Error');
         }
@@ -73,7 +73,7 @@ class controlador_em_empleado extends system {
         return $r_alta;
     }
 
-   
+
 
     public function fiscales(bool $header, bool $ws = false): array|stdClass
     {

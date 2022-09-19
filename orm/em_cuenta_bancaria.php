@@ -2,6 +2,7 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use models\bn_sucursal;
 use PDO;
 use stdClass;
 
@@ -12,9 +13,11 @@ class em_cuenta_bancaria extends modelo{
         $tabla = 'em_cuenta_bancaria';
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla,'bn_sucursal'=>$tabla,'bn_banco'=>'bn_sucursal');
         $campos_obligatorios = array('bn_sucursal_id','em_empleado_id','descripcion_select');
-
+        $campos_view = array('bn_sucursal_id' => array('type' => 'selects', 'model' => new bn_sucursal($link)),
+            'em_empleado_id' => array('type' => 'selects', 'model' => new em_empleado($link)),
+            'fecha' => array('type' => 'dates'));
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas);
+            columnas: $columnas,campos_view: $campos_view);
     }
 
     public function alta_bd(): array|stdClass

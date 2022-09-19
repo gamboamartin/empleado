@@ -38,17 +38,16 @@ class controlador_em_cuenta_bancaria extends system {
         }
 
         $keys_selects = array();
-        $keys_selects['em_empleado'] = new stdClass();
-        $keys_selects['em_empleado']->label = 'Empleado';
-        $keys_selects['em_empleado']->cols = 6;
-        $keys_selects['em_empleado']->name_model = 'gamboamartin\\empleado\\models\\em_empleado';
+        $keys_selects['em_empleado_id'] = new stdClass();
+        $keys_selects['em_empleado_id']->label = 'Empleado';
+        $keys_selects['em_empleado_id']->cols = 6;
 
-        $keys_selects['bn_sucursal'] = new stdClass();
-        $keys_selects['bn_sucursal']->label = 'Sucursal Bancaria';
-        $keys_selects['bn_sucursal']->cols = 6;
+        $keys_selects['bn_sucursal_id'] = new stdClass();
+        $keys_selects['bn_sucursal_id']->label = 'Sucursal Bancaria';
+        $keys_selects['bn_sucursal_id']->cols = 6;
 
         $inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs_alta(
-            controler: $this, keys_selects: $keys_selects, link: $this->link);
+            controler: $this, modelo: $this->modelo, link: $this->link,keys_selects: $keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

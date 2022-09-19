@@ -1,6 +1,7 @@
 <?php
 namespace html;
 
+use base\orm\modelo;
 use gamboamartin\empleado\controllers\controlador_em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\template\directivas;
@@ -20,9 +21,10 @@ class em_cuenta_bancaria_html extends em_html {
         return $inputs_;
     }
 
-    public function genera_inputs_alta(controlador_em_cuenta_bancaria $controler, array $keys_selects, PDO $link): array|stdClass
+    public function genera_inputs_alta(controlador_em_cuenta_bancaria $controler, modelo $modelo, PDO $link,
+                                       array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->init_alta(keys_selects: $keys_selects,link: $link);
+        $inputs = $this->init_alta2(modelo: $modelo,link: $link,keys_selects:$keys_selects );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 

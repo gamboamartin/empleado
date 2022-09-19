@@ -73,6 +73,25 @@ class controlador_em_empleado extends system {
         return $r_alta;
     }
 
+    private function asigna_keys_post(array $keys_generales): array
+    {
+        $registro = array();
+        foreach ($keys_generales as $key_general){
+            $registro = $this->asigna_key_post(key_general: $key_general,registro:  $registro);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al asignar key post',data:  $registro);
+            }
+        }
+        return $registro;
+    }
+
+    private function asigna_key_post(string $key_general, array $registro): array
+    {
+        if(isset($_POST[$key_general])){
+            $registro[$key_general] = $_POST[$key_general];
+        }
+        return $registro;
+    }
 
 
     public function fiscales(bool $header, bool $ws = false): array|stdClass
@@ -164,4 +183,35 @@ class controlador_em_empleado extends system {
         return $data;
     }
 
+        public function modifica_fiscales(bool $header, bool $ws = false): array|stdClass
+    {
+        $keys_fiscales[] = 'cat_sat_regimen_fiscal_id';
+        $keys_fiscales[] = 'rfc';
+
+        $r_modifica_bd = $this->upd_base(keys_generales: $keys_fiscales);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al modificar cif',data:  $r_modifica_bd,
+                header: $header,ws:$ws);
+        }
+
+        $_SESSION[$r_modifica_bd->salida][]['mensaje'] = $r_modifica_bd->mensaje.' del id '.$this->registro_id;
+        $this->header_out(result: $r_modifica_bd, header: $header,ws:  $ws);
+
+        return $r_modifica_bd;
+    }
+
+    private function upd_base(array $keys_generales): array|stdClass
+    {
+        $registro = $this->asigna_keys_post(keys_generales: $keys_generales);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al asignar keys post',data:  $registro);
+        }
+
+        $r_modifica_bd = $this->modelo->modifica_bd(registro: $registro, id: $this->registro_id);
+        if(errores::$error){
+
+            return $this->errores->error(mensaje: 'Error al modificar generales',data:  $r_modifica_bd);
+        }
+        return $r_modifica_bd;
+    }
 }

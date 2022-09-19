@@ -2,6 +2,10 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use models\cat_sat_regimen_fiscal;
+use models\dp_calle_pertenece;
+use models\im_registro_patronal;
+use models\org_puesto;
 use PDO;
 use stdClass;
 
@@ -12,9 +16,15 @@ class em_empleado extends modelo{
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla);
         $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis');
+        $campos_view = array(
+            'dp_calle_pertenece_id' => array('type' => 'selects', 'model' => new dp_calle_pertenece($link)),
+            'cat_sat_regimen_fiscal_id' => array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link)),
+            'im_registro_patronal_id' => array('type' => 'selects', 'model' => new im_registro_patronal($link)),
+            'org_puesto_id' => array('type' => 'selects', 'model' => new org_puesto($link)),
+            'fecha' => array('type' => 'dates'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas);
+            columnas: $columnas,campos_view: $campos_view);
     }
 
     public function alta_bd(): array|stdClass

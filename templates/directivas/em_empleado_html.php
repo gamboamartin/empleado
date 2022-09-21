@@ -19,6 +19,9 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->cat_sat_regimen_fiscal_id = $inputs->selects->cat_sat_regimen_fiscal_id;
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
+
+        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;
@@ -31,6 +34,9 @@ class em_empleado_html extends em_html {
         $controler->inputs->cuenta_bancaria = $inputs->texts->cuenta_bancaria;
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
+
+        $controler->inputs->num_cuenta = $inputs->texts->num_cuenta;
+        $controler->inputs->clabe = $inputs->texts->clabe;
 
         return $controler->inputs;
     }
@@ -447,6 +453,13 @@ class em_empleado_html extends em_html {
         }
         $selects->org_puesto_id = $select;
 
+        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
+            cols: 12, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_empleado_id = $select;
+
         return $selects;
     }
 
@@ -584,6 +597,18 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_salario_diario_integrado);
         }
         $texts->salario_diario_integrado = $in_salario_diario_integrado;
+
+        $in_num_cuenta= $this->input_num_cuenta(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_num_cuenta);
+        }
+        $texts->num_cuenta = $in_num_cuenta;
+
+        $in_clabe= $this->input_clabe(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_clabe);
+        }
+        $texts->num_cuenta = $in_clabe;
 
         return $texts;
     }

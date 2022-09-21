@@ -93,6 +93,16 @@ class controlador_em_empleado extends system {
         return $registro;
     }
 
+    public function cuenta_bancaria(bool $header, bool $ws = false): array|stdClass
+    {
+        $base = $this->base();
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
+                header: $header,ws:$ws);
+        }
+
+        return $base;
+    }
 
     public function fiscales(bool $header, bool $ws = false): array|stdClass
     {

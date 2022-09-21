@@ -2,6 +2,7 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use models\im_registro_patronal;
 use PDO;
 use stdClass;
 
@@ -91,5 +92,26 @@ class em_empleado extends modelo{
 
         return $r_modifica_bd;
 
+    }
+
+    /**
+     * Obtiene empresa a partir de empleado
+     * @param int $em_empleado_id Identificador del empleado a revisar su empresa
+     * @return array|stdClass
+     * @version
+     */
+    public function get_empresa(int $em_empleado_id){
+        $r_empleado = $this->registro(registro_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener empleado',data: $r_empleado);
+        }
+
+        $r_registro_patronal =  (new im_registro_patronal($this->link))->registro(registro_id:
+            $r_empleado['im_registro_patronal_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener registro patronal',data: $r_registro_patronal);
+        }
+
+        return $r_registro_patronal;
     }
 }

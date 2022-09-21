@@ -14,8 +14,9 @@ class em_empleado extends modelo{
     public function __construct(PDO $link){
         $tabla = 'em_empleado';
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
-            'dp_calle_pertenece'=>$tabla);
-        $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis');
+            'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla);
+        $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis',
+            'cat_sat_tipo_regimen_nom_id');
         $campos_view = array(
             'dp_calle_pertenece_id' => array('type' => 'selects', 'model' => new dp_calle_pertenece($link)),
             'cat_sat_regimen_fiscal_id' => array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link)),

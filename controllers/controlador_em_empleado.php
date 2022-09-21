@@ -64,7 +64,7 @@ class controlador_em_empleado extends system {
 
 
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(
-            controler: $this, keys_selects: $keys_selects, link: $this->link);
+            controler: $this, modelo: $this->modelo, link: $this->link);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

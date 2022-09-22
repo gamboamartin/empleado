@@ -19,7 +19,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->cat_sat_regimen_fiscal_id = $inputs->selects->cat_sat_regimen_fiscal_id;
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
-
+        $controler->inputs->select->cat_sat_tipo_regimen_nom_id = $inputs->selects->cat_sat_tipo_regimen_nom_id;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;
@@ -29,12 +29,8 @@ class em_empleado_html extends em_html {
         $controler->inputs->curp = $inputs->texts->curp;
         $controler->inputs->nss = $inputs->texts->nss;
         $controler->inputs->fecha_inicio_rel_laboral = $inputs->texts->fecha_inicio_rel_laboral;
-        $controler->inputs->cuenta_bancaria = $inputs->texts->cuenta_bancaria;
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
-
-        $controler->inputs->num_cuenta = $inputs->texts->num_cuenta;
-        $controler->inputs->clabe = $inputs->texts->clabe;
 
         return $controler->inputs;
     }
@@ -81,7 +77,7 @@ class em_empleado_html extends em_html {
     }
 
     public function genera_inputs_cuenta_bancaria(controlador_em_empleado $controler,PDO $link,
-                                            stdClass $params = new stdClass()): array|stdClass
+                                                  stdClass $params = new stdClass()): array|stdClass
     {
         $inputs = $this->init_cuenta_bancaria(link: $link, row_upd: $controler->row_upd, params: $params);
         if(errores::$error){
@@ -424,18 +420,32 @@ class em_empleado_html extends em_html {
         $selects = new stdClass();
 
         $select = (new dp_calle_pertenece_html(html:$this->html_base))->select_dp_calle_pertenece_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->dp_calle_pertenece_id,link: $link);
+            cols: 6, con_registros:true, id_selected:$row_upd->dp_calle_pertenece_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->dp_calle_pertenece_id = $select;
 
         $select = (new cat_sat_regimen_fiscal_html(html:$this->html_base))->select_cat_sat_regimen_fiscal_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->cat_sat_regimen_fiscal_id,link: $link);
+            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_regimen_fiscal_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->cat_sat_regimen_fiscal_id = $select;
+
+        $select = (new org_puesto_html(html:$this->html_base))->select_org_puesto_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->org_puesto_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->org_puesto_id = $select;
+
+        $select = (new cat_sat_tipo_regimen_nom_html(html:$this->html_base))->select_cat_sat_tipo_regimen_nom_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->cat_sat_tipo_regimen_nom_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->cat_sat_tipo_regimen_nom_id = $select;
 
         $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
             cols: 6, con_registros:true, id_selected:$row_upd->im_registro_patronal_id,link: $link);
@@ -444,12 +454,7 @@ class em_empleado_html extends em_html {
         }
         $selects->im_registro_patronal_id = $select;
 
-        $select = (new org_puesto_html(html:$this->html_base))->select_org_puesto_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->org_puesto_id,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->org_puesto_id = $select;
+
 
         return $selects;
     }
@@ -519,7 +524,7 @@ class em_empleado_html extends em_html {
         }
         $texts->codigo_bis = $in_codigo_bis;
 
-        $cols_nombre     = $params->nombre->cols ?? 12;
+        $cols_nombre     = $params->nombre->cols ?? 6;
 
         $in_nombre= $this->input_nombre(cols: $cols_nombre,row_upd:  $row_upd,value_vacio:  $value_vacio);
         if(errores::$error){
@@ -599,7 +604,7 @@ class em_empleado_html extends em_html {
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_clabe);
         }
-        $texts->clabe = $in_clabe;
+        $texts->num_cuenta = $in_clabe;
 
         return $texts;
     }

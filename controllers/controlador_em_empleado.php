@@ -49,23 +49,26 @@ class controlador_em_empleado extends system {
         }
 
         $keys_selects = array();
-        $keys_selects['dp_calle_pertenece'] = new stdClass();
-        $keys_selects['dp_calle_pertenece']->label = 'Calle';
+        $keys_selects['dp_calle_pertenece_id'] = new stdClass();
+        $keys_selects['dp_calle_pertenece_id']->label = 'Calle Pertenece';
 
 
-        $keys_selects['cat_sat_regimen_fiscal'] = new stdClass();
-        $keys_selects['cat_sat_regimen_fiscal']->label = 'Regimen Fiscal';
+        $keys_selects['cat_sat_regimen_fiscal_id'] = new stdClass();
+        $keys_selects['cat_sat_regimen_fiscal_id']->label = 'Regimen Fiscal';
 
-        $keys_selects['im_registro_patronal'] = new stdClass();
-        $keys_selects['im_registro_patronal']->label = 'Registro Patronal Fiscal';
-        $keys_selects['im_registro_patronal']->cols = 6;
+        $keys_selects['im_registro_patronal_id'] = new stdClass();
+        $keys_selects['im_registro_patronal_id']->label = 'Registro Patronal Fiscal';
+        $keys_selects['im_registro_patronal_id']->cols = 6;
 
-        $keys_selects['org_puesto'] = new stdClass();
-        $keys_selects['org_puesto']->label = 'Puesto';
+        $keys_selects['org_puesto_id'] = new stdClass();
+        $keys_selects['org_puesto_id']->label = 'Puesto';
+        $keys_selects['org_puesto_id']->required = false;
 
+        $keys_selects['cat_sat_tipo_regimen_nom_id'] = new stdClass();
+        $keys_selects['cat_sat_tipo_regimen_nom_id']->label = 'Tipo Regimen Nom';
 
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(
-            controler: $this, modelo: $this->modelo, link: $this->link);
+            controler: $this, modelo: $this->modelo, link: $this->link,keys_selects: $keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);

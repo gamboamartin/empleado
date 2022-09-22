@@ -3,12 +3,12 @@ namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use DateTime;
 use gamboamartin\errores\errores;
+use gamboamartin\organigrama\models\org_puesto;
 use models\im_conf_pres_empresa;
 use models\im_detalle_conf_prestaciones;
 use models\im_registro_patronal;
 use models\cat_sat_regimen_fiscal;
 use models\dp_calle_pertenece;
-use models\org_puesto;
 use PDO;
 use stdClass;
 

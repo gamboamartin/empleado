@@ -20,8 +20,6 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
 
-        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
-
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;
@@ -452,7 +450,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->org_puesto_id = $select;
-        
+
         return $selects;
     }
 

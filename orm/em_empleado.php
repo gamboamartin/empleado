@@ -161,8 +161,8 @@ class em_empleado extends modelo{
 
         $datos_sdi = array();
         foreach ($detalles as $detalle){
-            if($detalle['n_year'] === $years){
-                $datos_sdi[] = $detalle;
+            if((int)$detalle['im_detalle_conf_prestaciones_n_year'] === (int)$years){
+                $datos_sdi = $detalle;
             }
         }
 
@@ -175,8 +175,9 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al obtener detalle',data:  $detalle);
         }
 
-        $prima_vacacional = round((float)$detalle['n_dias_vacaciones']*.25,4);
-        $prima_mas_aguinaldo = round($prima_vacacional+(float)$detalle['n_dias_aguinaldo'],4);
+        $prima_vacacional = round((float)$detalle['im_detalle_conf_prestaciones_n_dias_vacaciones']*.25,4);
+        $prima_mas_aguinaldo = round($prima_vacacional+
+            (float)$detalle['im_detalle_conf_prestaciones_n_dias_aguinaldo'],4);
         $dias_sdi = round($prima_mas_aguinaldo+365,4);
 
         return round($dias_sdi/365, 4);

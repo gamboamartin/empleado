@@ -452,14 +452,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
         $selects->org_puesto_id = $select;
-
-        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
-            cols: 12, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
-        }
-        $selects->em_empleado_id = $select;
-
+        
         return $selects;
     }
 
@@ -608,7 +601,7 @@ class em_empleado_html extends em_html {
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_clabe);
         }
-        $texts->num_cuenta = $in_clabe;
+        $texts->clabe = $in_clabe;
 
         return $texts;
     }

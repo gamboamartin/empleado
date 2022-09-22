@@ -1,6 +1,7 @@
 <?php
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
+use DateTime;
 use gamboamartin\errores\errores;
 use models\im_conf_pres_empresa;
 use models\im_detalle_conf_prestaciones;
@@ -144,5 +145,87 @@ class em_empleado extends modelo{
         }
 
         return $detalle_conf;
+    }
+
+    public function obten_detalle(int $em_empleado_id, string $fecha_inicio_rel){
+        $detalles = $this->obten_conf(em_empleado_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener detalle',data:  $detalles);
+        }
+
+        $fecha_calculo = date('Y-m-d');
+        $years = $this->obten_years(fecha_calculo: $fecha_calculo, fecha_inicio_rel: $fecha_inicio_rel);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener años de trabajo',data:  $years);
+        }
+
+        $datos_sdi = array();
+        foreach ($detalles as $detalle){
+            if($detalle['n_year'] === $years){
+                $datos_sdi[] = $detalle;
+            }
+        }
+
+        return $datos_sdi;
+    }
+
+    public function obten_factor(int $em_empleado_id, string $fecha_inicio_rel){
+        $detalle = $this->obten_detalle(em_empleado_id: $em_empleado_id, fecha_inicio_rel: $fecha_inicio_rel);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener detalle',data:  $detalle);
+        }
+
+        $prima_vacacional = round((float)$detalle['n_dias_vacaciones']*.25,4);
+        $prima_mas_aguinaldo = round($prima_vacacional+(float)$detalle['n_dias_aguinaldo'],4);
+        $dias_sdi = round($prima_mas_aguinaldo+365,4);
+
+        return round($dias_sdi/365, 4);
+    }
+
+    public function calcula_sdi(int $em_empleado_id, string $fecha_inicio_rel, float $salario_diario){
+        $factor = $this->obten_factor(em_empleado_id: $em_empleado_id, fecha_inicio_rel: $fecha_inicio_rel);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener factor',data:  $factor);
+        }
+
+        $sdi = $salario_diario * $factor;
+
+        return round($sdi,2);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function obten_years(string $fecha_calculo, string $fecha_inicio_rel): int|array
+    {
+        $fecha_calculo = trim($fecha_calculo);
+        if($fecha_calculo === ''){
+            return $this->error->error("Error fecha calculo esta vacia",$fecha_calculo);
+        }
+        $fecha_inicio_rel = trim($fecha_inicio_rel);
+        if($fecha_inicio_rel === ''){
+            return $this->error->error("Error fecha_inicio_rel esta vacia",$fecha_inicio_rel);
+        }
+
+        $valida = $this->validacion->valida_fecha($fecha_calculo);
+        if(errores::$error){
+            return $this->error->error("Error al validar fecha_calculo",$valida);
+        }
+
+        $valida = $this->validacion->valida_fecha($fecha_inicio_rel);
+        if(errores::$error){
+            return $this->error->error("Error al validar fecha_inicio_rel",$valida);
+        }
+
+        if($fecha_inicio_rel>$fecha_calculo){
+            return $this->error->error("Error la fecha inicio rel laboral debe ser mas antigua que la fecha 
+            calculada",$fecha_calculo);
+        }
+
+        $date1 = new DateTime($fecha_inicio_rel);
+        $date2 = new DateTime($fecha_calculo);
+        $diff = $date1->diff($date2);
+
+        return $diff->y;
     }
 }

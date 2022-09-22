@@ -8,6 +8,7 @@
 <?php echo $controlador->inputs->select->dp_calle_pertenece_id; ?>
 <?php echo $controlador->inputs->select->cat_sat_regimen_fiscal_id; ?>
 <?php echo $controlador->inputs->select->org_puesto_id; ?>
+<?php echo $controlador->inputs->select->cat_sat_tipo_regimen_nom_id; ?>
 <?php echo $controlador->inputs->telefono; ?>
 <?php echo $controlador->inputs->rfc; ?>
 <?php echo $controlador->inputs->curp; ?>

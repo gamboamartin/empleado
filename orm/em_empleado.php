@@ -2,6 +2,8 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use gamboamartin\errores\errores;
+use models\im_conf_pres_empresa;
+use models\im_detalle_conf_prestaciones;
 use models\im_registro_patronal;
 use models\cat_sat_regimen_fiscal;
 use models\dp_calle_pertenece;
@@ -124,5 +126,23 @@ class em_empleado extends modelo{
         }
 
         return $r_registro_patronal;
+    }
+
+    public function obten_conf(int $em_empleado_id){
+        $imss_modelo = new im_conf_pres_empresa($this->link);
+        $empresa = $imss_modelo->obten_configuraciones_empresa(em_empleado_id: $em_empleado_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener empresa perteneciente',data:  $empresa);
+        }
+
+        $im_conf_prestaciones_id = $empresa[0]['im_conf_prestaciones_id'];
+        $detalle_conf = (new im_detalle_conf_prestaciones($this->link))->obten_detalle_conf
+        (im_conf_prestaciones_id: $im_conf_prestaciones_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el detalle de las conf de prestaciones',
+                data:  $detalle_conf);
+        }
+
+        return $detalle_conf;
     }
 }

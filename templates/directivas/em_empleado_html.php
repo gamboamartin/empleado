@@ -45,13 +45,13 @@ class em_empleado_html extends em_html {
         return $inputs_;
     }
 
-    public function genera_inputs_alta(controlador_em_empleado $controler,modelo $modelo, PDO $link, array $keys_selects = array()): array|stdClass
+    public function genera_inputs_alta(controlador_em_empleado $controler, array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->init_alta2(modelo: $modelo, link: $link,keys_selects:$keys_selects, );
+        $inputs = $this->init_alta2(modelo: $controler->modelo, link: $controler->link, keys_selects:$keys_selects);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
-
         }
+
         $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
@@ -60,13 +60,12 @@ class em_empleado_html extends em_html {
         return $inputs_asignados;
     }
 
-    private function genera_inputs_modifica(controlador_em_empleado $controler,PDO $link,
-                                            stdClass $params = new stdClass()): array|stdClass
+    private function genera_inputs_modifica(controlador_em_empleado $controler,
+                                            array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->init_modifica(link: $link, row_upd: $controler->row_upd, params: $params);
+        $inputs = $this->init_alta2(modelo: $controler->modelo, link: $controler->link,keys_selects:$keys_selects);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
-
         }
         $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
         if(errores::$error){
@@ -154,11 +153,9 @@ class em_empleado_html extends em_html {
     }
 
 
-    public function inputs_em_empleado(controlador_em_empleado $controlador,
-                                       stdClass $params = new stdClass()): array|stdClass
+    public function inputs_em_empleado(controlador_em_empleado $controlador,array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->genera_inputs_modifica(controler: $controlador,
-            link: $controlador->link, params: $params);
+        $inputs = $this->genera_inputs_modifica(controler: $controlador,keys_selects: $keys_selects);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
         }

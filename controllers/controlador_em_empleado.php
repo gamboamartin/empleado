@@ -23,6 +23,8 @@ use Throwable;
 
 class controlador_em_empleado extends system {
 
+    public array $keys_selects = array();
+
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new em_empleado(link: $link);
@@ -39,6 +41,22 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->keys_row_lista = $keys_rows_lista;
+
+        $this->keys_selects['dp_calle_pertenece_id'] = new stdClass();
+        $this->keys_selects['dp_calle_pertenece_id']->label = 'Calle Pertenece';
+
+        $this->keys_selects['cat_sat_regimen_fiscal_id'] = new stdClass();
+        $this->keys_selects['cat_sat_regimen_fiscal_id']->label = 'Regimen Fiscal';
+
+        $this->keys_selects['im_registro_patronal_id'] = new stdClass();
+        $this->keys_selects['im_registro_patronal_id']->label = 'Registro Patronal Fiscal';
+
+        $this->keys_selects['org_puesto_id'] = new stdClass();
+        $this->keys_selects['org_puesto_id']->label = 'Puesto';
+        $this->keys_selects['org_puesto_id']->required = false;
+
+        $this->keys_selects['cat_sat_tipo_regimen_nom_id'] = new stdClass();
+        $this->keys_selects['cat_sat_tipo_regimen_nom_id']->label = 'Tipo Regimen Nom';
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -48,24 +66,8 @@ class controlador_em_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $keys_selects = array();
-        $keys_selects['dp_calle_pertenece_id'] = new stdClass();
-        $keys_selects['dp_calle_pertenece_id']->label = 'Calle Pertenece';
-
-        $keys_selects['cat_sat_regimen_fiscal_id'] = new stdClass();
-        $keys_selects['cat_sat_regimen_fiscal_id']->label = 'Regimen Fiscal';
-
-        $keys_selects['im_registro_patronal_id'] = new stdClass();
-        $keys_selects['im_registro_patronal_id']->label = 'Registro Patronal Fiscal';
-
-        $keys_selects['org_puesto_id'] = new stdClass();
-        $keys_selects['org_puesto_id']->label = 'Puesto';
-        $keys_selects['org_puesto_id']->required = false;
-
-        $keys_selects['cat_sat_tipo_regimen_nom_id'] = new stdClass();
-        $keys_selects['cat_sat_tipo_regimen_nom_id']->label = 'Tipo Regimen Nom';
-
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(controler: $this, keys_selects: $keys_selects);
+        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
+            keys_selects:  $this->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
@@ -181,29 +183,14 @@ class controlador_em_empleado extends system {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
-        $keys_selects = array();
-        $keys_selects['dp_calle_pertenece_id'] = new stdClass();
-        $keys_selects['dp_calle_pertenece_id']->label = 'Calle Pertenece';
-        $keys_selects['dp_calle_pertenece_id']->id_selected = $this->row_upd->dp_calle_pertenece_id;
+        $this->keys_selects['dp_calle_pertenece_id']->id_selected = $this->row_upd->dp_calle_pertenece_id;
+        $this->keys_selects['cat_sat_regimen_fiscal_id']->id_selected = $this->row_upd->cat_sat_regimen_fiscal_id;
+        $this->keys_selects['im_registro_patronal_id']->id_selected = $this->row_upd->im_registro_patronal_id;
+        $this->keys_selects['org_puesto_id']->id_selected = $this->row_upd->org_puesto_id;
+        $this->keys_selects['cat_sat_tipo_regimen_nom_id']->id_selected = $this->row_upd->cat_sat_tipo_regimen_nom_id;
 
-        $keys_selects['cat_sat_regimen_fiscal_id'] = new stdClass();
-        $keys_selects['cat_sat_regimen_fiscal_id']->label = 'Regimen Fiscal';
-        $keys_selects['cat_sat_regimen_fiscal_id']->id_selected = $this->row_upd->cat_sat_regimen_fiscal_id;
-
-        $keys_selects['im_registro_patronal_id'] = new stdClass();
-        $keys_selects['im_registro_patronal_id']->label = 'Registro Patronal Fiscal';
-        $keys_selects['im_registro_patronal_id']->id_selected = $this->row_upd->im_registro_patronal_id;
-
-        $keys_selects['org_puesto_id'] = new stdClass();
-        $keys_selects['org_puesto_id']->label = 'Puesto';
-        $keys_selects['org_puesto_id']->required = false;
-        $keys_selects['org_puesto_id']->id_selected = $this->row_upd->org_puesto_id;
-
-        $keys_selects['cat_sat_tipo_regimen_nom_id'] = new stdClass();
-        $keys_selects['cat_sat_tipo_regimen_nom_id']->label = 'Tipo Regimen Nom';
-        $keys_selects['cat_sat_tipo_regimen_nom_id']->id_selected = $this->row_upd->cat_sat_tipo_regimen_nom_id;
-
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(controler: $this,keys_selects: $keys_selects);
+        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_alta(controler: $this,
+            keys_selects: $this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }

@@ -1,6 +1,5 @@
 <?php /** @var  \gamboamartin\empleado\models\controlador_em_empleado $controlador  controlador en ejecucion */ ?>
 <?php use config\views; ?>
-<?php echo $controlador->inputs->id; ?>
 <?php echo $controlador->inputs->codigo; ?>
 <?php echo $controlador->inputs->nombre; ?>
 <?php echo $controlador->inputs->ap; ?>

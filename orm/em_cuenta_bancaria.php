@@ -12,7 +12,8 @@ class em_cuenta_bancaria extends modelo{
     public function __construct(PDO $link){
         $tabla = 'em_cuenta_bancaria';
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla,'bn_sucursal'=>$tabla,'bn_banco'=>'bn_sucursal');
-        $campos_obligatorios = array('bn_sucursal_id','em_empleado_id','descripcion_select');
+        $campos_obligatorios = array('bn_sucursal_id','em_empleado_id','descripcion_select','clabe','num_cuenta',
+            'alias','codigo_bis');
         $campos_view = array('bn_sucursal_id' => array('type' => 'selects', 'model' => new bn_sucursal($link)),
             'em_empleado_id' => array('type' => 'selects', 'model' => new em_empleado($link)),
             'fecha' => array('type' => 'dates'));

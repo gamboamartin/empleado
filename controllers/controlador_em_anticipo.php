@@ -28,7 +28,7 @@ class controlador_em_anticipo extends system {
         $obj_link = new links_menu($this->registro_id);
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
-        $this->titulo_lista = 'Empleados';
+        $this->titulo_lista = 'Anticipo';
 
         $this->keys_selects['em_tipo_anticipo_id'] = new stdClass();
         $this->keys_selects['em_tipo_anticipo_id']->label = 'Tipo Anticipo';

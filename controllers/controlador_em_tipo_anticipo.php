@@ -26,7 +26,7 @@ class controlador_em_tipo_anticipo extends system {
         $obj_link = new links_menu($this->registro_id);
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
-        $this->titulo_lista = 'Empleados';
+        $this->titulo_lista = 'Tipo Anticipo';
     }
 
     public function alta(bool $header, bool $ws = false): array|string

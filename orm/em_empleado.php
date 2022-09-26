@@ -29,6 +29,8 @@ class em_empleado extends modelo{
             'im_registro_patronal_id' => array('type' => 'selects', 'model' => new im_registro_patronal($link)),
             'org_puesto_id' => array('type' => 'selects', 'model' => new org_puesto($link)),
             'cat_sat_tipo_regimen_nom_id' => array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link)),
+            'em_empleado_id' => array('type' => 'selects', 'model' => $this),
+            'em_tipo_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_anticipo($link)),
             'fecha' => array('type' => 'dates'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,

@@ -4,6 +4,7 @@ namespace html;
 
 use base\orm\modelo;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
+use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\errores\errores;
 use gamboamartin\template\directivas;
 use gamboamartin\empleado\models\em_empleado;
@@ -101,6 +102,23 @@ class em_empleado_html extends em_html {
 
         return $inputs_asignados;
     }
+
+    public function genera_inputs_genera_anticipo(controlador_em_empleado $controler, PDO $link,
+                                                  array $keys_selects = array()): array|stdClass
+    {
+        $inputs = (new em_anticipo_html(html: $this->html_base))->init_alta2(modelo: $controler->modelo,link: $link,keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
+        }
+
+        $inputs_asignados = $this->asigna_inputs_anticipo(controler: $controler, inputs: $inputs);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al asignar inputs', data: $inputs_asignados);
+        }
+
+        return $inputs;
+    }
+
 
     public function genera_inputs_cuenta_bancaria(controlador_em_empleado $controler,PDO $link,
                                                   stdClass $params = new stdClass()): array|stdClass

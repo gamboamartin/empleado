@@ -29,6 +29,7 @@ class controlador_em_empleado extends system {
     public array $keys_selects = array();
     public stdClass $cuentas_bancarias;
     public stdClass $anticipos;
+    public string $link_em_anticipo_alta_bd = '';
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -46,6 +47,16 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->keys_row_lista = $keys_rows_lista;
+
+        $link_em_anticipo_alta_bd = $obj_link->link_con_id(accion: 'genera_anticipo_alta_bd',
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->link_em_anticipo_alta_bd = $link_em_anticipo_alta_bd;
 
         $this->keys_selects['dp_calle_pertenece_id'] = new stdClass();
         $this->keys_selects['dp_calle_pertenece_id']->label = 'Calle Pertenece';
@@ -544,18 +555,74 @@ class controlador_em_empleado extends system {
         return $anticipo;
     }
 
+
     public function genera_anticipo(bool $header, bool $ws = false): array|stdClass
     {
-        $filtro['em_anticipo.em_empleado_id'] = $this->registro_id;
-        $anticipos = (new em_anticipo($this->link))->filtro_and(filtro: $filtro);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener anticipos',data:  $anticipos,
-                header: $header,ws:$ws);
+        $r_alta = parent::alta(header: false, ws: false);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $this->anticipos = $anticipos;
+        $keys_selects = array();
+        $keys_selects['em_empleado_id'] = new stdClass();
+        $keys_selects['em_empleado_id']->cols = 6;
+        $keys_selects['em_empleado_id']->disabled = true;
+        $keys_selects['em_empleado_id']->filtro = array('em_empleado.id' => $this->registro_id);
+        $keys_selects['em_empleado_id']->id_selected = $this->registro_id;
+        $keys_selects['em_empleado_id']->label = 'Empleado';
 
-        return array();
+        $keys_selects['em_tipo_anticipo_id'] = new stdClass();
+        $keys_selects['em_tipo_anticipo_id']->cols = 6;
+        $keys_selects['em_tipo_anticipo_id']->label = 'Tipo Anticipo';
+
+        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_genera_anticipo(controler: $this,
+            link: $this->link,keys_selects: $keys_selects);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $inputs;
+    }
+
+    public function genera_anticipo_alta_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        $_POST['em_empleado_id'] = $this->registro_id;
+
+        $alta = (new em_anticipo($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: $siguiente_view, ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = $siguiente_view;
+
+        return $alta;
     }
 
 

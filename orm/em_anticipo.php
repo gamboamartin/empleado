@@ -18,7 +18,7 @@ class em_anticipo extends modelo{
 
     public function __construct(PDO $link){
         $tabla = 'em_anticipo';
-        $columnas = array($tabla=>false);
+        $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla);
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_anticipo_id','em_empleado_id','monto','fecha_prestacion');
         $campos_view = array(
@@ -54,5 +54,18 @@ class em_anticipo extends modelo{
         }
 
         return $r_alta_bd;
+    }
+
+    public function anticipos(int $em_empleado_id): array|stdClass
+    {
+        if($em_empleado_id <=0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0', data: $em_empleado_id);
+        }
+        $filtro['em_empleado.id'] = $em_empleado_id;
+        $r_em_anticipo = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener anticipo', data: $r_em_anticipo);
+        }
+        return $r_em_anticipo;
     }
 }

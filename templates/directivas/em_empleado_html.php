@@ -45,6 +45,17 @@ class em_empleado_html extends em_html {
         return $inputs_;
     }
 
+    private function asigna_inputs_anticipo(controlador_em_empleado $controler, stdClass $inputs): array|stdClass
+    {
+        $controler->inputs->select = new stdClass();
+        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->select->em_tipo_anticipo_id = $inputs->selects->em_tipo_anticipo_id;
+
+        $controler->inputs->monto = $inputs->texts->monto;
+        $controler->inputs->fecha_prestacion = $inputs->texts->fecha_prestacion;
+        return $controler->inputs;
+    }
+
     public function genera_inputs_alta(controlador_em_empleado $controler, array $keys_selects = array()): array|stdClass
     {
         $inputs = $this->init_alta2(modelo: $controler->modelo, link: $controler->link, keys_selects:$keys_selects);
@@ -68,6 +79,22 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
         }
         $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
+        }
+
+        return $inputs_asignados;
+    }
+
+    public function genera_inputs_anticipo(controlador_em_empleado $controler,PDO $link,
+                                                  stdClass $params = new stdClass()): array|stdClass
+    {
+        $inputs = $this->init_anticipo(link: $link, row_upd: $controler->row_upd, params: $params);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
+
+        }
+        $inputs_asignados = $this->asigna_inputs_anticipo(controler: $controler, inputs: $inputs);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
         }
@@ -129,6 +156,26 @@ class em_empleado_html extends em_html {
         $alta_inputs = new stdClass();
         $alta_inputs->texts = $texts;
         $alta_inputs->selects = $selects;
+        return $alta_inputs;
+    }
+
+    private function init_anticipo(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
+    {
+
+        $selects = $this->selects_anticipo(link: $link, row_upd: $row_upd);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
+        }
+
+        $texts = $this->texts_anticipo(row_upd: $row_upd, value_vacio: false, params: $params);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
+        }
+
+        $alta_inputs = new stdClass();
+        $alta_inputs->texts = $texts;
+        $alta_inputs->selects = $selects;
+
         return $alta_inputs;
     }
 
@@ -411,6 +458,26 @@ class em_empleado_html extends em_html {
         return $div;
     }
 
+    private function selects_anticipo(PDO $link, stdClass $row_upd): array|stdClass
+    {
+        $selects = new stdClass();
+
+        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link,disabled: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_empleado_id = $select;
+
+        $select = (new em_tipo_anticipo_html(html:$this->html_base))->select_em_tipo_anticipo_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->em_tipo_anticipo_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_tipo_anticipo_id = $select;
+
+        return $selects;
+    }
 
     private function selects_cuenta_bancaria(PDO $link, stdClass $row_upd): array|stdClass
     {
@@ -623,6 +690,25 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar input',data:  $in_clabe);
         }
         $texts->num_cuenta = $in_clabe;
+
+        return $texts;
+    }
+
+    private function texts_anticipo(stdClass $row_upd, bool $value_vacio, stdClass $params = new stdClass()): array|stdClass
+    {
+        $texts = new stdClass();
+
+        $in_monto = $this->input_monto(cols: 6,row_upd:  $row_upd,value_vacio:  $value_vacio);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_monto);
+        }
+        $texts->monto = $in_monto;
+
+        $in_fecha_prestacion = $this->input_fecha_prestacion(cols: 6,row_upd:  $row_upd,value_vacio: false);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar input',data:  $in_fecha_prestacion);
+        }
+        $texts->fecha_prestacion = $in_fecha_prestacion;
 
         return $texts;
     }

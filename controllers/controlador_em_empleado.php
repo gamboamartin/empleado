@@ -153,7 +153,7 @@ class controlador_em_empleado extends system {
             print_r($error);
             die('Error');
         }
-        return $r_modifica;
+        return $inputs;
     }
 
     public function lista(bool $header, bool $ws = false): array

@@ -143,7 +143,7 @@ class controlador_em_empleado extends system {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
-        $this->row_upd->em_empleado_id = -1;
+        $this->row_upd->em_empleado_id = $this->registro_id;
         $this->row_upd->bn_sucursal_id = -1;
 
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_cuenta_bancaria(controler: $this,

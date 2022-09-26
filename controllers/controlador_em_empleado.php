@@ -503,6 +503,61 @@ class controlador_em_empleado extends system {
         return $registros;
     }
 
+    public function ver_anticipos(bool $header, bool $ws = false): array|stdClass
+    {
+        $filtro['em_anticipo.em_empleado_id'] = $this->registro_id;
+        $anticipos = (new em_anticipo($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener anticipos',data:  $anticipos,
+                header: $header,ws:$ws);
+        }
+
+        foreach ($anticipos->registros as $indice => $anticipo) {
+            $anticipo = $this->data_anticipo_btn(anticipo: $anticipo);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $anticipo, header: $header, ws: $ws);
+            }
+            $anticipos->registros[$indice] = $anticipo;
+        }
+
+        $this->anticipos = $anticipos;
+
+        return $this->anticipos;
+    }
+
+    private function data_anticipo_btn(array $anticipo): array
+    {
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
+            registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'danger');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $anticipo['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
+            registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'warning');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $anticipo['link_modifica'] = $btn_modifica;
+
+        return $anticipo;
+    }
+
+    public function genera_anticipo(bool $header, bool $ws = false): array|stdClass
+    {
+        $filtro['em_anticipo.em_empleado_id'] = $this->registro_id;
+        $anticipos = (new em_anticipo($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener anticipos',data:  $anticipos,
+                header: $header,ws:$ws);
+        }
+
+        $this->anticipos = $anticipos;
+
+        return array();
+    }
+
 
 
 }

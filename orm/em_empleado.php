@@ -34,7 +34,8 @@ class em_empleado extends modelo{
             'cat_sat_tipo_regimen_nom_id' => array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link)),
             'em_empleado_id' => array('type' => 'selects', 'model' => $this),
             'em_tipo_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_anticipo($link)),
-            'fecha_inicio_rel_laboral' => array('type' => 'dates'),'codigo' => array('type' => 'inputs'),
+            'fecha_inicio_rel_laboral' => array('type' => 'dates'), 'fecha_prestacion' => array('type' => 'dates'),
+            'monto' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
             'nombre' => array('type' => 'inputs'),'ap' => array('type' => 'inputs'),'am' => array('type' => 'inputs'),
             'telefono' => array('type' => 'inputs'),'rfc' => array('type' => 'inputs'),'curp' => array('type' => 'inputs'),
             'nss' => array('type' => 'inputs'),'salario_diario' => array('type' => 'inputs'),'salario_diario_integrado' => array('type' => 'inputs'));

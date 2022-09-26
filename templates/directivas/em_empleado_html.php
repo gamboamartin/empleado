@@ -1,10 +1,7 @@
 <?php
 namespace html;
 
-
-use base\orm\modelo;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
-use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\errores\errores;
 use gamboamartin\template\directivas;
 use gamboamartin\empleado\models\em_empleado;
@@ -53,7 +50,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->em_tipo_anticipo_id = $inputs->selects->em_tipo_anticipo_id;
 
         $controler->inputs->monto = $inputs->texts->monto;
-        $controler->inputs->fecha_prestacion = $inputs->texts->fecha_prestacion;
+        $controler->inputs->fecha_prestacion = $inputs->dates->fecha_prestacion;
         return $controler->inputs;
     }
 
@@ -64,21 +61,6 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
         }
 
-        $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
-        }
-
-        return $inputs_asignados;
-    }
-
-    private function genera_inputs_modifica(controlador_em_empleado $controler,
-                                            array $keys_selects = array()): array|stdClass
-    {
-        $inputs = $this->init_alta2(modelo: $controler->modelo, link: $controler->link,keys_selects:$keys_selects);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
-        }
         $inputs_asignados = $this->asigna_inputs(controler:$controler, inputs: $inputs);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar inputs',data:  $inputs_asignados);
@@ -106,7 +88,8 @@ class em_empleado_html extends em_html {
     public function genera_inputs_genera_anticipo(controlador_em_empleado $controler, PDO $link,
                                                   array $keys_selects = array()): array|stdClass
     {
-        $inputs = (new em_anticipo_html(html: $this->html_base))->init_alta2(modelo: $controler->modelo,link: $link,keys_selects: $keys_selects);
+        $inputs = (new em_anticipo_html(html: $this->html_base))->init_alta2(row_upd: $controler->row_upd,
+            modelo: $controler->modelo,link: $link,keys_selects: $keys_selects);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al generar inputs', data: $inputs);
         }
@@ -118,7 +101,6 @@ class em_empleado_html extends em_html {
 
         return $inputs;
     }
-
 
     public function genera_inputs_cuenta_bancaria(controlador_em_empleado $controler,PDO $link,
                                                   stdClass $params = new stdClass()): array|stdClass
@@ -155,25 +137,6 @@ class em_empleado_html extends em_html {
         $alta_inputs->selects = $selects;
         $alta_inputs->texts = $texts;
 
-        return $alta_inputs;
-    }
-
-    private function init_modifica(PDO $link, stdClass $row_upd, stdClass $params = new stdClass()): array|stdClass
-    {
-
-        $selects = $this->selects_modifica(link: $link, row_upd: $row_upd);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar selects',data:  $selects);
-        }
-
-        $texts = $this->texts_alta(row_upd: $row_upd, value_vacio: false, params: $params);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar texts',data:  $texts);
-        }
-
-        $alta_inputs = new stdClass();
-        $alta_inputs->texts = $texts;
-        $alta_inputs->selects = $selects;
         return $alta_inputs;
     }
 
@@ -215,16 +178,6 @@ class em_empleado_html extends em_html {
         $alta_inputs->selects = $selects;
 
         return $alta_inputs;
-    }
-
-
-    public function inputs_em_empleado(controlador_em_empleado $controlador,array $keys_selects = array()): array|stdClass
-    {
-        $inputs = $this->genera_inputs_modifica(controler: $controlador,keys_selects: $keys_selects);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
-        }
-        return $inputs;
     }
 
     /**
@@ -749,8 +702,6 @@ class em_empleado_html extends em_html {
 
         return $texts;
     }
-
-
 
     public function input_num_cuenta(int $cols, stdClass $row_upd, bool $value_vacio, bool $disable = false): array|string
     {

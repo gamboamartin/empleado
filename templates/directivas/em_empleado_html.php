@@ -417,7 +417,7 @@ class em_empleado_html extends em_html {
         $selects = new stdClass();
 
         $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
+            cols: 6, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link,disabled: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }

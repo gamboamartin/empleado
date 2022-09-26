@@ -29,7 +29,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->rfc = $inputs->texts->rfc;
         $controler->inputs->curp = $inputs->texts->curp;
         $controler->inputs->nss = $inputs->texts->nss;
-        $controler->inputs->fecha_inicio_rel_laboral = $inputs->texts->fecha_inicio_rel_laboral;
+        $controler->inputs->fecha_inicio_rel_laboral = $inputs->dates->fecha_inicio_rel_laboral;
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
 
@@ -59,7 +59,7 @@ class em_empleado_html extends em_html {
 
     public function genera_inputs_alta(controlador_em_empleado $controler, array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->init_alta2(modelo: $controler->modelo, link: $controler->link, keys_selects:$keys_selects);
+        $inputs = $this->init_alta2(row_upd: $controler->row_upd, modelo: $controler->modelo, link: $controler->link, keys_selects:$keys_selects);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
         }

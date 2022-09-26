@@ -8,16 +8,13 @@
  */
 namespace gamboamartin\empleado\controllers;
 
-use base\frontend\params_inputs;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\system\actions;
-use gamboamartin\system\init;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
-use html\cat_sat_moneda_html;
 use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
@@ -73,6 +70,16 @@ class controlador_em_empleado extends system {
 
         $this->keys_selects['cat_sat_tipo_regimen_nom_id'] = new stdClass();
         $this->keys_selects['cat_sat_tipo_regimen_nom_id']->label = 'Tipo Regimen Nom';
+
+        $this->keys_selects['salario_diario'] = new stdClass();
+        $this->keys_selects['salario_diario']->place_holder = "Salario Diario";
+
+        $this->keys_selects['salario_diario_integrado'] = new stdClass();
+        $this->keys_selects['salario_diario_integrado']->place_holder = "Salario Diario Integrado";
+
+        $this->keys_selects['fecha_inicio_rel_laboral'] = new stdClass();
+        $this->keys_selects['fecha_inicio_rel_laboral']->place_holder = "Fecha Inicio Rel Laboral";
+
     }
 
     public function alta(bool $header, bool $ws = false): array|string

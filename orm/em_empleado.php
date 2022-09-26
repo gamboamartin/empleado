@@ -2,15 +2,14 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use DateTime;
+use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
+use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
 use gamboamartin\organigrama\models\org_puesto;
-use models\cat_sat_tipo_jornada_nom;
-use models\cat_sat_tipo_regimen_nom;
 use models\im_conf_pres_empresa;
 use models\im_detalle_conf_prestaciones;
 use models\im_registro_patronal;
-use models\cat_sat_regimen_fiscal;
 use PDO;
 use stdClass;
 

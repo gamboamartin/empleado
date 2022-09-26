@@ -421,20 +421,20 @@ class controlador_em_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $keys_selects = array();
-        $keys_selects['em_empleado_id'] = new stdClass();
-        $keys_selects['em_empleado_id']->cols = 6;
-        $keys_selects['em_empleado_id']->disabled = true;
-        $keys_selects['em_empleado_id']->filtro = array('em_empleado.id' => $this->registro_id);
-        $keys_selects['em_empleado_id']->id_selected = $this->registro_id;
-        $keys_selects['em_empleado_id']->label = 'Empleado';
+        $this->keys_selects['em_empleado_id'] = new stdClass();
+        $this->keys_selects['em_empleado_id']->disabled = true;
+        $this->keys_selects['em_empleado_id']->filtro = array('em_empleado.id' => $this->registro_id);
+        $this->keys_selects['em_empleado_id']->id_selected = $this->registro_id;
+        $this->keys_selects['em_empleado_id']->label = 'Empleado';
 
-        $keys_selects['em_tipo_anticipo_id'] = new stdClass();
-        $keys_selects['em_tipo_anticipo_id']->cols = 6;
-        $keys_selects['em_tipo_anticipo_id']->label = 'Tipo Anticipo';
+        $this->keys_selects['em_tipo_anticipo_id'] = new stdClass();
+        $this->keys_selects['em_tipo_anticipo_id']->label = 'Tipo Anticipo';
+
+        $this->keys_selects['fecha_prestacion'] = new stdClass();
+        $this->keys_selects['fecha_prestacion']->place_holder = 'Fecha Prestacion';
 
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_genera_anticipo(controler: $this,
-            link: $this->link,keys_selects: $keys_selects);
+            link: $this->link,keys_selects: $this->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
             print_r($error);

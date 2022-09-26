@@ -3,6 +3,7 @@ namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 use DateTime;
 use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
+use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;

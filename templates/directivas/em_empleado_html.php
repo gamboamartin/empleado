@@ -412,6 +412,27 @@ class em_empleado_html extends em_html {
     }
 
 
+    private function selects_cuenta_bancaria(PDO $link, stdClass $row_upd): array|stdClass
+    {
+        $selects = new stdClass();
+
+        $select = (new em_empleado_html(html:$this->html_base))->select_em_empleado_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->em_empleado_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->em_empleado_id = $select;
+
+        $select = (new bn_sucursal_html(html:$this->html_base))->select_bn_sucursal_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->bn_sucursal_id,link: $link);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al generar select',data:  $select);
+        }
+        $selects->bn_sucursal_id = $select;
+
+        return $selects;
+    }
+
     private function selects_modifica(PDO $link, stdClass $row_upd): array|stdClass
     {
         $selects = new stdClass();

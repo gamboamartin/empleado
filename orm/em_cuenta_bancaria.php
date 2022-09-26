@@ -37,5 +37,18 @@ class em_cuenta_bancaria extends modelo{
         return $r_alta_bd;
     }
 
+    public function cuentas_bancarias(int $em_empleado_id): array|stdClass
+    {
+        if($em_empleado_id <=0){
+            return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0', data: $em_empleado_id);
+        }
+        $filtro['em_empleado.id'] = $em_empleado_id;
+        $r_em_cuenta_bancaria = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener cuentas bancarias', data: $r_em_cuenta_bancaria);
+        }
+        return $r_em_cuenta_bancaria;
+    }
+
 
 }

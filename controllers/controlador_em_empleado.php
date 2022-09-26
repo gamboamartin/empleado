@@ -9,6 +9,7 @@
 namespace gamboamartin\empleado\controllers;
 
 use base\frontend\params_inputs;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\system\init;
 use gamboamartin\system\links_menu;
@@ -24,6 +25,7 @@ use Throwable;
 class controlador_em_empleado extends system {
 
     public array $keys_selects = array();
+    public stdClass $cuentas_bancarias;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -153,6 +155,14 @@ class controlador_em_empleado extends system {
             print_r($error);
             die('Error');
         }
+
+        $cuentas_bancarias = (new em_cuenta_bancaria($this->link))->cuentas_bancarias(em_empleado_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener cuentas_bancarias',data:  $cuentas_bancarias, header: $header,ws:$ws);
+        }
+
+        $this->cuentas_bancarias = $cuentas_bancarias;
+
         return $inputs;
     }
 

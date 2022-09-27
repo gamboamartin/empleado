@@ -14,9 +14,10 @@ class em_anticipo extends modelo{
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla);
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_anticipo_id','em_empleado_id','monto','fecha_prestacion');
-        $campos_view = array(
+        $campos_view = array('em_empleado_id' => array('type' => 'selects', 'model' => new em_empleado($link)),
             'em_tipo_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_anticipo($link)),
-            'em_empleado_id' => array('type' => 'selects', 'model' => new em_empleado($link)));
+            'id' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
+            'fecha_prestacion' => array('type' => 'dates'), 'monto' => array('type' => 'inputs'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view);
@@ -53,16 +54,18 @@ class em_anticipo extends modelo{
         return $r_alta_bd;
     }
 
-    public function anticipos(int $em_empleado_id): array|stdClass
+    public function get_anticipos_empleado(int $em_empleado_id): array|stdClass
     {
         if($em_empleado_id <=0){
             return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0', data: $em_empleado_id);
         }
+
         $filtro['em_empleado.id'] = $em_empleado_id;
         $r_em_anticipo = $this->filtro_and(filtro: $filtro);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener anticipo', data: $r_em_anticipo);
+            return $this->error->error(mensaje: 'Error al obtener anticipos', data: $r_em_anticipo);
         }
+
         return $r_em_anticipo;
     }
 }

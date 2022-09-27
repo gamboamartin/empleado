@@ -614,8 +614,7 @@ class controlador_em_empleado extends system {
 
     public function ver_anticipos(bool $header, bool $ws = false): array|stdClass
     {
-        $filtro['em_anticipo.em_empleado_id'] = $this->registro_id;
-        $anticipos = (new em_anticipo($this->link))->filtro_and(filtro: $filtro);
+        $anticipos = (new em_anticipo($this->link))->get_anticipos_empleado(em_empleado_id: $this->registro_id);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al obtener anticipos',data:  $anticipos,
                 header: $header,ws:$ws);

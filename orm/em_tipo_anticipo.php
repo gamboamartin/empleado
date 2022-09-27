@@ -4,7 +4,6 @@ use base\orm\modelo;
 
 use PDO;
 
-
 class em_tipo_anticipo extends modelo{
 
     public function __construct(PDO $link){

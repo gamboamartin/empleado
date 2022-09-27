@@ -19,6 +19,7 @@ use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
 use stdClass;
+use Throwable;
 
 class controlador_em_empleado extends system {
 
@@ -26,6 +27,7 @@ class controlador_em_empleado extends system {
     public stdClass $cuentas_bancarias;
     public stdClass $anticipos;
     public string $link_em_anticipo_alta_bd = '';
+    public string $link_em_cuenta_bancaria_alta_bd = '';
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -52,6 +54,15 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->link_em_anticipo_alta_bd = $link_em_anticipo_alta_bd;
+
+        $link_em_cuenta_bancaria_alta_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_alta_bd', registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_cuenta_bancaria_alta_bd = $link_em_cuenta_bancaria_alta_bd;
 
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece"]);
         if (errores::$error) {
@@ -102,6 +113,13 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'bn_sucursal_id', propiedades: ["label" => "Sucursal"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $this->asignar_propiedad(identificador:'fecha_inicio_rel_laboral',
             propiedades: ["place_holder" => "Fecha Inicio Rel Laboral"]);
         if (errores::$error) {
@@ -126,6 +144,20 @@ class controlador_em_empleado extends system {
         }
 
         $this->asignar_propiedad(identificador:'fecha_prestacion',propiedades: ["place_holder" => "Fecha Prestacion"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'num_cuenta', propiedades: ["place_holder" => "Num. Cuenta"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'clabe', propiedades: ["place_holder" => "Clabe"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -205,7 +237,7 @@ class controlador_em_empleado extends system {
         $alta = (new em_anticipo($this->link))->alta_registro(registro: $_POST);
         if (errores::$error) {
             $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al dar de alta percepcion', data: $alta,
+            return $this->retorno_error(mensaje: 'Error al dar de alta anticipo', data: $alta,
                 header: $header, ws: $ws);
         }
 
@@ -223,6 +255,26 @@ class controlador_em_empleado extends system {
         $alta->siguiente_view = "anticipo";
 
         return $alta;
+    }
+
+    private function asigna_keys_post(array $keys_generales): array
+    {
+        $registro = array();
+        foreach ($keys_generales as $key_general){
+            $registro = $this->asigna_key_post(key_general: $key_general,registro:  $registro);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al asignar key post',data:  $registro);
+            }
+        }
+        return $registro;
+    }
+
+    private function asigna_key_post(string $key_general, array $registro): array
+    {
+        if(isset($_POST[$key_general])){
+            $registro[$key_general] = $_POST[$key_general];
+        }
+        return $registro;
     }
 
     private function asigna_link_row(stdClass $row, string $accion, string $propiedad, string $estilo): array|stdClass
@@ -319,6 +371,117 @@ class controlador_em_empleado extends system {
         return $data;
     }
 
+    public function calcula_sdi(bool $header, bool $ws = true){
+        $em_empleado_id = $_GET['em_empleado_id'];
+        $fecha_inicio_rel = $_GET['fecha_inicio_rel_laboral'];
+        $salario_diario = $_GET['salario_diario'];
+
+        $result = (new em_empleado($this->link))->calcula_sdi(em_empleado_id: $em_empleado_id,
+            fecha_inicio_rel: $fecha_inicio_rel, salario_diario: $salario_diario);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener',data:  $result, header: $header,ws:$ws);
+        }
+
+        if($header){
+            $retorno = $_SERVER['HTTP_REFERER'];
+            header('Location:'.$retorno);
+            exit;
+        }
+        if($ws){
+            header('Content-Type: application/json');
+            try {
+                echo json_encode($result, JSON_THROW_ON_ERROR);
+            }
+            catch (Throwable $e){
+                return $this->retorno_error(mensaje: 'Error al maquetar estados',data:  $e, header: false,ws:$ws);
+            }
+            exit;
+        }
+
+        return $result;
+    }
+
+    public function cuenta_bancaria(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_alta = parent::alta(header: false);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $this->registro_id,
+            "disabled" => true, "filtro" => array('em_empleado.id' => $this->registro_id)]);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al asignar propiedad',data:  $this->anticipos, header: $header,ws:$ws);
+        }
+
+        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
+            keys_selects:  $this->keys_selects);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        $cuentas_bancarias = (new em_cuenta_bancaria($this->link))->get_cuentas_bancarias_empleado(
+            em_empleado_id: $this->registro_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener anticipos',data:  $cuentas_bancarias,
+                header: $header,ws:$ws);
+        }
+
+        foreach ($cuentas_bancarias->registros as $indice => $cuenta_bancaria) {
+            $cuenta_bancaria = $this->data_cuenta_bancaria_btn(cuenta_bancaria: $cuenta_bancaria);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $cuenta_bancaria, header: $header, ws: $ws);
+            }
+            $cuentas_bancarias->registros[$indice] = $cuenta_bancaria;
+        }
+
+        $this->cuentas_bancarias = $cuentas_bancarias;
+
+        return $inputs;
+    }
+
+    public function cuenta_bancaria_alta_bd(bool $header, bool $ws = false)
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        $_POST['em_empleado_id'] = $this->registro_id;
+
+        $alta = (new em_cuenta_bancaria($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta cuenta bancaria', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: "cuenta_bancaria", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = "cuenta_bancaria";
+
+        return $alta;
+
+    }
+
     private function data_anticipo_btn(array $anticipo): array
     {
         $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
@@ -336,6 +499,49 @@ class controlador_em_empleado extends system {
         $anticipo['link_modifica'] = $btn_modifica;
 
         return $anticipo;
+    }
+
+    private function data_cuenta_bancaria_btn(array $cuenta_bancaria): array
+    {
+        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
+            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_cuenta_bancaria', style: 'danger');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $cuenta_bancaria['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
+            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_cuenta_bancaria', style: 'warning');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $cuenta_bancaria['link_modifica'] = $btn_modifica;
+
+        return $cuenta_bancaria;
+    }
+
+    public function fiscales(bool $header, bool $ws = false): array|stdClass
+    {
+        $base = $this->base();
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
+                header: $header,ws:$ws);
+        }
+
+        return $base;
+
+    }
+
+    public function imss(bool $header, bool $ws = false): array|stdClass
+    {
+        $base = $this->base();
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
+                header: $header,ws:$ws);
+        }
+
+        return $base;
+
     }
 
     private function keys_rows_lista(): array
@@ -399,6 +605,13 @@ class controlador_em_empleado extends system {
                 return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
             }
             $registros[$indice] = $row;
+
+            $row = $this->asigna_link_row(row: $row, accion: "cuenta_bancaria",propiedad: "link_cuenta_bancaria",
+                estilo: "link_cuenta_bancaria_style");
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
         }
         return $registros;
     }
@@ -413,6 +626,38 @@ class controlador_em_empleado extends system {
         }
 
         return $base->template;
+    }
+
+    public function modifica_fiscales(bool $header, bool $ws = false): array|stdClass
+    {
+        $keys_fiscales[] = 'cat_sat_regimen_fiscal_id';
+        $keys_fiscales[] = 'rfc';
+
+        $r_modifica_bd = $this->upd_base(keys_generales: $keys_fiscales);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al modificar cif',data:  $r_modifica_bd,
+                header: $header,ws:$ws);
+        }
+
+        $_SESSION[$r_modifica_bd->salida][]['mensaje'] = $r_modifica_bd->mensaje.' del id '.$this->registro_id;
+        $this->header_out(result: $r_modifica_bd, header: $header,ws:  $ws);
+
+        return $r_modifica_bd;
+    }
+
+    private function upd_base(array $keys_generales): array|stdClass
+    {
+        $registro = $this->asigna_keys_post(keys_generales: $keys_generales);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al asignar keys post',data:  $registro);
+        }
+
+        $r_modifica_bd = $this->modelo->modifica_bd(registro: $registro, id: $this->registro_id);
+        if(errores::$error){
+
+            return $this->errores->error(mensaje: 'Error al modificar generales',data:  $r_modifica_bd);
+        }
+        return $r_modifica_bd;
     }
 
     public function ver_anticipos(bool $header, bool $ws = false): array|stdClass
@@ -435,7 +680,5 @@ class controlador_em_empleado extends system {
 
         return $this->anticipos;
     }
-
-
 
 }

@@ -8,6 +8,7 @@ use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
 use gamboamartin\organigrama\models\org_puesto;
+use models\bn_sucursal;
 use models\im_conf_pres_empresa;
 use models\im_detalle_conf_prestaciones;
 use models\im_registro_patronal;
@@ -34,12 +35,14 @@ class em_empleado extends modelo{
             'im_registro_patronal_id' => array('type' => 'selects', 'model' => new im_registro_patronal($link)),
             'em_empleado_id' => array('type' => 'selects', 'model' => $this),
             'em_tipo_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_anticipo($link)),
+            'bn_sucursal_id' => array('type' => 'selects', 'model' => new bn_sucursal($link)),
             'fecha_inicio_rel_laboral' => array('type' => 'dates'), 'fecha_prestacion' => array('type' => 'dates'),
             'monto' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
             'nombre' => array('type' => 'inputs'),'ap' => array('type' => 'inputs'),'am' => array('type' => 'inputs'),
             'telefono' => array('type' => 'inputs'),'rfc' => array('type' => 'inputs'),'curp' => array('type' => 'inputs'),
             'nss' => array('type' => 'inputs'),'salario_diario' => array('type' => 'inputs'),
-            'salario_diario_integrado' => array('type' => 'inputs'));
+            'salario_diario_integrado' => array('type' => 'inputs'),'num_cuenta' => array('type' => 'inputs'),
+            'clabe' => array('type' => 'inputs'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view);

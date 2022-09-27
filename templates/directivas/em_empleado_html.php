@@ -20,6 +20,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->cat_sat_tipo_regimen_nom_id = $inputs->selects->cat_sat_tipo_regimen_nom_id;
         $controler->inputs->select->em_tipo_anticipo_id = $inputs->selects->em_tipo_anticipo_id;
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
+        $controler->inputs->select->bn_sucursal_id = $inputs->selects->bn_sucursal_id;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;
@@ -33,6 +34,8 @@ class em_empleado_html extends em_html {
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
         $controler->inputs->monto = $inputs->texts->monto;
         $controler->inputs->fecha_prestacion = $inputs->dates->fecha_prestacion;
+        $controler->inputs->num_cuenta = $inputs->texts->num_cuenta;
+        $controler->inputs->clabe = $inputs->texts->clabe;
 
         return $controler->inputs;
     }

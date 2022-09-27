@@ -124,6 +124,23 @@ class controlador_em_cuenta_bancaria extends system {
         return $data;
     }
 
+    public function get_cuentas_bancarias (bool $header, bool $ws = true): array|stdClass
+    {
+        $keys['em_cuenta_bancaria'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis',
+            'num_cuenta', 'clabe');
+
+        $keys['em_empleado'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis',
+            'nombre', 'ap','am','rfc','curp','nss');
+
+        $keys['bn_banco'] = array("id",'descripcion','codigo','alias','descripcion_select','codigo_bis');
+
+        $salida = $this->get_out(header: $header,keys: $keys, ws: $ws);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar salida',data:  $salida,header: $header,ws: $ws);
+        }
+        return $salida;
+    }
+
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {

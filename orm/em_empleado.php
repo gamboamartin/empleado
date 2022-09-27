@@ -29,16 +29,17 @@ class em_empleado extends modelo{
         $campos_view = array(
             'dp_calle_pertenece_id' => array('type' => 'selects', 'model' => new dp_calle_pertenece($link)),
             'cat_sat_regimen_fiscal_id' => array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link)),
-            'im_registro_patronal_id' => array('type' => 'selects', 'model' => new im_registro_patronal($link)),
             'org_puesto_id' => array('type' => 'selects', 'model' => new org_puesto($link)),
             'cat_sat_tipo_regimen_nom_id' => array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link)),
+            'im_registro_patronal_id' => array('type' => 'selects', 'model' => new im_registro_patronal($link)),
             'em_empleado_id' => array('type' => 'selects', 'model' => $this),
             'em_tipo_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_anticipo($link)),
             'fecha_inicio_rel_laboral' => array('type' => 'dates'), 'fecha_prestacion' => array('type' => 'dates'),
             'monto' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
             'nombre' => array('type' => 'inputs'),'ap' => array('type' => 'inputs'),'am' => array('type' => 'inputs'),
             'telefono' => array('type' => 'inputs'),'rfc' => array('type' => 'inputs'),'curp' => array('type' => 'inputs'),
-            'nss' => array('type' => 'inputs'),'salario_diario' => array('type' => 'inputs'),'salario_diario_integrado' => array('type' => 'inputs'));
+            'nss' => array('type' => 'inputs'),'salario_diario' => array('type' => 'inputs'),
+            'salario_diario_integrado' => array('type' => 'inputs'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view);

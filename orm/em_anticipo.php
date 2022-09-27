@@ -29,6 +29,7 @@ class em_anticipo extends modelo{
         if (!isset($this->registro['codigo'])) {
             $this->registro['codigo'] = $this->registro['em_empleado_id'];
             $this->registro['codigo'] .= $this->registro['em_tipo_anticipo_id'];
+            $this->registro['codigo'] .= $this->registro['descripcion'];
         }
 
         if (!isset($this->registro['descripcion_select'])) {

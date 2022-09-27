@@ -71,7 +71,7 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador:'salario_diario', propiedades: ["place_holder" => "Salario Diario"]);
         $this->asignar_propiedad(identificador:'salario_diario_integrado', propiedades: ["place_holder" => "Salario Diario Integrado"]);
         $this->asignar_propiedad(identificador:'fecha_inicio_rel_laboral', propiedades: ["place_holder" => "Fecha Inicio Rel Laboral"]);
-        $this->asignar_propiedad(identificador:'fecha_prestacion', propiedades: ["place_holder" => "fecha_prestacion"]);
+        $this->asignar_propiedad(identificador:'fecha_prestacion', propiedades: ["place_holder" => "Fecha Prestacion"]);
 
     }
 

@@ -15,6 +15,7 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
+use html\em_cuenta_bancaria_html;
 use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
@@ -28,6 +29,7 @@ class controlador_em_empleado extends system {
     public stdClass $anticipos;
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_alta_bd = '';
+    public int $em_cuenta_bancaria_id = -1;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -482,6 +484,42 @@ class controlador_em_empleado extends system {
 
     }
 
+    public function cuenta_bancaria_modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $controlador = new controlador_em_cuenta_bancaria($this->link);
+        $controlador->registro_id = $this->em_cuenta_bancaria_id;
+
+        $r_alta =  $controlador->modifica(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        }
+
+        $this->asignar_propiedad(identificador:'bn_sucursal_id',
+            propiedades: ["id_selected"=> $controlador->row_upd->bn_sucursal_id]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $controlador->row_upd->em_empleado_id,
+            "disabled" => true, "filtro" => array('em_empleado.id' => $controlador->row_upd->em_empleado_id)]);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al asignar propiedad',data:  $this, header: $header,ws:$ws);
+        }
+
+        $this->inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $controlador,
+            keys_selects:  $this->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $this->inputs;
+    }
+
+
     private function data_anticipo_btn(array $anticipo): array
     {
         $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
@@ -503,15 +541,15 @@ class controlador_em_empleado extends system {
 
     private function data_cuenta_bancaria_btn(array $cuenta_bancaria): array
     {
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
-            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_cuenta_bancaria', style: 'danger');
+        $btn_elimina = $this->html_base->button_href(accion: 'cuenta_bancaria_elimina_bd', etiqueta: 'Elimina',
+            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_empleado', style: 'danger');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $cuenta_bancaria['link_elimina'] = $btn_elimina;
 
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
-            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_cuenta_bancaria', style: 'warning');
+        $btn_modifica = $this->html_base->button_href(accion: 'cuenta_bancaria_modifica', etiqueta: 'Modifica',
+            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_empleado', style: 'warning');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }

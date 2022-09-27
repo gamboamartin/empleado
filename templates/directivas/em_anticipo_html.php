@@ -1,7 +1,6 @@
 <?php
 namespace html;
 
-use base\orm\modelo;
 use gamboamartin\empleado\controllers\controlador_em_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\errores\errores;

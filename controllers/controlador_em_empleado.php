@@ -55,27 +55,27 @@ class controlador_em_empleado extends system {
 
         $this->link_em_anticipo_alta_bd = $link_em_anticipo_alta_bd;
 
-        $this->asignar_proiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "calle pertenece"]);
+        $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "calle pertenece"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar proiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_proiedad(identificador:'cat_sat_regimen_fiscal_id', propiedades: ["label" => "Regimen Fiscal"]);
-        $this->asignar_proiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal Fiscal"]);
-        $this->asignar_proiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto","required"=>false]);
-        $this->asignar_proiedad(identificador:'cat_sat_tipo_regimen_nom_id', propiedades: ["label" => "Tipo Regimen Nom"]);
-        $this->asignar_proiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado"]);
-        $this->asignar_proiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo"]);
-        $this->asignar_proiedad(identificador:'salario_diario', propiedades: ["place_holder" => "Salario Diario"]);
-        $this->asignar_proiedad(identificador:'salario_diario_integrado', propiedades: ["place_holder" => "Salario Diario Integrado"]);
-        $this->asignar_proiedad(identificador:'fecha_inicio_rel_laboral', propiedades: ["place_holder" => "Fecha Inicio Rel Laboral"]);
-        $this->asignar_proiedad(identificador:'fecha_prestacion', propiedades: ["place_holder" => "fecha_prestacion"]);
+        $this->asignar_propiedad(identificador:'cat_sat_regimen_fiscal_id', propiedades: ["label" => "Regimen Fiscal"]);
+        $this->asignar_propiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal Fiscal"]);
+        $this->asignar_propiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto","required"=>false]);
+        $this->asignar_propiedad(identificador:'cat_sat_tipo_regimen_nom_id', propiedades: ["label" => "Tipo Regimen Nom"]);
+        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado"]);
+        $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo"]);
+        $this->asignar_propiedad(identificador:'salario_diario', propiedades: ["place_holder" => "Salario Diario"]);
+        $this->asignar_propiedad(identificador:'salario_diario_integrado', propiedades: ["place_holder" => "Salario Diario Integrado"]);
+        $this->asignar_propiedad(identificador:'fecha_inicio_rel_laboral', propiedades: ["place_holder" => "Fecha Inicio Rel Laboral"]);
+        $this->asignar_propiedad(identificador:'fecha_prestacion', propiedades: ["place_holder" => "fecha_prestacion"]);
 
     }
 
-    private function asignar_proiedad(string $identificador, mixed $propiedades)
+    public function asignar_propiedad(string $identificador, mixed $propiedades)
     {
         if (!array_key_exists($identificador,$this->keys_selects)){
             $this->keys_selects[$identificador] = new stdClass();
@@ -171,7 +171,7 @@ class controlador_em_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $this->asignar_proiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $this->registro_id,
+        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $this->registro_id,
             "disabled" => true, "filtro" => array('em_empleado.id' => $this->registro_id)]);
 
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs_genera_anticipo(controler: $this,

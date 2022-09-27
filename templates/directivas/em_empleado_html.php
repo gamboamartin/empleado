@@ -48,7 +48,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
         $controler->inputs->select->em_tipo_anticipo_id = $inputs->selects->em_tipo_anticipo_id;
-
+        $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->monto = $inputs->texts->monto;
         $controler->inputs->fecha_prestacion = $inputs->dates->fecha_prestacion;
         return $controler->inputs;

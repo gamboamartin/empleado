@@ -22,7 +22,7 @@ class em_tipo_anticipo_html extends em_html {
     public function genera_inputs_alta(controlador_em_tipo_anticipo $controler, modelo $modelo, PDO $link,
                                        array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->init_alta2(modelo: $modelo,link: $link,keys_selects:$keys_selects );
+        $inputs = $this->init_alta2(row_upd: $controler->row_upd, modelo: $modelo,link: $link,keys_selects:$keys_selects );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 

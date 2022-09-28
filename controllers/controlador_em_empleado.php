@@ -364,6 +364,43 @@ class controlador_em_empleado extends system {
         return $r_modifica;
     }
 
+    public function anticipo_elimina_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $r_elimina = (new em_anticipo($this->link))->elimina_bd(id: $this->em_anticipo_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
+                ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
+                siguiente_view: "anticipo", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_elimina->siguiente_view = "anticipo";
+
+        return $r_elimina;
+    }
+
     private function asigna_keys_post(array $keys_generales): array
     {
         $registro = array();

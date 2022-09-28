@@ -8,6 +8,7 @@
  */
 namespace gamboamartin\empleado\controllers;
 
+use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
@@ -522,6 +523,13 @@ class controlador_em_empleado extends system {
 
     private function data_anticipo_btn(array $anticipo): array
     {
+        $btn_abono = $this->html_base->button_href(accion: 'abono', etiqueta: 'Abono',
+            registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'info');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_abono);
+        }
+        $anticipo['link_abono'] = $btn_abono;
+
         $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
             registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'danger');
         if (errores::$error) {
@@ -624,8 +632,6 @@ class controlador_em_empleado extends system {
         }
         $this->registros = $registros;
 
-        print_r((new em_anticipo($this->link))->get_saldo_anticipo(8));
-
         return $r_lista;
     }
 
@@ -694,7 +700,6 @@ class controlador_em_empleado extends system {
 
         $r_modifica_bd = $this->modelo->modifica_bd(registro: $registro, id: $this->registro_id);
         if(errores::$error){
-
             return $this->errores->error(mensaje: 'Error al modificar generales',data:  $r_modifica_bd);
         }
         return $r_modifica_bd;
@@ -709,9 +714,21 @@ class controlador_em_empleado extends system {
         }
 
         foreach ($anticipos->registros as $indice => $anticipo) {
+
             $anticipo = $this->data_anticipo_btn(anticipo: $anticipo);
+
             if (errores::$error) {
                 return $this->retorno_error(mensaje: 'Error al asignar botones', data: $anticipo, header: $header, ws: $ws);
+            }
+
+            $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo($anticipo['em_anticipo_id']);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al obtener el saldo pendiente',data:  $anticipo);
+            }
+
+            $anticipo['em_anticipo_total_abonado'] = (new em_abono_anticipo($this->link))->get_total_abonado($anticipo['em_anticipo_id']);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al obtener el total abonado',data:  $anticipo);
             }
             $anticipos->registros[$indice] = $anticipo;
         }

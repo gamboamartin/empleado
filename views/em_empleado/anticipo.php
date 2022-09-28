@@ -44,9 +44,12 @@
                                 <th data-breakpoints="xs sm md" data-type="html">Id</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Codigo</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Descripcion</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Descripcion Select</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Alias</th>
+                                <th data-breakpoints="xs sm md" data-type="html">Monto</th>
+                                <th data-breakpoints="xs sm md" data-type="html">Fecha</th>
+                                <th data-breakpoints="xs sm md" data-type="html">Saldo Pendiente</th>
+                                <th data-breakpoints="xs sm md" data-type="html">Total Abonado</th>
 
+                                <th data-breakpoints="xs md" class="control"  data-type="html">Abono</th>
                                 <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>
                                 <th data-breakpoints="xs md" class="control"  data-type="html">Elimina</th>
                             </tr>
@@ -58,8 +61,11 @@
                                     <td><?php echo $anticipo['em_anticipo_id']; ?></td>
                                     <td><?php echo $anticipo['em_anticipo_codigo']; ?></td>
                                     <td><?php echo $anticipo['em_anticipo_descripcion']; ?></td>
-                                    <td><?php echo $anticipo['em_anticipo_descripcion_select']; ?></td>
-                                    <td><?php echo $anticipo['em_anticipo_alias']; ?></td>
+                                    <td><?php echo $anticipo['em_anticipo_monto']; ?></td>
+                                    <td><?php echo $anticipo['em_anticipo_fecha_prestacion']; ?></td>
+                                    <td><?php echo $anticipo['em_anticipo_saldo_pendiente']; ?></td>
+                                    <td><?php echo $anticipo['em_anticipo_total_abonado']; ?></td>
+                                    <td><?php echo $anticipo['link_abono']; ?></td>
                                     <td><?php echo $anticipo['link_modifica']; ?></td>
                                     <td><?php echo $anticipo['link_elimina']; ?></td>
                                 </tr>

@@ -60,4 +60,20 @@ class em_abono_anticipo extends modelo{
 
         return $r_alta_bd;
     }
+
+    public function get_total_abonado(int $em_anticipo_id): float|array
+    {
+        if($em_anticipo_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_anticipo_id debe ser mayor a 0', data: $em_anticipo_id);
+        }
+
+        $campos['total_abonado'] = 'em_abono_anticipo.monto';
+        $filtro['em_abono_anticipo.em_anticipo_id'] = $em_anticipo_id;
+        $r_em_anticipo = $this->suma(campos:$campos, filtro:  $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el anticipo', data: $r_em_anticipo);
+        }
+
+        return round($r_em_anticipo['total_abonado'],2);
+    }
 }

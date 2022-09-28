@@ -624,6 +624,8 @@ class controlador_em_empleado extends system {
         }
         $this->registros = $registros;
 
+        print_r((new em_anticipo($this->link))->get_saldo_anticipo(8));
+
         return $r_lista;
     }
 

@@ -23,6 +23,8 @@ class em_anticipo extends modelo{
             columnas: $columnas,campos_view: $campos_view);
 
         $this->NAMESPACE = __NAMESPACE__;
+
+
     }
 
     public function alta_bd(): array|stdClass
@@ -68,4 +70,25 @@ class em_anticipo extends modelo{
 
         return $r_em_anticipo;
     }
+
+    public function get_saldo_anticipo(int $em_anticipo_id): float|array
+    {
+        if($em_anticipo_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_anticipo_id debe ser mayor a 0', data: $em_anticipo_id);
+        }
+
+        $r_em_anticipo = $this->registro(registro_id: $em_anticipo_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el anticipo', data: $r_em_anticipo);
+        }
+
+        $total_abonado = (new em_abono_anticipo(link: $this->link))->get_total_abonado($em_anticipo_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el total abonado', data: $total_abonado);
+        }
+
+        return $r_em_anticipo['em_anticipo_monto'] - $total_abonado;
+    }
+
+
 }

@@ -16,6 +16,7 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
+use html\em_anticipo_html;
 use html\em_cuenta_bancaria_html;
 use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
@@ -31,7 +32,9 @@ class controlador_em_empleado extends system {
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_alta_bd = '';
     public string $link_em_cuenta_bancaria_modifica_bd = '';
+    public string $link_em_anticipo_modifica_bd = '';
     public int $em_cuenta_bancaria_id = -1;
+    public int $em_anticipo_id = -1;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -77,8 +80,21 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_cuenta_bancaria_modifica_bd = $link_em_cuenta_bancaria_modifica_bd;
 
+        $link_em_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'anticipo_modifica_bd', registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_anticipo_modifica_bd = $link_em_anticipo_modifica_bd;
+
         if (isset($_GET['em_cuenta_bancaria_id'])){
             $this->em_cuenta_bancaria_id = $_GET['em_cuenta_bancaria_id'];
+        }
+
+        if (isset($_GET['em_anticipo_id'])){
+            $this->em_anticipo_id = $_GET['em_anticipo_id'];
         }
 
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece"]);
@@ -272,6 +288,80 @@ class controlador_em_empleado extends system {
         $alta->siguiente_view = "anticipo";
 
         return $alta;
+    }
+
+    public function anticipo_modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $controlador = new controlador_em_anticipo($this->link);
+        $controlador->registro_id = $this->em_anticipo_id;
+
+        $modifica =  $controlador->modifica(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
+        }
+
+        $this->asignar_propiedad(identificador:'em_tipo_anticipo_id',
+            propiedades: ["id_selected"=> $controlador->row_upd->em_tipo_anticipo_id]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $controlador->row_upd->em_empleado_id,
+            "disabled" => true, "filtro" => array('em_empleado.id' => $controlador->row_upd->em_empleado_id)]);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al asignar propiedad',data:  $this, header: $header,ws:$ws);
+        }
+
+        $this->inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
+            keys_selects:  $this->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $this->inputs;
+    }
+
+    public function anticipo_modifica_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $registros = $_POST;
+
+        $r_modifica = (new em_anticipo($this->link))->modifica_bd(registro: $registros,
+            id: $this->em_anticipo_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al modificar anticipo', data: $r_modifica, header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: "anticipo", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_modifica->siguiente_view = "anticipo";
+
+        return $r_modifica;
     }
 
     private function asigna_keys_post(array $keys_generales): array
@@ -612,22 +702,24 @@ class controlador_em_empleado extends system {
 
     private function data_anticipo_btn(array $anticipo): array
     {
+        $params['em_anticipo_id'] = $anticipo['em_anticipo_id'];
+
         $btn_abono = $this->html_base->button_href(accion: 'abono', etiqueta: 'Abono',
-            registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'info');
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'info',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_abono);
         }
         $anticipo['link_abono'] = $btn_abono;
 
-        $btn_elimina = $this->html_base->button_href(accion: 'elimina_bd', etiqueta: 'Elimina',
-            registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'danger');
+        $btn_elimina = $this->html_base->button_href(accion: 'anticipo_elimina_bd', etiqueta: 'Elimina',
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $anticipo['link_elimina'] = $btn_elimina;
 
-        $btn_modifica = $this->html_base->button_href(accion: 'modifica', etiqueta: 'Modifica',
-            registro_id: $anticipo['em_anticipo_id'], seccion: 'em_anticipo', style: 'warning');
+        $btn_modifica = $this->html_base->button_href(accion: 'anticipo_modifica', etiqueta: 'Modifica',
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }

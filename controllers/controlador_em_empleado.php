@@ -30,6 +30,7 @@ class controlador_em_empleado extends system {
     public stdClass $anticipos;
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_alta_bd = '';
+    public string $link_em_cuenta_bancaria_modifica_bd = '';
     public int $em_cuenta_bancaria_id = -1;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
@@ -66,6 +67,19 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->link_em_cuenta_bancaria_alta_bd = $link_em_cuenta_bancaria_alta_bd;
+
+        $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd', registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_cuenta_bancaria_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_cuenta_bancaria_modifica_bd = $link_em_cuenta_bancaria_modifica_bd;
+
+        if (isset($_GET['em_cuenta_bancaria_id'])){
+            $this->em_cuenta_bancaria_id = $_GET['em_cuenta_bancaria_id'];
+        }
 
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece"]);
         if (errores::$error) {
@@ -520,6 +534,44 @@ class controlador_em_empleado extends system {
         return $this->inputs;
     }
 
+    public function cuenta_bancaria_modifica_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $registros = $_POST;
+
+        $r_modifica = (new em_cuenta_bancaria($this->link))->modifica_bd(registro: $registros,
+            id: $this->em_cuenta_bancaria_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica, header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: "cuenta_bancaria", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_modifica->siguiente_view = "cuenta_bancaria";
+
+        return $r_modifica;
+    }
 
     private function data_anticipo_btn(array $anticipo): array
     {
@@ -549,15 +601,17 @@ class controlador_em_empleado extends system {
 
     private function data_cuenta_bancaria_btn(array $cuenta_bancaria): array
     {
+        $params['em_cuenta_bancaria_id'] = $cuenta_bancaria['em_cuenta_bancaria_id'];
+
         $btn_elimina = $this->html_base->button_href(accion: 'cuenta_bancaria_elimina_bd', etiqueta: 'Elimina',
-            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_empleado', style: 'danger');
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $cuenta_bancaria['link_elimina'] = $btn_elimina;
 
         $btn_modifica = $this->html_base->button_href(accion: 'cuenta_bancaria_modifica', etiqueta: 'Modifica',
-            registro_id: $cuenta_bancaria['em_cuenta_bancaria_id'], seccion: 'em_empleado', style: 'warning');
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }

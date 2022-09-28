@@ -44,8 +44,8 @@
                                 <th data-breakpoints="xs sm md" data-type="html">Id</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Codigo</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Descripcion</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Descripcion Select</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Alias</th>
+                                <th data-breakpoints="xs sm md" data-type="html">Sucursal</th>
+                                <th data-breakpoints="xs sm md" data-type="html">Num. Cuenta</th>
 
                                 <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>
                                 <th data-breakpoints="xs md" class="control"  data-type="html">Elimina</th>
@@ -58,8 +58,8 @@
                                     <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_id']; ?></td>
                                     <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_codigo']; ?></td>
                                     <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_descripcion']; ?></td>
-                                    <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_descripcion_select']; ?></td>
-                                    <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_alias']; ?></td>
+                                    <td><?php echo $cuenta_bancaria['bn_sucursal_descripcion']; ?></td>
+                                    <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_num_cuenta']; ?></td>
                                     <td><?php echo $cuenta_bancaria['link_modifica']; ?></td>
                                     <td><?php echo $cuenta_bancaria['link_elimina']; ?></td>
                                 </tr>

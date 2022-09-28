@@ -9,7 +9,7 @@
                     <?php include (new views())->ruta_templates."head/title.php"; ?>
                     <?php include (new views())->ruta_templates."head/subtitulo.php"; ?>
                     <?php include (new views())->ruta_templates."mensajes.php"; ?>
-                    <form method="post" action="<?php echo $controlador->link_em_cuenta_bancaria_alta_bd; ?>" class="form-additional">
+                    <form method="post" action="<?php echo $controlador->link_em_cuenta_bancaria_modifica_bd; ?>&em_cuenta_bancaria_id=<?php echo $controlador->em_cuenta_bancaria_id; ?>" class="form-additional">
                         <?php echo $controlador->inputs->codigo; ?>
                         <?php echo $controlador->inputs->select->bn_sucursal_id; ?>
                         <?php echo $controlador->inputs->descripcion; ?>

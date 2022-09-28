@@ -99,7 +99,8 @@ class controlador_em_anticipo extends system {
         }
 
         $this->asignar_propiedad(identificador:'em_empleado_id',
-            propiedades: ["id_selected"=>$this->row_upd->em_empleado_id]);
+            propiedades: ["id_selected"=> $this->row_upd->em_empleado_id, "disabled" => true,
+                "filtro" => array('em_empleado.id' => $this->row_upd->em_empleado_id)]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

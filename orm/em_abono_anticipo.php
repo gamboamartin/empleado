@@ -14,7 +14,7 @@ class em_abono_anticipo extends modelo{
         $tabla = 'em_abono_anticipo';
 
         $columnas = array($tabla=>false, 'em_anticipo'=>$tabla, 'em_tipo_abono_anticipo'=>$tabla,
-            'cat_sat_forma_pago'=>$tabla);
+            'cat_sat_forma_pago'=>$tabla, 'em_empleado' => 'em_anticipo');
 
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_abono_anticipo_id','em_anticipo_id','cat_sat_forma_pago_id','monto','fecha');

@@ -93,6 +93,7 @@ class controlador_em_abono_anticipo extends system {
 
     private function base(): array|stdClass
     {
+
         $r_modifica =  parent::modifica(header: false,aplica_form:  false);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
@@ -114,12 +115,14 @@ class controlador_em_abono_anticipo extends system {
         }
 
         $this->asignar_propiedad(identificador:'em_anticipo_id',
-            propiedades: ["id_selected"=>$this->row_upd->em_anticipo_id]);
+            propiedades: ["id_selected"=>$this->row_upd->em_anticipo_id, "disabled" => true,
+                "filtro" => array('em_anticipo.id' => $this->row_upd->em_anticipo_id)]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
+
 
         $this->asignar_propiedad(identificador:'cat_sat_forma_pago_id',
             propiedades: ["id_selected"=>$this->row_upd->cat_sat_forma_pago_id]);

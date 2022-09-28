@@ -9,12 +9,10 @@
 namespace gamboamartin\empleado\controllers;
 
 use gamboamartin\empleado\models\em_tipo_abono_anticipo;
-use gamboamartin\empleado\models\em_tipo_anticipo;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\em_tipo_abono_anticipo_html;
-use html\em_tipo_anticipo_html;
 use PDO;
 use stdClass;
 

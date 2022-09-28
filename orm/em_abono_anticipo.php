@@ -61,6 +61,21 @@ class em_abono_anticipo extends modelo{
         return $r_alta_bd;
     }
 
+    public function get_abonos_anticipo(int $em_anticipo_id): array|stdClass
+    {
+        if($em_anticipo_id <=0){
+            return $this->error->error(mensaje: 'Error $em_anticipo_id debe ser mayor a 0', data: $em_anticipo_id);
+        }
+
+        $filtro['em_anticipo.id'] = $em_anticipo_id;
+        $registros = $this->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener abonos', data: $registros);
+        }
+
+        return $registros;
+    }
+
     public function get_total_abonado(int $em_anticipo_id): float|array
     {
         if($em_anticipo_id <= 0){

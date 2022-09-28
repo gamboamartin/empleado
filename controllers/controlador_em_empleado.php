@@ -16,6 +16,7 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
+use html\em_abono_anticipo_html;
 use html\em_anticipo_html;
 use html\em_cuenta_bancaria_html;
 use html\em_empleado_html;
@@ -29,12 +30,15 @@ class controlador_em_empleado extends system {
     public array $keys_selects = array();
     public stdClass $cuentas_bancarias;
     public stdClass $anticipos;
+    public stdClass $abonos;
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_alta_bd = '';
+    public string $link_em_abono_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_modifica_bd = '';
     public string $link_em_anticipo_modifica_bd = '';
     public int $em_cuenta_bancaria_id = -1;
     public int $em_anticipo_id = -1;
+    public int $em_abono_anticipo_id = -1;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -71,6 +75,15 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_cuenta_bancaria_alta_bd = $link_em_cuenta_bancaria_alta_bd;
 
+        $link_em_abono_anticipo_alta_bd = $obj_link->link_con_id(accion: 'abono_alta_bd', registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_abono_anticipo_alta_bd = $link_em_abono_anticipo_alta_bd;
+
         $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd', registro_id: $this->registro_id,
             seccion: $this->seccion);
         if (errores::$error) {
@@ -95,6 +108,10 @@ class controlador_em_empleado extends system {
 
         if (isset($_GET['em_anticipo_id'])){
             $this->em_anticipo_id = $_GET['em_anticipo_id'];
+        }
+
+        if (isset($_GET['em_abono_anticipo_id'])){
+            $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
         }
 
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece"]);
@@ -217,6 +234,143 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         return $r_alta;
+    }
+
+    public function abono(bool $header, bool $ws = false): array|stdClass
+    {
+        $controlador = new controlador_em_abono_anticipo($this->link);
+
+        $alta = $controlador->alta(header: false);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
+        }
+
+        $controlador->asignar_propiedad(identificador: 'em_anticipo_id', propiedades: ["id_selected" => $this->em_anticipo_id,
+            "disabled" => true, "filtro" => array('em_anticipo.id' => $this->em_anticipo_id)]);
+
+        $this->inputs = (new em_abono_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
+            keys_selects:  $controlador->keys_selects);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        $abonos = (new em_abono_anticipo($this->link))->get_abonos_anticipo(em_anticipo_id: $this->em_anticipo_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener abonos',data:  $abonos,header: $header,ws:$ws);
+        }
+
+        foreach ($abonos->registros as $indice => $abono) {
+            $abono = $this->data_abono_btn(abono: $abono);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $abono, header: $header, ws: $ws);
+            }
+            $abonos->registros[$indice] = $abono;
+        }
+
+        $this->abonos = $abonos;
+
+        return $this->inputs;
+    }
+
+    public function abono_alta_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $_POST['em_anticipo_id'] = $this->em_anticipo_id;
+
+        $alta = (new em_abono_anticipo($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta abono', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: "abono", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = "abono";
+
+        return $alta;
+    }
+
+    public function abono_modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $controlador = new controlador_em_abono_anticipo($this->link);
+        $controlador->registro_id = 8;
+
+        $modifica = $controlador->modifica(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
+        }
+
+
+        $this->inputs = (new em_abono_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
+            keys_selects:  $this->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $this->inputs;
+    }
+
+    public function abono_elimina_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $r_elimina = (new em_abono_anticipo($this->link))->elimina_bd(id: $this->em_abono_anticipo_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
+                ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
+                siguiente_view: "abono", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_elimina->siguiente_view = "abono";
+
+        return $r_elimina;
     }
 
     public function anticipo(bool $header, bool $ws = false): array|stdClass
@@ -786,6 +940,27 @@ class controlador_em_empleado extends system {
         return $cuenta_bancaria;
     }
 
+    private function data_abono_btn(array $abono): array
+    {
+        $params['em_abono_anticipo_id'] = $abono['em_abono_anticipo_id'];
+
+        $btn_elimina = $this->html_base->button_href(accion: 'abono_elimina_bd', etiqueta: 'Elimina',
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $abono['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'abono_modifica', etiqueta: 'Modifica',
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $abono['link_modifica'] = $btn_modifica;
+
+        return $abono;
+    }
+
     public function fiscales(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
@@ -850,6 +1025,7 @@ class controlador_em_empleado extends system {
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al maquetar registros',data:  $registros, header: $header,ws:$ws);
         }
+
         $this->registros = $registros;
 
         return $r_lista;

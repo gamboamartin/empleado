@@ -30,6 +30,14 @@ class controlador_em_anticipo extends system {
 
         $this->titulo_lista = 'Anticipo';
 
+        $keys_rows_lista = $this->keys_rows_lista();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $keys_rows_lista);
+            print_r($error);
+            die('Error');
+        }
+        $this->keys_row_lista = $keys_rows_lista;
+
         $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
@@ -125,6 +133,35 @@ class controlador_em_anticipo extends system {
         $data->inputs = $inputs;
 
         return $data;
+    }
+
+    private function keys_rows_lista(): array
+    {
+        $keys_rows_lista = array();
+        $keys = array('em_anticipo_id','em_anticipo_codigo','em_anticipo_descripcion','em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am','em_anticipo_monto','em_anticipo_fecha_prestacion');
+
+        foreach ($keys as $campo) {
+            $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
+            if (errores::$error){
+                return $this->errores->error(mensaje: "error al inicializar key",data: $keys_rows_lista);
+            }
+        }
+
+        return $keys_rows_lista;
+    }
+
+    private function key_row_lista_init(string $campo, array $keys_rows_lista): array
+    {
+        $data = new stdClass();
+        $data->campo = $campo;
+
+        $campo = str_replace(array("em_anticipo", "em_", "_"), '', $campo);
+        $campo = ucfirst(strtolower($campo));
+
+        $data->name_lista = $campo;
+        $keys_rows_lista[] = $data;
+
+        return $keys_rows_lista;
     }
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,

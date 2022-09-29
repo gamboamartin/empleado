@@ -40,6 +40,10 @@ class controlador_em_empleado extends system {
     public int $em_cuenta_bancaria_id = -1;
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
+    public controlador_em_cuenta_bancaria $controlador_em_cuenta_bancaria;
+    public controlador_em_anticipo $controlador_em_anticipo;
+    public controlador_em_abono_anticipo $controlador_em_abono_anticipo;
+
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -49,6 +53,10 @@ class controlador_em_empleado extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Empleados';
+
+        $this->controlador_em_cuenta_bancaria= new controlador_em_cuenta_bancaria($this->link);
+        $this->controlador_em_anticipo= new controlador_em_anticipo($this->link);
+        $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo($this->link);
 
         $keys_rows_lista = $this->keys_rows_lista();
         if (errores::$error) {
@@ -138,7 +146,14 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto"]);
+        $this->asignar_propiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto", "required"=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -152,28 +167,8 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'bn_sucursal_id', propiedades: ["label" => "Sucursal"]);
+        $this->asignar_propiedad(identificador:'cat_sat_tipo_jornada_nom_id', propiedades: ["label" => "Tipo Jornada",
+            "required"=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -203,21 +198,21 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'fecha_prestacion',propiedades: ["place_holder" => "Fecha Prestacion"]);
+        $this->asignar_propiedad(identificador:'rfc', propiedades: ["cols" => 4]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'num_cuenta', propiedades: ["place_holder" => "Num. Cuenta"]);
+        $this->asignar_propiedad(identificador:'curp', propiedades: ["cols" => 4]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'clabe', propiedades: ["place_holder" => "Clabe"]);
+        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 4]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -248,18 +243,17 @@ class controlador_em_empleado extends system {
 
     public function abono(bool $header, bool $ws = false): array|stdClass
     {
-        $controlador = new controlador_em_abono_anticipo($this->link);
-
-        $alta = $controlador->alta(header: false);
+        $alta = $this->controlador_em_abono_anticipo->alta(header: false);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
         }
 
-        $controlador->asignar_propiedad(identificador: 'em_anticipo_id', propiedades: ["id_selected" => $this->em_anticipo_id,
-            "disabled" => true, "filtro" => array('em_anticipo.id' => $this->em_anticipo_id)]);
+        $this->controlador_em_abono_anticipo->asignar_propiedad(identificador: 'em_anticipo_id',
+            propiedades: ["id_selected" => $this->em_anticipo_id, "disabled" => true,
+                "filtro" => array('em_anticipo.id' => $this->em_anticipo_id)]);
 
-        $this->inputs = (new em_abono_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
-            keys_selects:  $controlador->keys_selects);
+        $this->inputs = (new em_abono_anticipo_html(html: $this->html_base))->genera_inputs(
+            controler: $this->controlador_em_abono_anticipo, keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
             print_r($error);
@@ -312,7 +306,7 @@ class controlador_em_empleado extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: "abono", ws:  $ws);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -372,14 +366,14 @@ class controlador_em_empleado extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
-                siguiente_view: "lista", ws:  $ws);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');
             echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
             exit;
         }
-        $r_modifica->siguiente_view = "lista";
+        $r_modifica->siguiente_view = "abono";
 
         return $r_modifica;
     }
@@ -409,7 +403,7 @@ class controlador_em_empleado extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: "abono", ws:  $ws);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -423,24 +417,19 @@ class controlador_em_empleado extends system {
 
     public function anticipo(bool $header, bool $ws = false): array|stdClass
     {
-        $r_alta = parent::alta(header: false, ws: false);
+        $alta = $this->controlador_em_anticipo->alta(header: false);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
         }
 
-        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $this->registro_id,
-            "disabled" => true, "filtro" => array('em_empleado.id' => $this->registro_id)]);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al asignar propiedad',data:  $this->anticipos, header: $header,ws:$ws);
-        }
+        $this->controlador_em_anticipo->asignar_propiedad(identificador: 'em_empleado_id',
+            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
+                "filtro" => array('em_empleado.id' => $this->registro_id)]);
 
-        $this->row_upd->fecha_prestacion = date('Y-m-d');
-        $this->row_upd->monto = 0;
-
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects:  $this->keys_selects);
+        $this->inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $this->controlador_em_anticipo,
+            keys_selects:  $this->controlador_em_anticipo->keys_selects);
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
             print_r($error);
             die('Error');
         }
@@ -450,7 +439,7 @@ class controlador_em_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al obtener los anticipos',data:  $this->anticipos, header: $header,ws:$ws);
         }
 
-        return $inputs;
+        return $this->inputs;
     }
 
     public function anticipo_alta_bd(bool $header, bool $ws = false): array|stdClass
@@ -497,13 +486,13 @@ class controlador_em_empleado extends system {
         $controlador = new controlador_em_anticipo($this->link);
         $controlador->registro_id = $this->em_anticipo_id;
 
-        $modifica =  $controlador->modifica(header: false);
+        $modifica = $controlador->modifica(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
         }
 
         $this->inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
-            keys_selects:  $this->keys_selects);
+            keys_selects:  $controlador->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
             print_r($error);
@@ -687,14 +676,20 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'cat_sat_tipo_jornada_nom_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_tipo_jornada_nom_id]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
             keys_selects: $this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
-        }
+
 
         $data = new stdClass();
         $data->template = $r_modifica;
@@ -735,21 +730,19 @@ class controlador_em_empleado extends system {
 
     public function cuenta_bancaria(bool $header, bool $ws = false): array|stdClass
     {
-        $r_alta = parent::alta(header: false);
+        $alta = $this->controlador_em_cuenta_bancaria->alta(header: false);
         if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar template', data: $r_alta, header: $header, ws: $ws);
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
         }
 
-        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $this->registro_id,
-            "disabled" => true, "filtro" => array('em_empleado.id' => $this->registro_id)]);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al asignar propiedad',data:  $this->anticipos, header: $header,ws:$ws);
-        }
+        $this->controlador_em_cuenta_bancaria->asignar_propiedad(identificador: 'em_empleado_id',
+            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
+                "filtro" => array('em_empleado.id' => $this->registro_id)]);
 
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects:  $this->keys_selects);
+        $this->inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $this->controlador_em_cuenta_bancaria,
+            keys_selects:  $this->controlador_em_cuenta_bancaria->keys_selects);
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $inputs);
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
             print_r($error);
             die('Error');
         }
@@ -768,10 +761,9 @@ class controlador_em_empleado extends system {
             }
             $cuentas_bancarias->registros[$indice] = $cuenta_bancaria;
         }
-
         $this->cuentas_bancarias = $cuentas_bancarias;
 
-        return $inputs;
+        return $this->inputs;
     }
 
     public function cuenta_bancaria_alta_bd(bool $header, bool $ws = false)
@@ -819,27 +811,13 @@ class controlador_em_empleado extends system {
         $controlador = new controlador_em_cuenta_bancaria($this->link);
         $controlador->registro_id = $this->em_cuenta_bancaria_id;
 
-        $r_alta =  $controlador->modifica(header: false);
+        $modifica = $controlador->modifica(header: false);
         if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
-        }
-
-        $this->asignar_propiedad(identificador:'bn_sucursal_id',
-            propiedades: ["id_selected"=> $controlador->row_upd->bn_sucursal_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["id_selected" => $controlador->row_upd->em_empleado_id,
-            "disabled" => true, "filtro" => array('em_empleado.id' => $controlador->row_upd->em_empleado_id)]);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al asignar propiedad',data:  $this, header: $header,ws:$ws);
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
         }
 
         $this->inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $controlador,
-            keys_selects:  $this->keys_selects);
+            keys_selects:  $controlador->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
             print_r($error);
@@ -977,6 +955,7 @@ class controlador_em_empleado extends system {
     private function data_abono_btn(array $abono): array
     {
         $params['em_abono_anticipo_id'] = $abono['em_abono_anticipo_id'];
+        $params['em_anticipo_id'] = $abono['em_anticipo_id'];
 
         $btn_elimina = $this->html_base->button_href(accion: 'abono_elimina_bd', etiqueta: 'Elimina',
             registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);

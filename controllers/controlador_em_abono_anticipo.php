@@ -50,14 +50,6 @@ class controlador_em_abono_anticipo extends system {
             print_r($error);
             die('Error');
         }
-
-        $this->asignar_propiedad(identificador:'fecha', propiedades: ["place_holder" => "Fecha"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
     }
 
     public function asignar_propiedad(string $identificador, mixed $propiedades)
@@ -93,7 +85,6 @@ class controlador_em_abono_anticipo extends system {
 
     private function base(): array|stdClass
     {
-
         $r_modifica =  parent::modifica(header: false,aplica_form:  false);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
@@ -122,7 +113,6 @@ class controlador_em_abono_anticipo extends system {
             print_r($error);
             die('Error');
         }
-
 
         $this->asignar_propiedad(identificador:'cat_sat_forma_pago_id',
             propiedades: ["id_selected"=>$this->row_upd->cat_sat_forma_pago_id]);

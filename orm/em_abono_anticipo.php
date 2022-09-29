@@ -53,6 +53,17 @@ class em_abono_anticipo extends modelo{
             $this->registro['alias'] .= $this->registro['descripcion'];
         }
 
+        $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo(
+            $this->registro['em_anticipo_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el saldo pendiente',data: $anticipo);
+        }
+
+        if ($this->registro['monto']>$anticipo['em_anticipo_saldo_pendiente']){
+            return $this->error->error(mensaje: 'Error el monto ingresado es mayor al saldo pendiente',
+                data: $this->registro['monto']);
+        }
+
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al dar de alta anticipo',data: $r_alta_bd);

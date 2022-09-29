@@ -312,7 +312,7 @@ class controlador_em_empleado extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: "abono", ws:  $ws);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');

@@ -138,7 +138,14 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto"]);
+        $this->asignar_propiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto", "required"=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -152,28 +159,8 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'bn_sucursal_id', propiedades: ["label" => "Sucursal"]);
+        $this->asignar_propiedad(identificador:'cat_sat_tipo_jornada_nom_id', propiedades: ["label" => "Tipo Jornada",
+            "required"=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -203,21 +190,21 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'fecha_prestacion',propiedades: ["place_holder" => "Fecha Prestacion"]);
+        $this->asignar_propiedad(identificador:'rfc', propiedades: ["cols" => 4]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'num_cuenta', propiedades: ["place_holder" => "Num. Cuenta"]);
+        $this->asignar_propiedad(identificador:'curp', propiedades: ["cols" => 4]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'clabe', propiedades: ["place_holder" => "Clabe"]);
+        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 4]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -372,14 +359,14 @@ class controlador_em_empleado extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
-                siguiente_view: "lista", ws:  $ws);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');
             echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
             exit;
         }
-        $r_modifica->siguiente_view = "lista";
+        $r_modifica->siguiente_view = "abono";
 
         return $r_modifica;
     }
@@ -409,7 +396,7 @@ class controlador_em_empleado extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: "abono", ws:  $ws);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -683,14 +670,20 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'cat_sat_tipo_jornada_nom_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_tipo_jornada_nom_id]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
             keys_selects: $this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
-        }
+
 
         $data = new stdClass();
         $data->template = $r_modifica;
@@ -957,6 +950,7 @@ class controlador_em_empleado extends system {
     private function data_abono_btn(array $abono): array
     {
         $params['em_abono_anticipo_id'] = $abono['em_abono_anticipo_id'];
+        $params['em_anticipo_id'] = $abono['em_anticipo_id'];
 
         $btn_elimina = $this->html_base->button_href(accion: 'abono_elimina_bd', etiqueta: 'Elimina',
             registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);

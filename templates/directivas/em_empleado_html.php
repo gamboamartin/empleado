@@ -19,6 +19,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
         $controler->inputs->select->cat_sat_tipo_regimen_nom_id = $inputs->selects->cat_sat_tipo_regimen_nom_id;
+        $controler->inputs->select->cat_sat_tipo_jornada_nom_id = $inputs->selects->cat_sat_tipo_jornada_nom_id;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;

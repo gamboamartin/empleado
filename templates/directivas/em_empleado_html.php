@@ -19,9 +19,6 @@ class em_empleado_html extends em_html {
         $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
         $controler->inputs->select->cat_sat_tipo_regimen_nom_id = $inputs->selects->cat_sat_tipo_regimen_nom_id;
-        $controler->inputs->select->em_tipo_anticipo_id = $inputs->selects->em_tipo_anticipo_id;
-        $controler->inputs->select->em_empleado_id = $inputs->selects->em_empleado_id;
-        $controler->inputs->select->bn_sucursal_id = $inputs->selects->bn_sucursal_id;
         $controler->inputs->codigo = $inputs->texts->codigo;
         $controler->inputs->nombre = $inputs->texts->nombre;
         $controler->inputs->ap = $inputs->texts->ap;
@@ -33,10 +30,6 @@ class em_empleado_html extends em_html {
         $controler->inputs->fecha_inicio_rel_laboral = $inputs->dates->fecha_inicio_rel_laboral;
         $controler->inputs->salario_diario = $inputs->texts->salario_diario;
         $controler->inputs->salario_diario_integrado = $inputs->texts->salario_diario_integrado;
-        $controler->inputs->monto = $inputs->texts->monto;
-        $controler->inputs->fecha_prestacion = $inputs->dates->fecha_prestacion;
-        $controler->inputs->num_cuenta = $inputs->texts->num_cuenta;
-        $controler->inputs->clabe = $inputs->texts->clabe;
 
         return $controler->inputs;
     }

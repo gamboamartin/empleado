@@ -165,6 +165,40 @@ class controlador_em_anticipo extends system {
         return $keys_rows_lista;
     }
 
+    private function asigna_link_row(stdClass $row, string $accion, string $propiedad, string $estilo): array|stdClass
+    {
+        $keys = array('em_anticipo_id');
+        $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
+        }
+
+        $link = $this->obj_link->link_con_id(accion: $accion,registro_id:  $row->em_anticipo_id,
+            seccion:  $this->tabla);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al genera link',data:  $link);
+        }
+
+        $row->$propiedad = $link;
+        $row->$estilo = 'info';
+
+        return $row;
+    }
+
+
+    private function maqueta_registros_lista(array $registros): array
+    {
+        foreach ($registros as $indice=> $row){
+            $row = $this->asigna_link_row(row: $row, accion: "ver_abonos",propiedad: "link_ver_abonos",
+                estilo: "link_ver_abonos_style");
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
+            }
+            $registros[$indice] = $row;
+        }
+        return $registros;
+    }
+
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string
     {
@@ -175,6 +209,23 @@ class controlador_em_anticipo extends system {
         }
 
         return $base->template;
+    }
+
+    public function lista(bool $header, bool $ws = false): array
+    {
+        $r_lista = parent::lista($header, $ws);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $r_lista, header: $header,ws:$ws);
+        }
+
+        $registros = $this->maqueta_registros_lista(registros: $this->registros);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al maquetar registros',data:  $registros, header: $header,ws:$ws);
+        }
+
+        $this->registros = $registros;
+
+        return $r_lista;
     }
 
 }

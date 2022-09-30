@@ -228,4 +228,22 @@ class controlador_em_anticipo extends system {
         return $r_lista;
     }
 
+    public function ver_abonos(bool $header, bool $ws = false): array|stdClass
+    {
+        $modifica = $this->modifica(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
+        }
+
+        $this->inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $this,
+            keys_selects:  $this->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $this->inputs;
+    }
+
 }

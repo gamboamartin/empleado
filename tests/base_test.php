@@ -17,6 +17,9 @@ class base_test{
         $registro['id'] = 1;
         $registro['codigo'] = 1;
         $registro['descripcion'] = 1;
+        $registro['nombre'] = 1;
+        $registro['ap'] = 1;
+        $registro['org_puesto_id'] = 1;
 
 
 

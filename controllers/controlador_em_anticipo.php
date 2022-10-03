@@ -23,6 +23,7 @@ class controlador_em_anticipo extends system {
 
     public array $keys_selects = array();
     public string $link_abono_alta_bd = '';
+    public stdClass $abonos;
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -32,6 +33,8 @@ class controlador_em_anticipo extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Anticipo';
+
+        $this->abonos = new stdClass();
 
         $keys_rows_lista = $this->keys_rows_lista();
         if (errores::$error) {
@@ -254,6 +257,14 @@ class controlador_em_anticipo extends system {
             print_r($error);
             die('Error');
         }
+
+        $filtro['em_anticipo.id'] = $this->registro_id;
+        $r_em_abonos = (new em_abono_anticipo($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al obtener abosno', data: $r_em_abonos);
+        }
+
+        $this->abonos = $r_em_abonos;
 
         return $this->inputs;
     }

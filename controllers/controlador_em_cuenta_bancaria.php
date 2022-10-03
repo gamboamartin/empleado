@@ -71,8 +71,7 @@ class controlador_em_cuenta_bancaria extends system {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects:  $this->keys_selects);
+        $inputs = $this->genera_inputs($this->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
@@ -112,8 +111,7 @@ class controlador_em_cuenta_bancaria extends system {
             die('Error');
         }
 
-        $inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects: $this->keys_selects);
+        $inputs = $this->genera_inputs($this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }

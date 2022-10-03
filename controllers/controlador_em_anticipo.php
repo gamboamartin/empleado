@@ -8,8 +8,10 @@
  */
 namespace gamboamartin\empleado\controllers;
 
+use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\errores\errores;
+use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
@@ -20,6 +22,7 @@ use stdClass;
 class controlador_em_anticipo extends system {
 
     public array $keys_selects = array();
+    public string $link_abono_alta_bd = '';
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){
@@ -58,6 +61,15 @@ class controlador_em_anticipo extends system {
             print_r($error);
             die('Error');
         }
+
+        $link_abono_alta_bd= $obj_link->link_con_id(accion: 'abono_alta_bd', registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_abono_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_abono_alta_bd = $link_abono_alta_bd;
 
     }
 
@@ -246,4 +258,43 @@ class controlador_em_anticipo extends system {
         return $this->inputs;
     }
 
+
+    public function abono_alta_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        $_POST['em_anticipo_id'] = $this->registro_id;
+
+        $alta = (new em_abono_anticipo($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta anticipo', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: "anticipo", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = "anticipo";
+
+        return $alta;
+    }
 }

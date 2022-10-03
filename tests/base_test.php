@@ -20,6 +20,7 @@ class base_test{
         $registro['nombre'] = 1;
         $registro['ap'] = 1;
         $registro['org_puesto_id'] = 1;
+        $registro['dp_calle_pertenece_id'] = 1;
 
 
 

@@ -97,8 +97,7 @@ class controlador_em_anticipo extends system {
         $this->row_upd->fecha_prestacion = date('Y-m-d');
         $this->row_upd->monto = 0;
 
-        $inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects:  $this->keys_selects);
+        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
@@ -138,8 +137,7 @@ class controlador_em_anticipo extends system {
             die('Error');
         }
 
-        $inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects: $this->keys_selects);
+        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }

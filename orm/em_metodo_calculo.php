@@ -4,19 +4,15 @@ use base\orm\modelo;
 
 use PDO;
 
-class em_tipo_descuento extends modelo{
+class em_metodo_calculo extends modelo{
 
     public function __construct(PDO $link){
-        $tabla = 'em_tipo_descuento';
+        $tabla = 'em_metodo_calculo';
         $columnas = array($tabla=>false);
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis');
 
-        $campos_view['em_metodo_calculo_id']['type'] = "selects";
-        $campos_view['em_metodo_calculo_id']['model'] = new em_metodo_calculo(link: $link);
-        $campos_view['monto']['type'] = "inputs";
-
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view);
+            columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
     }

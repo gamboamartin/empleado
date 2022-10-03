@@ -58,6 +58,13 @@ class controlador_em_anticipo extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'em_tipo_descuento_id', propiedades: ["label" => "Tipo Descuento"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $this->asignar_propiedad(identificador:'fecha_prestacion', propiedades: ["place_holder" => "Fecha Prestacion"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
@@ -131,6 +138,14 @@ class controlador_em_anticipo extends system {
 
         $this->asignar_propiedad(identificador:'em_tipo_anticipo_id',
             propiedades: ["id_selected"=>$this->row_upd->em_tipo_anticipo_id]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'em_tipo_descuento_id',
+            propiedades: ["id_selected"=>$this->row_upd->em_tipo_descuento_id]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

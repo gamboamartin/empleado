@@ -231,8 +231,7 @@ class controlador_em_empleado extends system {
         $this->row_upd->salario_diario = 0;
         $this->row_upd->salario_diario_integrado = 0;
 
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects:  $this->keys_selects);
+        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
             print_r($error);
@@ -252,8 +251,8 @@ class controlador_em_empleado extends system {
             propiedades: ["id_selected" => $this->em_anticipo_id, "disabled" => true,
                 "filtro" => array('em_anticipo.id' => $this->em_anticipo_id)]);
 
-        $this->inputs = (new em_abono_anticipo_html(html: $this->html_base))->genera_inputs(
-            controler: $this->controlador_em_abono_anticipo, keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
+        $this->inputs = $this->controlador_em_abono_anticipo->genera_inputs(
+             keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
             print_r($error);
@@ -320,16 +319,15 @@ class controlador_em_empleado extends system {
 
     public function abono_modifica(bool $header, bool $ws = false): array|stdClass
     {
-        $controlador = new controlador_em_abono_anticipo($this->link);
-        $controlador->registro_id = $this->em_abono_anticipo_id;
+        $this->controlador_em_abono_anticipo->registro_id = $this->em_abono_anticipo_id;
 
-        $modifica = $controlador->modifica(header: false);
+        $modifica = $this->controlador_em_abono_anticipo->modifica(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
         }
 
-        $this->inputs = (new em_abono_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
-            keys_selects:  $controlador->keys_selects);
+        $this->inputs = $this->controlador_em_abono_anticipo->genera_inputs(
+            keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
             print_r($error);
@@ -426,7 +424,7 @@ class controlador_em_empleado extends system {
             propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
                 "filtro" => array('em_empleado.id' => $this->registro_id)]);
 
-        $this->inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $this->controlador_em_anticipo,
+        $this->inputs = $this->controlador_em_anticipo->genera_inputs(
             keys_selects:  $this->controlador_em_anticipo->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
@@ -483,16 +481,15 @@ class controlador_em_empleado extends system {
 
     public function anticipo_modifica(bool $header, bool $ws = false): array|stdClass
     {
-        $controlador = new controlador_em_anticipo($this->link);
-        $controlador->registro_id = $this->em_anticipo_id;
+        $this->controlador_em_anticipo->registro_id = $this->em_anticipo_id;
 
-        $modifica = $controlador->modifica(header: false);
+        $modifica = $this->controlador_em_anticipo->modifica(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
         }
 
-        $this->inputs = (new em_anticipo_html(html: $this->html_base))->genera_inputs(controler: $controlador,
-            keys_selects:  $controlador->keys_selects);
+        $this->inputs = $this->controlador_em_anticipo->genera_inputs(
+            keys_selects:  $this->controlador_em_anticipo->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
             print_r($error);
@@ -684,8 +681,7 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $inputs = (new em_empleado_html(html: $this->html_base))->genera_inputs(controler: $this,
-            keys_selects: $this->keys_selects);
+        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
         }
@@ -739,7 +735,7 @@ class controlador_em_empleado extends system {
             propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
                 "filtro" => array('em_empleado.id' => $this->registro_id)]);
 
-        $this->inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $this->controlador_em_cuenta_bancaria,
+        $this->inputs = $this->controlador_em_cuenta_bancaria->genera_inputs(
             keys_selects:  $this->controlador_em_cuenta_bancaria->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
@@ -808,16 +804,15 @@ class controlador_em_empleado extends system {
 
     public function cuenta_bancaria_modifica(bool $header, bool $ws = false): array|stdClass
     {
-        $controlador = new controlador_em_cuenta_bancaria($this->link);
-        $controlador->registro_id = $this->em_cuenta_bancaria_id;
+        $this->controlador_em_cuenta_bancaria->registro_id = $this->em_cuenta_bancaria_id;
 
-        $modifica = $controlador->modifica(header: false);
+        $modifica = $this->controlador_em_cuenta_bancaria->modifica(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
         }
 
-        $this->inputs = (new em_cuenta_bancaria_html(html: $this->html_base))->genera_inputs(controler: $controlador,
-            keys_selects:  $controlador->keys_selects);
+        $this->inputs = $this->controlador_em_cuenta_bancaria->genera_inputs(
+            keys_selects:  $this->controlador_em_cuenta_bancaria->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
             print_r($error);

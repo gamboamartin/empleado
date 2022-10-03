@@ -14,17 +14,22 @@ class em_anticipo extends modelo{
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla);
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_anticipo_id','em_empleado_id','monto','fecha_prestacion');
-        $campos_view = array('em_empleado_id' => array('type' => 'selects', 'model' => new em_empleado($link)),
-            'em_tipo_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_anticipo($link)),
-            'id' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
-            'fecha_prestacion' => array('type' => 'dates'), 'monto' => array('type' => 'inputs'));
+
+        $campos_view['em_empleado_id']['type'] = "selects";
+        $campos_view['em_empleado_id']['model'] = new em_empleado($link);
+        $campos_view['em_tipo_anticipo_id']['type'] = "selects";
+        $campos_view['em_tipo_anticipo_id']['model'] = new em_tipo_anticipo($link);
+        $campos_view['em_tipo_descuento_id']['type'] = "selects";
+        $campos_view['em_tipo_descuento_id']['model'] = new em_tipo_descuento($link);
+        $campos_view['id']['type'] = "inputs";
+        $campos_view['codigo']['type'] = "inputs";
+        $campos_view['monto']['type'] = "inputs";
+        $campos_view['fecha_prestacion']['type'] = "dates";
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view);
 
         $this->NAMESPACE = __NAMESPACE__;
-
-
     }
 
     public function alta_bd(): array|stdClass

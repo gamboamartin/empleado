@@ -11,10 +11,10 @@
                     <?php include (new views())->ruta_templates."mensajes.php"; ?>
                     <form method="post" action="<?php echo $controlador->link_em_abono_anticipo_modifica_bd; ?>&em_abono_anticipo_id=<?php echo $controlador->em_abono_anticipo_id; ?>&em_anticipo_id=<?php echo $controlador->em_anticipo_id; ?>" class="form-additional">
                         <?php echo $controlador->inputs->codigo; ?>
-                        <?php echo $controlador->inputs->select->em_anticipo_id; ?>
+                        <?php echo $controlador->inputs->em_anticipo_id; ?>
                         <?php echo $controlador->inputs->descripcion; ?>
-                        <?php echo $controlador->inputs->select->em_tipo_abono_anticipo_id; ?>
-                        <?php echo $controlador->inputs->select->cat_sat_forma_pago_id; ?>
+                        <?php echo $controlador->inputs->em_tipo_abono_anticipo_id; ?>
+                        <?php echo $controlador->inputs->cat_sat_forma_pago_id; ?>
                         <?php echo $controlador->inputs->monto; ?>
                         <?php echo $controlador->inputs->fecha; ?>
                         <div class="control-group btn-alta">

@@ -45,4 +45,13 @@ class base_test{
         return $del;
     }
 
+    public function del_em_empleado(PDO $link): array
+    {
+        $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_empleado');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
 }

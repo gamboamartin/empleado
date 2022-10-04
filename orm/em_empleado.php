@@ -44,7 +44,7 @@ class em_empleado extends modelo{
             'salario_diario' => array('type' => 'inputs'), 'salario_diario_integrado' => array('type' => 'inputs'));
 
         $tipo_campos = array();
-        $tipo_campos[] = 'rfc';
+        $tipo_campos['rfc'] = 'rfc';
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view, tipo_campos: $tipo_campos);

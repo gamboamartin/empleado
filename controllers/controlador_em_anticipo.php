@@ -88,6 +88,15 @@ class controlador_em_anticipo extends system {
         }
         $this->link_em_abono_anticipo_alta_bd = $link_em_abono_anticipo_alta_bd;
 
+        $link_em_abono_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'abono_modifica_bd', registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_abono_anticipo_modifica_bd = $link_em_abono_anticipo_modifica_bd;
+
         if (isset($_GET['em_anticipo_id'])){
             $this->em_anticipo_id = $_GET['em_anticipo_id'];
         }
@@ -279,8 +288,8 @@ class controlador_em_anticipo extends system {
         }
 
         $this->controlador_em_abono_anticipo->asignar_propiedad(identificador: 'em_anticipo_id',
-            propiedades: ["id_selected" => $this->em_anticipo_id, "disabled" => true,
-                "filtro" => array('em_anticipo.id' => $this->em_anticipo_id)]);
+            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
+                "filtro" => array('em_anticipo.id' => $this->registro_id)]);
 
         $this->inputs = $this->controlador_em_abono_anticipo->genera_inputs(
             keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
@@ -323,7 +332,7 @@ class controlador_em_anticipo extends system {
             unset($_POST['btn_action_next']);
         }
 
-        $_POST['em_anticipo_id'] = $this->em_anticipo_id;
+        $_POST['em_anticipo_id'] = $this->registro_id;
 
         $alta = (new em_abono_anticipo($this->link))->alta_registro(registro: $_POST);
         if (errores::$error) {
@@ -336,7 +345,7 @@ class controlador_em_anticipo extends system {
 
         if ($header) {
             $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->em_anticipo_id]);
+                siguiente_view: "abono", ws:  $ws, params: ['em_anticipo_id'=>$this->registro_id]);
         }
         if ($ws) {
             header('Content-Type: application/json');
@@ -450,14 +459,14 @@ class controlador_em_anticipo extends system {
         $params['em_anticipo_id'] = $abono['em_anticipo_id'];
 
         $btn_elimina = $this->html_base->button_href(accion: 'abono_elimina_bd', etiqueta: 'Elimina',
-            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
+            registro_id: $this->registro_id, seccion: 'em_anticipo', style: 'danger',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
         }
         $abono['link_elimina'] = $btn_elimina;
 
         $btn_modifica = $this->html_base->button_href(accion: 'abono_modifica', etiqueta: 'Modifica',
-            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
+            registro_id: $this->registro_id, seccion: 'em_anticipo', style: 'warning',params: $params);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
         }

@@ -115,7 +115,12 @@ class em_empleado extends modelo{
         return round($sdi,2);
     }
 
-    
+    /**
+     * Obtiene el tipo de jornada si no existe
+     * @param array $registro Registro en proceso
+     * @return array
+     * @version 0.126.1
+     */
     private function cat_sat_tipo_jornada_nom_id(array $registro): array
     {
         if (!isset($registro['cat_sat_tipo_jornada_nom_id'])) {

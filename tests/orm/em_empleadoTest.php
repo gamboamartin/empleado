@@ -34,7 +34,6 @@ class em_empleadoTest extends test {
         $modelo = new em_empleado($this->link);
         $modelo = new liberator($modelo);
 
-        //$html = new liberator($html);
         $registro = array();
         $resultado = $modelo->am($registro);
 
@@ -42,6 +41,28 @@ class em_empleadoTest extends test {
         $this->assertNotTrue(errores::$error);
         $this->assertEquals("", $resultado['am']);
 
+        errores::$error = false;
+    }
+
+    public function test_cat_sat_tipo_jornada_nom_id(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $modelo = new em_empleado($this->link);
+        $modelo = new liberator($modelo);
+
+
+        $registro = array();
+        $resultado = $modelo->cat_sat_tipo_jornada_nom_id($registro);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(10, $resultado['cat_sat_tipo_jornada_nom_id']);
         errores::$error = false;
     }
 

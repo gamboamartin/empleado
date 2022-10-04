@@ -194,6 +194,11 @@ class base_test{
             return (new errores())->error('Error al eliminar', $del);
         }
 
+        $del = $this->del_em_anticipo($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_empleado');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);

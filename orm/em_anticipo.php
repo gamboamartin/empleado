@@ -93,7 +93,7 @@ class em_anticipo extends modelo{
             return $this->error->error(mensaje: 'Error al obtener el total abonado', data: $total_abonado);
         }
 
-        return $r_em_anticipo['em_anticipo_monto'] - $total_abonado;
+        return round(round($r_em_anticipo['em_anticipo_monto'],2) - round($total_abonado,2),2);
     }
 
 

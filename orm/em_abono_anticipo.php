@@ -33,6 +33,18 @@ class em_abono_anticipo extends modelo{
 
     public function alta_bd(): array|stdClass
     {
+
+        $keys = array('em_anticipo_id');
+        $valida = $this->validacion->valida_ids(keys: $keys,registro:  $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar registro',data: $valida);
+        }
+        $keys = array('monto');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys,registro:  $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar registro',data: $valida);
+        }
+
         if (!isset($this->registro['codigo'])) {
             $this->registro['codigo'] = $this->registro['em_anticipo_id'];
             $this->registro['codigo'] .= $this->registro['em_tipo_abono_anticipo_id'];
@@ -59,7 +71,9 @@ class em_abono_anticipo extends modelo{
             return $this->error->error(mensaje: 'Error al obtener el saldo pendiente',data: $anticipo);
         }
 
-        if ($this->registro['monto']>$anticipo['em_anticipo_saldo_pendiente']){
+        $this->registro['monto'] = round($this->registro['monto'],2);
+
+        if ($this->registro['monto'] > $anticipo['em_anticipo_saldo_pendiente']){
             return $this->error->error(mensaje: 'Error el monto ingresado es mayor al saldo pendiente',
                 data: $this->registro['monto']);
         }
@@ -72,6 +86,12 @@ class em_abono_anticipo extends modelo{
         return $r_alta_bd;
     }
 
+    /**
+     * Obtiene los abonos de un anticipo
+     * @param int $em_anticipo_id Identificador del anticipo
+     * @return array|stdClass
+     * @version 0.128.1
+     */
     public function get_abonos_anticipo(int $em_anticipo_id): array|stdClass
     {
         if($em_anticipo_id <=0){

@@ -16,6 +16,13 @@ class em_anticipo extends modelo{
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_anticipo_id','em_empleado_id','monto','fecha_prestacion');
 
+        $columnas_extra['em_anticipo_abonos'] = '(SELECT SUM(em_abono_anticipo.monto) 
+        FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id)';
+
+        $columnas_extra['em_anticipo_saldo'] = "(em_anticipo.monto - $columnas_extra[em_anticipo_abonos])";
+
+        $columnas_extra['em_anticipo_tiene_saldo'] = "(SELECT IF($columnas_extra[em_anticipo_saldo] > 0, 'activo', 'inactivo'))";
+
         $campos_view['em_empleado_id']['type'] = "selects";
         $campos_view['em_empleado_id']['model'] = new em_empleado($link);
         $campos_view['em_tipo_anticipo_id']['type'] = "selects";
@@ -28,7 +35,7 @@ class em_anticipo extends modelo{
         $campos_view['fecha_prestacion']['type'] = "dates";
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view);
+            columnas: $columnas,campos_view: $campos_view, columnas_extra: $columnas_extra);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
@@ -62,14 +69,36 @@ class em_anticipo extends modelo{
         return $r_alta_bd;
     }
 
-    public function get_anticipos_empleado(int $em_empleado_id): array|stdClass
+    /**
+     * Obtiene los anticipos de un empleado
+     * @param bool $con_saldo
+     * @param int $em_empleado_id Identificador del empleado
+     * @param string $fecha
+     * @return array|stdClass
+     * @version 1.131.1
+     */
+    public function get_anticipos_empleado( int $em_empleado_id, bool $con_saldo = false, string $fecha = ''): array|stdClass
     {
         if($em_empleado_id <=0){
             return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0', data: $em_empleado_id);
         }
 
+        if($fecha === ''){
+            $fecha = date('Y-m-d');
+        }
+
         $filtro['em_empleado.id'] = $em_empleado_id;
-        $r_em_anticipo = $this->filtro_and(filtro: $filtro);
+
+        if($con_saldo) {
+            $filtro['em_anticipo_tiene_saldo']['campo'] = 'em_empleado_tiene_saldo';
+            $filtro['em_anticipo_tiene_saldo']['es_sq'] = true;
+            $filtro['em_anticipo_tiene_saldo']['value'] = 'activo';
+        }
+
+        $filtro_extra[0]['em_anticipo.fecha_prestacion']['operador'] = '<=';
+        $filtro_extra[0]['em_anticipo.fecha_prestacion']['valor'] = $fecha;
+        $filtro_extra[0]['em_anticipo.fecha_prestacion']['comparacion'] = 'AND';
+        $r_em_anticipo = $this->filtro_and(filtro: $filtro, filtro_extra: $filtro_extra);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener anticipos', data: $r_em_anticipo);
         }

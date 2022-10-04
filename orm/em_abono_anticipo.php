@@ -107,6 +107,12 @@ class em_abono_anticipo extends modelo{
         return $registros;
     }
 
+    /**
+     * Obtiene el monto total abonado de un anticipo
+     * @param int $em_anticipo_id Identificador del anticipo
+     * @return float|array
+     * @version 0.129.1
+     */
     public function get_total_abonado(int $em_anticipo_id): float|array
     {
         if($em_anticipo_id <= 0){

@@ -164,6 +164,11 @@ class base_test{
     public function del_em_anticipo(PDO $link): array
     {
 
+        $del = $this->del_em_abono_anticipo($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_anticipo');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);

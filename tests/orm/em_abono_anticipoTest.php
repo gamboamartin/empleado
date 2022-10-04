@@ -83,6 +83,56 @@ class em_abono_anticipoTest extends test {
         errores::$error = false;
     }
 
+    public function test_get_total_abonado(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $modelo = new em_abono_anticipo($this->link);
+        //$modelo = new liberator($modelo);
+
+        $del = (new base_test())->del_em_tipo_anticipo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+        $del = (new base_test())->del_em_tipo_abono_anticipo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $em_anticipo_id = 1;
+        $resultado = $modelo->get_total_abonado($em_anticipo_id);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(0, $resultado);
+
+        errores::$error = false;
+
+        $alta = (new base_test())->alta_em_abono_anticipo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $em_anticipo_id = 1;
+        $resultado = $modelo->get_total_abonado($em_anticipo_id);
+        $this->assertIsFloat($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals(50, $resultado);
+
+        errores::$error = false;
+    }
+
 
 
 

@@ -115,6 +115,7 @@ class em_empleado extends modelo{
         return round($sdi,2);
     }
 
+    
     private function cat_sat_tipo_jornada_nom_id(array $registro): array
     {
         if (!isset($registro['cat_sat_tipo_jornada_nom_id'])) {
@@ -122,6 +123,7 @@ class em_empleado extends modelo{
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al obtener cat_tipo_jornada_nom_id',data: $cat_tipo_jornada_nom_id);
             }
+            $registro['cat_sat_tipo_jornada_nom_id'] = $cat_tipo_jornada_nom_id;
         }
         return $registro;
     }

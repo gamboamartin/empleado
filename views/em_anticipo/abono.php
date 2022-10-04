@@ -11,11 +11,12 @@
                     <?php include (new views())->ruta_templates."mensajes.php"; ?>
                     <form method="post" action="<?php echo $controlador->link_em_abono_anticipo_alta_bd; ?>&em_anticipo_id=<?php echo $controlador->em_anticipo_id; ?>" class="form-additional">
                         <?php echo $controlador->inputs->codigo; ?>
-                        <?php echo $controlador->inputs->select->em_tipo_anticipo_id; ?>
+                        <?php echo $controlador->inputs->select->em_anticipo_id; ?>
                         <?php echo $controlador->inputs->descripcion; ?>
-                        <?php echo $controlador->inputs->select->em_empleado_id; ?>
+                        <?php echo $controlador->inputs->select->em_tipo_abono_anticipo_id; ?>
+                        <?php echo $controlador->inputs->select->cat_sat_forma_pago_id; ?>
                         <?php echo $controlador->inputs->monto; ?>
-                        <?php echo $controlador->inputs->fecha_prestacion; ?>
+                        <?php echo $controlador->inputs->fecha; ?>
                         <div class="control-group btn-alta">
                             <div class="controls">
                                 <button type="submit" class="btn btn-success" value="genera_anticipo" name="btn_action_next">Alta</button><br>

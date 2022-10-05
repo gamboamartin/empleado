@@ -16,12 +16,12 @@ class em_anticipo extends modelo{
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_anticipo_id','em_empleado_id','monto','fecha_prestacion');
 
-        $columnas_extra['em_anticipo_abonos'] = '(SELECT SUM(em_abono_anticipo.monto) 
-        FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id)';
+        $columnas_extra['em_anticipo_abonos'] = 'IFNULL((SELECT SUM(em_abono_anticipo.monto) 
+        FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id),0.0)';
 
-        $columnas_extra['em_anticipo_saldo'] = "(em_anticipo.monto - $columnas_extra[em_anticipo_abonos])";
+        $columnas_extra['em_anticipo_saldo'] = "IFNULL((em_anticipo.monto - $columnas_extra[em_anticipo_abonos]),0.0)";
 
-        $columnas_extra['em_anticipo_tiene_saldo'] = "(SELECT IF($columnas_extra[em_anticipo_saldo] > 0, 'activo', 'inactivo'))";
+        $columnas_extra['em_anticipo_tiene_saldo'] = "IFNULL((SELECT IF($columnas_extra[em_anticipo_saldo] > 0, 'activo', 'inactivo')),0.0)";
 
         $campos_view['em_empleado_id']['type'] = "selects";
         $campos_view['em_empleado_id']['model'] = new em_empleado($link);

@@ -31,6 +31,14 @@ class controlador_em_cuenta_bancaria extends system {
 
         $this->titulo_lista = 'Cuenta Bancaria';
 
+        $keys_rows_lista = $this->keys_rows_lista();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $keys_rows_lista);
+            print_r($error);
+            die('Error');
+        }
+        $this->keys_row_lista = $keys_rows_lista;
+
         $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
@@ -139,6 +147,38 @@ class controlador_em_cuenta_bancaria extends system {
         }
         return $salida;
     }
+
+    private function key_row_lista_init(string $campo, array $keys_rows_lista): array
+    {
+        $data = new stdClass();
+        $data->campo = $campo;
+
+        $campo = str_replace(array("em_cuenta_bancaria", "em_", "_"), '', $campo);
+        $campo = ucfirst(strtolower($campo));
+
+        $data->name_lista = $campo;
+        $keys_rows_lista[] = $data;
+
+        return $keys_rows_lista;
+    }
+
+    private function keys_rows_lista(): array
+    {
+        $keys_rows_lista = array();
+        $keys = array('em_cuenta_bancaria_id','em_empleado_codigo','em_empleado_nombre','em_empleado_ap',
+            'em_empleado_am','bn_banco_descripcion','em_cuenta_bancaria_num_cuenta','em_cuenta_bancaria_clabe');
+
+        foreach ($keys as $campo) {
+            $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
+            if (errores::$error){
+                return $this->errores->error(mensaje: "error al inicializar key",data: $keys_rows_lista);
+            }
+        }
+
+        return $keys_rows_lista;
+    }
+
+
 
     public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
                              bool $muestra_btn = true): array|string

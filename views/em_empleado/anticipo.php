@@ -17,6 +17,7 @@
                         <?php echo $controlador->inputs->em_tipo_descuento_id; ?>
                         <?php echo $controlador->inputs->monto; ?>
                         <?php echo $controlador->inputs->fecha_prestacion; ?>
+                        <?php echo $controlador->inputs->fecha_inicio_descuento; ?>
                         <div class="control-group btn-alta">
                             <div class="controls">
                                 <button type="submit" class="btn btn-success" value="genera_anticipo" name="btn_action_next">Alta</button><br>

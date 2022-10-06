@@ -14,7 +14,7 @@ class em_anticipo extends modelo{
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla, 'em_tipo_descuento'=>$tabla,
             'em_metodo_calculo'=>'em_tipo_descuento');
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
-            'em_tipo_anticipo_id','em_empleado_id','monto','fecha_prestacion');
+            'em_tipo_anticipo_id','em_empleado_id','monto','fecha_inicio_descuento','fecha_prestacion');
 
         $columnas_extra['em_anticipo_abonos'] = 'IFNULL((SELECT SUM(em_abono_anticipo.monto) 
         FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id),0.0)';
@@ -33,6 +33,7 @@ class em_anticipo extends modelo{
         $campos_view['codigo']['type'] = "inputs";
         $campos_view['monto']['type'] = "inputs";
         $campos_view['fecha_prestacion']['type'] = "dates";
+        $campos_view['fecha_inicio_descuento']['type'] = "dates";
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view, columnas_extra: $columnas_extra);
@@ -95,9 +96,9 @@ class em_anticipo extends modelo{
             $filtro['em_anticipo_tiene_saldo']['value'] = 'activo';
         }
 
-        $filtro_extra[0]['em_anticipo.fecha_prestacion']['operador'] = '<=';
-        $filtro_extra[0]['em_anticipo.fecha_prestacion']['valor'] = $fecha;
-        $filtro_extra[0]['em_anticipo.fecha_prestacion']['comparacion'] = 'AND';
+        $filtro_extra[0]['em_anticipo.fecha_inicio_descuento']['operador'] = '<=';
+        $filtro_extra[0]['em_anticipo.fecha_inicio_descuento']['valor'] = $fecha;
+        $filtro_extra[0]['em_anticipo.fecha_inicio_descuento']['comparacion'] = 'AND';
         $r_em_anticipo = $this->filtro_and(filtro: $filtro, filtro_extra: $filtro_extra);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener anticipos', data: $r_em_anticipo);

@@ -7,4 +7,5 @@
 <?php echo $controlador->inputs->em_tipo_descuento_id; ?>
 <?php echo $controlador->inputs->monto; ?>
 <?php echo $controlador->inputs->fecha_prestacion; ?>
+<?php echo $controlador->inputs->fecha_inicio_descuento; ?>
 <?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>

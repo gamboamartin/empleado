@@ -80,6 +80,13 @@ class controlador_em_anticipo extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'fecha_inicio_descuento', propiedades: ["place_holder" => "Fecha Inicio Descuento"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $link_em_abono_anticipo_alta_bd= $obj_link->link_con_id(accion: 'abono_alta_bd', registro_id: $this->registro_id,
             seccion: $this->seccion);
         if (errores::$error) {
@@ -127,6 +134,7 @@ class controlador_em_anticipo extends system {
         }
 
         $this->row_upd->fecha_prestacion = date('Y-m-d');
+        $this->row_upd->fecha_inicio_descuento = date('Y-m-d');
         $this->row_upd->monto = 0;
 
         $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);

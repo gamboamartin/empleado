@@ -1,9 +1,8 @@
 <thead>
     <tr>
         <th data-breakpoints="xs sm md" data-type="html">Id</th>
-
-        <th data-breakpoints="xs sm md"  data-type="html">Codigo Anticipo</th>
-        <th data-breakpoints="xs sm md"  data-type="html">Descripcion Anticipo</th>
+        <th data-breakpoints="xs sm md"  data-type="html">Descripcion</th>
+        <th data-breakpoints="xs sm md"  data-type="html">Codigo Empleado</th>
         <th data-breakpoints="xs sm md"  data-type="html">Empleado</th>
         <th data-breakpoints="xs sm md"  data-type="html">Monto</th>
         <th data-breakpoints="xs sm md"  data-type="html">Fecha Prestacion</th>

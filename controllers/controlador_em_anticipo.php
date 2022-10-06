@@ -191,7 +191,8 @@ class controlador_em_anticipo extends system {
     private function keys_rows_lista(): array
     {
         $keys_rows_lista = array();
-        $keys = array('em_anticipo_id','em_anticipo_codigo','em_anticipo_descripcion','em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am','em_anticipo_monto','em_anticipo_fecha_prestacion');
+        $keys = array('em_anticipo_id','em_anticipo_descripcion','em_empleado_codigo','em_empleado_nombre','em_empleado_ap',
+            'em_empleado_am','em_anticipo_monto','em_tipo_descuento_descripcion','em_anticipo_fecha_prestacion');
 
         foreach ($keys as $campo) {
             $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);

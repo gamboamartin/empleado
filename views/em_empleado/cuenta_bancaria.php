@@ -42,11 +42,9 @@
                             <thead>
                             <tr>
                                 <th data-breakpoints="xs sm md" data-type="html">Id</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Codigo</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Descripcion</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Sucursal</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Num. Cuenta</th>
-
+                                <th data-breakpoints="xs sm md"  data-type="html">Banco</th>
+                                <th data-breakpoints="xs md" class="control"  data-type="html">Nº. Cuenta</th>
+                                <th data-breakpoints="xs md" class="control"  data-type="html">Clabe</th>
                                 <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>
                                 <th data-breakpoints="xs md" class="control"  data-type="html">Elimina</th>
                             </tr>
@@ -56,10 +54,9 @@
                             <?php foreach ($controlador->cuentas_bancarias->registros as $cuenta_bancaria){?>
                                 <tr>
                                     <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_id']; ?></td>
-                                    <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_codigo']; ?></td>
-                                    <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_descripcion']; ?></td>
-                                    <td><?php echo $cuenta_bancaria['bn_sucursal_descripcion']; ?></td>
+                                    <td><?php echo $cuenta_bancaria['bn_banco_descripcion']; ?></td>
                                     <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_num_cuenta']; ?></td>
+                                    <td><?php echo $cuenta_bancaria['em_cuenta_bancaria_clabe']; ?></td>
                                     <td><?php echo $cuenta_bancaria['link_modifica']; ?></td>
                                     <td><?php echo $cuenta_bancaria['link_elimina']; ?></td>
                                 </tr>

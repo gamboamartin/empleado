@@ -43,7 +43,6 @@
                             <thead>
                             <tr>
                                 <th data-breakpoints="xs sm md" data-type="html">Id</th>
-                                <th data-breakpoints="xs sm md" data-type="html">Codigo</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Descripcion</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Monto</th>
                                 <th data-breakpoints="xs sm md" data-type="html">Fecha</th>
@@ -60,7 +59,6 @@
                             <?php foreach ($controlador->anticipos->registros as $anticipo){?>
                                 <tr>
                                     <td><?php echo $anticipo['em_anticipo_id']; ?></td>
-                                    <td><?php echo $anticipo['em_anticipo_codigo']; ?></td>
                                     <td><?php echo $anticipo['em_anticipo_descripcion']; ?></td>
                                     <td><?php echo $anticipo['em_anticipo_monto']; ?></td>
                                     <td><?php echo $anticipo['em_anticipo_fecha_prestacion']; ?></td>

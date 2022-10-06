@@ -51,6 +51,7 @@ class controlador_em_anticipo extends system {
         }
         $this->keys_row_lista = $keys_rows_lista;
 
+
         $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
@@ -192,7 +193,8 @@ class controlador_em_anticipo extends system {
     {
         $keys_rows_lista = array();
         $keys = array('em_anticipo_id','em_anticipo_descripcion','em_empleado_codigo','em_empleado_nombre','em_empleado_ap',
-            'em_empleado_am','em_anticipo_monto','em_tipo_descuento_descripcion','em_anticipo_fecha_prestacion');
+            'em_empleado_am','em_anticipo_monto','em_tipo_descuento_descripcion','em_anticipo_fecha_prestacion',
+            'em_anticipo_saldo_pendiente','em_anticipo_saldo_pendiente');
 
         foreach ($keys as $campo) {
             $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
@@ -218,6 +220,7 @@ class controlador_em_anticipo extends system {
         return $keys_rows_lista;
     }
 
+
     private function asigna_link_row(stdClass $row, string $accion, string $propiedad, string $estilo): array|stdClass
     {
         $keys = array('em_anticipo_id');
@@ -241,13 +244,25 @@ class controlador_em_anticipo extends system {
 
     private function maqueta_registros_lista(array $registros): array
     {
+
         foreach ($registros as $indice=> $row){
+
             $row = $this->asigna_link_row(row: $row, accion: "abono",propiedad: "link_abono",
                 estilo: "link_abono_style");
             if(errores::$error){
                 return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
             }
             $registros[$indice] = $row;
+
+            $row->em_anticipo_saldo_pendiente = (new em_anticipo($this->link))->get_saldo_anticipo($row->em_anticipo_id);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al obtener el saldo pendiente',data:  $row->em_anticipo_id);
+            }
+
+            $row->em_anticipo_total_abonado = (new em_abono_anticipo($this->link))->get_total_abonado($row->em_anticipo_id);
+            if(errores::$error){
+                return $this->errores->error(mensaje: 'Error al obtener el total abonado',data:  $row->em_anticipo_id);
+            }
         }
         return $registros;
     }

@@ -6,6 +6,8 @@
         <th data-breakpoints="xs sm md"  data-type="html">Empleado</th>
         <th data-breakpoints="xs sm md"  data-type="html">Monto</th>
         <th data-breakpoints="xs sm md"  data-type="html">Fecha Prestacion</th>
+        <th data-breakpoints="xs sm md" data-type="html">Saldo Pendiente</th>
+        <th data-breakpoints="xs sm md" data-type="html">Total Abonado</th>
 
         <th data-breakpoints="xs md" class="control"  data-type="html">Ver Abonos</th>
         <th data-breakpoints="xs md" class="control"  data-type="html">Modifica</th>

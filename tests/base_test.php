@@ -63,6 +63,7 @@ class base_test{
         $registro['em_empleado_id'] = 1;
         $registro['monto'] = 100;
         $registro['fecha_prestacion'] = '2020-01-01';
+        $registro['fecha_inicio_descuento'] = '2020-01-01';
 
 
         $alta = (new em_anticipo($link))->alta_registro($registro);

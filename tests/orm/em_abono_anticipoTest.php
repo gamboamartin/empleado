@@ -65,6 +65,20 @@ class em_abono_anticipoTest extends test {
             exit;
         }
 
+        $del = (new base_test())->del_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_em_abono_anticipo($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -103,6 +117,20 @@ class em_abono_anticipoTest extends test {
             exit;
         }
         $del = (new base_test())->del_em_tipo_abono_anticipo($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new base_test())->del_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);

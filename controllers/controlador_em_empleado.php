@@ -22,6 +22,7 @@ use html\em_cuenta_bancaria_html;
 use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
+use SoulDoit\DataTable\SSP;
 use stdClass;
 use Throwable;
 
@@ -43,6 +44,8 @@ class controlador_em_empleado extends system {
     public controlador_em_cuenta_bancaria $controlador_em_cuenta_bancaria;
     public controlador_em_anticipo $controlador_em_anticipo;
     public controlador_em_abono_anticipo $controlador_em_abono_anticipo;
+    public array $columnas_lista_data_table_full = array();
+    public array $columnas_lista_data_table_label = array();
 
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
@@ -218,6 +221,32 @@ class controlador_em_empleado extends system {
             print_r($error);
             die('Error');
         }
+
+        $this->columnas_lista_data_table_full['em_empleado_id']['dt'] = 'em_empleado_id';
+        $this->columnas_lista_data_table_full['em_empleado_id']['filter'] = 'em_empleado.id';
+        $this->columnas_lista_data_table_full['em_empleado_id']['label'] = 'ID';
+
+        $this->columnas_lista_data_table_full['em_empleado_codigo']['dt'] = 'em_empleado_codigo';
+        $this->columnas_lista_data_table_full['em_empleado_codigo']['filter'] = 'em_empleado.codigo';
+        $this->columnas_lista_data_table_full['em_empleado_codigo']['label'] = 'Codigo';
+
+        $this->columnas_lista_data_table_full['em_empleado_nombre']['dt'] = 'em_empleado_nombre';
+        $this->columnas_lista_data_table_full['em_empleado_nombre']['filter'] = 'em_empleado.nombre';
+        $this->columnas_lista_data_table_full['em_empleado_nombre']['label'] = 'Nombre';
+
+        $this->columnas_lista_data_table_full['cat_sat_regimen_fiscal_codigo']['dt'] = 'cat_sat_regimen_fiscal_codigo';
+        $this->columnas_lista_data_table_full['cat_sat_regimen_fiscal_codigo']['label'] = 'Cod RF';
+
+
+        foreach ($this->columnas_lista_data_table_full as $column){
+            $this->columnas_lista_data_table[] = $column['dt'];
+            $this->columnas_lista_data_table_label[] = $column['label'];
+
+            if(isset($column['filter'])){
+                $this->columnas_lista_data_table_filter[] = $column['filter'];
+            }
+        }
+
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -981,6 +1010,8 @@ class controlador_em_empleado extends system {
 
     }
 
+
+
     public function imss(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
@@ -1037,6 +1068,11 @@ class controlador_em_empleado extends system {
         $this->registros = $registros;
 
         return $r_lista;
+    }
+
+    public function lista_ajax(bool $header, bool $ws = false){
+
+
     }
 
     private function maqueta_registros_lista(array $registros): array

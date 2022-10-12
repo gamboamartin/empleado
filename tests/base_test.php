@@ -54,6 +54,11 @@ class base_test{
             return (new errores())->error('Error al dar de alta ', $alta);
 
         }
+        $alta = $this->alta_em_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
 
         $registro = array();
         $registro['id'] = 1;
@@ -77,6 +82,13 @@ class base_test{
 
     public function alta_em_empleado(PDO $link): array|\stdClass
     {
+
+        $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_puesto($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+
         $registro = array();
         $registro['id'] = 1;
         $registro['codigo'] = 1;

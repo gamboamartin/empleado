@@ -66,6 +66,8 @@ class em_empleadoTest extends test {
         errores::$error = false;
     }
 
+    
+
 
 
 

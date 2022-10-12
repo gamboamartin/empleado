@@ -153,8 +153,7 @@ class em_empleado extends modelo{
     private function descripcion_select(array $registro): array
     {
         if (!isset($registro['descripcion_select'])) {
-            $registro['descripcion_select'] = $registro['rfc'];
-            $registro['descripcion_select'] .= $registro['nombre'].' '.$registro['ap'].' ';
+            $registro['descripcion_select'] = $registro['nombre'].' '.$registro['ap'].' ';
             $registro['descripcion_select'] .= $registro['am'];
             $registro['descripcion_select'] = strtoupper($registro['descripcion_select']);
         }

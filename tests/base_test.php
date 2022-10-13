@@ -3,6 +3,7 @@ namespace gamboamartin\empleado\test;
 use base\orm\modelo_base;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
+use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\empleado\models\em_tipo_abono_anticipo;
 use gamboamartin\empleado\models\em_tipo_anticipo;
 use gamboamartin\errores\errores;
@@ -72,6 +73,28 @@ class base_test{
 
 
         $alta = (new em_anticipo($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
+
+    public function alta_em_cuenta_bancaria(PDO $link): array|\stdClass
+    {
+
+
+        $registro = array();
+        $registro['id'] = 1;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['bn_sucursal_id'] = 1;
+        $registro['em_empleado_id'] = 1;
+        $registro['clabe'] = 1;
+        $registro['num_cuenta'] = 1;
+
+
+        $alta = (new em_cuenta_bancaria($link))->alta_registro($registro);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta ', $alta);
 

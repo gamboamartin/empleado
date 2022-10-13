@@ -221,6 +221,10 @@ class controlador_em_empleado extends system {
             print_r($error);
             die('Error');
         }
+
+        /**
+         * VALIDAR ERRORES
+         */
         $this->asignar_propiedad(identificador: 'codigo', propiedades: ['place_holder'=> 'Codigo']);
         $this->asignar_propiedad(identificador: 'nombre', propiedades: ['place_holder'=> 'Nombre']);
         $this->asignar_propiedad(identificador: 'ap', propiedades: ['place_holder'=> 'Apellido Paterno']);

@@ -201,26 +201,37 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'rfc', propiedades: ["cols" => 4]);
+        $this->asignar_propiedad(identificador:'rfc', propiedades: ["cols" => 6]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'curp', propiedades: ["cols" => 4]);
+        $this->asignar_propiedad(identificador:'curp', propiedades: ["cols" => 6]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 4]);
+        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 12]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
+        $this->asignar_propiedad(identificador: 'codigo', propiedades: ['place_holder'=> 'Codigo']);
+        $this->asignar_propiedad(identificador: 'nombre', propiedades: ['place_holder'=> 'Nombre']);
+        $this->asignar_propiedad(identificador: 'ap', propiedades: ['place_holder'=> 'Apellido Paterno']);
+        $this->asignar_propiedad(identificador: 'am', propiedades: ['place_holder'=> 'Apellido Materno']);
+        $this->asignar_propiedad(identificador: 'telefono', propiedades: ['place_holder'=> 'Telefono']);
+        $this->asignar_propiedad(identificador: 'rfc', propiedades: ['place_holder'=> 'RFC']);
+        $this->asignar_propiedad(identificador: 'nss', propiedades: ['place_holder'=> 'NSS']);
+        $this->asignar_propiedad(identificador: 'curp', propiedades: ['place_holder'=> 'CURP']);
+        $this->asignar_propiedad(identificador: 'fecha_inicio_rel_laboral',
+            propiedades: ['place_holder'=> 'Fecha Inicio Relacion Laboral']);
+
 
         $this->columnas_lista_data_table_full['em_empleado_id']['dt'] = 'em_empleado_id';
         $this->columnas_lista_data_table_full['em_empleado_id']['filter'] = 'em_empleado.id';

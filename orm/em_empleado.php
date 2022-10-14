@@ -160,6 +160,14 @@ class em_empleado extends modelo{
         return $registro;
     }
 
+    private function fecha_inicio_rel_laboral_default(array $registro): array
+    {
+        if (!isset($registro['fecha_inicio_rel_laboral'])) {
+            $registro['fecha_inicio_rel_laboral'] = '1900-01-01';
+        }
+        return $registro;
+    }
+
     /**
      * Obtiene empresa a partir de empleado
      * @param int $em_empleado_id Identificador del empleado a revisar su empresa
@@ -219,6 +227,10 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al asignar cat_sat_tipo_jornada_nom_id',data: $registro);
         }
         $registro = $this->rfc(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
+        }
+        $registro = $this->fecha_inicio_rel_laboral_default(registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
         }

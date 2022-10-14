@@ -218,6 +218,10 @@ class em_empleado extends modelo{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar cat_sat_tipo_jornada_nom_id',data: $registro);
         }
+        $registro = $this->rfc(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
+        }
 
         return $registro;
     }
@@ -353,6 +357,14 @@ class em_empleado extends modelo{
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al obtener get_puesto_default_id',data: $registro['org_puesto_id']);
             }
+        }
+        return $registro;
+    }
+
+    private function rfc(array $registro): array
+    {
+        if (!isset($registro['rfc'])) {
+            $registro['rfc'] = 'AAA010101AAA';
         }
         return $registro;
     }

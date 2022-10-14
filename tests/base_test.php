@@ -103,7 +103,8 @@ class base_test{
     }
 
 
-    public function alta_em_empleado(PDO $link, float $salario_diario = 180, float $salario_diario_integrado = 180): array|\stdClass
+    public function alta_em_empleado(PDO $link, float $salario_diario = 180,
+                                     float $salario_diario_integrado = 180): array|\stdClass
     {
 
         $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_puesto($link);
@@ -122,6 +123,7 @@ class base_test{
         $registro['dp_calle_pertenece_id'] = 1;
         $registro['salario_diario'] = $salario_diario;
         $registro['salario_diario_integrado'] = $salario_diario_integrado;
+
 
 
 

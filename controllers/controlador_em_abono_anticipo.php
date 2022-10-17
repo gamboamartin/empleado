@@ -45,7 +45,7 @@ class controlador_em_abono_anticipo extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'em_anticipo_id', propiedades: ["label" => "Anticipo"]);
+        $this->asignar_propiedad(identificador:'em_anticipo_id', propiedades: ["label" => "Anticipo", "extra_params_keys" => ["em_anticipo_id"]]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -53,6 +53,13 @@ class controlador_em_abono_anticipo extends system {
         }
 
         $this->asignar_propiedad(identificador:'cat_sat_forma_pago_id', propiedades: ["label" => "Forma Pago"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'num_pago', propiedades: ["place_holder" => "Nº. Pago", "disable" => true]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -80,6 +87,7 @@ class controlador_em_abono_anticipo extends system {
 
         $this->row_upd->fecha = date('Y-m-d');
         $this->row_upd->monto = 0;
+        $this->row_upd->num_pago = 0;
 
         $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){

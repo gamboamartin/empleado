@@ -23,6 +23,7 @@ class em_abono_anticipo extends modelo{
             'em_tipo_abono_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_abono_anticipo($link)),
             'cat_sat_forma_pago_id' => array('type' => 'selects', 'model' => new cat_sat_forma_pago($link)),
             'id' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
+            'num_pago' => array('type' => 'inputs'),
             'fecha' => array('type' => 'dates'), 'monto' => array('type' => 'inputs'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,

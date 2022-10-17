@@ -73,6 +73,13 @@ class controlador_em_anticipo extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'n_pagos', propiedades: ["place_holder" => "Nº. Pagos"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $this->asignar_propiedad(identificador:'fecha_prestacion', propiedades: ["place_holder" => "Fecha Prestacion"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);

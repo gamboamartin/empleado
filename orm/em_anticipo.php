@@ -32,6 +32,7 @@ class em_anticipo extends modelo{
         $campos_view['id']['type'] = "inputs";
         $campos_view['codigo']['type'] = "inputs";
         $campos_view['monto']['type'] = "inputs";
+        $campos_view['n_pagos']['type'] = "inputs";
         $campos_view['fecha_prestacion']['type'] = "dates";
         $campos_view['fecha_inicio_descuento']['type'] = "dates";
 

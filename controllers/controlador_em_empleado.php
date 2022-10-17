@@ -55,6 +55,13 @@ class controlador_em_empleado extends system {
         $obj_link = new links_menu($this->registro_id);
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
+        $obj_link->genera_links($this);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar links', data: $obj_link);
+            print_r($error);
+            die('Error');
+        }
+
         $this->titulo_lista = 'Empleados';
 
         $this->controlador_em_cuenta_bancaria= new controlador_em_cuenta_bancaria($this->link);
@@ -262,6 +269,51 @@ class controlador_em_empleado extends system {
             }
         }
 
+        $elementos[] = "em_empleado_id";
+        $elementos[] = "em_empleado_codigo";
+        $elementos[] = "em_empleado_nombre";
+        $elementos[] = "em_empleado_ap";
+        $elementos[] = "em_empleado_am";
+        $elementos[] = "em_empleado_rfc";
+        $elementos[] = "link_modifica";
+
+        $titulos[] = "ID";
+        $titulos[] = "Codigo";
+        $titulos[] = "Empleado";
+        $titulos[] = "RFC";
+        $titulos[] = "Otros";
+        $titulos[] = "Acciones";
+
+        $columndefs[0]["visible"] = false;
+        $columndefs[0]["targets"] = [ 3, 4 ];
+
+        $columndefs[1]["type"] = "button";
+        $columndefs[1]["targets"] = 6;
+        $columndefs[1]["rendered"][0]["index"] = "ver_anticipos";
+        $columndefs[1]["rendered"][0]["class"] = "btn-info";
+        $columndefs[1]["rendered"][0]["text"] = "Ver Anticipos";
+        $columndefs[1]["rendered"][1]["index"] = "anticipo";
+        $columndefs[1]["rendered"][1]["class"] = "btn-info";
+        $columndefs[1]["rendered"][1]["text"] = "Anticipo";
+        $columndefs[1]["rendered"][2]["index"] = "cuenta_bancaria";
+        $columndefs[1]["rendered"][2]["class"] = "btn-info";
+        $columndefs[1]["rendered"][2]["text"] = "Cuenta Bancaria";
+
+        $columndefs[2]["type"] = "button";
+        $columndefs[2]["targets"] = 7;
+        $columndefs[2]["rendered"][0]["index"] = "modifica";
+        $columndefs[2]["rendered"][0]["class"] = "btn-warning";
+        $columndefs[2]["rendered"][0]["text"] = "Modifica";
+        $columndefs[2]["rendered"][1]["index"] = "elimina_bd";
+        $columndefs[2]["rendered"][1]["class"] = "btn-danger";
+        $columndefs[2]["rendered"][1]["text"] = "Elimina";
+
+        $this->datatable_init(columns: $elementos,titulos: $titulos,columndefs: $columndefs);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $obj_link);
+            print_r($error);
+            die('Error');
+        }
     }
 
     public function alta(bool $header, bool $ws = false): array|string

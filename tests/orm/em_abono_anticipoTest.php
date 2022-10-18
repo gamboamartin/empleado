@@ -35,7 +35,7 @@ class em_abono_anticipoTest extends test {
         $modelo = new em_abono_anticipo($this->link);
         //$modelo = new liberator($modelo);
 
-        $del = (new base_test())->del_em_abono_anticipo($this->link);
+        $del = (new base_test())->del_em_tipo_descuento($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
@@ -52,32 +52,6 @@ class em_abono_anticipoTest extends test {
 
         errores::$error = false;
 
-        $del = (new base_test())->del_em_tipo_anticipo($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-        $del = (new base_test())->del_em_tipo_abono_anticipo($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new base_test())->del_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
         $alta = (new base_test())->alta_em_abono_anticipo($this->link);
         if(errores::$error){

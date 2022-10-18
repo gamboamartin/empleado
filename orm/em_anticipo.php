@@ -14,7 +14,8 @@ class em_anticipo extends modelo{
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla, 'em_tipo_descuento'=>$tabla,
             'em_metodo_calculo'=>'em_tipo_descuento');
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
-            'em_tipo_anticipo_id','em_empleado_id','monto','fecha_inicio_descuento','fecha_prestacion');
+            'em_tipo_anticipo_id','em_empleado_id','monto','fecha_inicio_descuento','fecha_prestacion',
+            'em_tipo_descuento_id');
 
         $columnas_extra['em_anticipo_abonos'] = 'IFNULL((SELECT SUM(em_abono_anticipo.monto) 
         FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id),0.0)';

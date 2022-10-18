@@ -79,9 +79,14 @@ class em_abono_anticipo extends modelo{
             return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
         }
 
-        if ($n_pago >= $em_anticipo["em_anticipo_n_pagos"]){
+        /**
+         * Revisar operacion ya que indepoendientemente de los pagos existe la posibilidad de que se tenga saldo pendiene
+         */
+
+        /**if ($n_pago >= $em_anticipo["em_anticipo_n_pagos"]){
             return $this->error->error(mensaje: 'Error no hay pagos pendientes',data: $n_pago);
         }
+         * */
 
         $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo(
             $this->registro['em_anticipo_id']);

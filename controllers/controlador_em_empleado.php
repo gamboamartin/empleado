@@ -308,7 +308,9 @@ class controlador_em_empleado extends system {
         $columndefs[2]["rendered"][1]["class"] = "btn-danger";
         $columndefs[2]["rendered"][1]["text"] = "Elimina";
 
-        $this->datatable_init(columns: $elementos,titulos: $titulos,columndefs: $columndefs);
+        $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc");
+
+        $this->datatable_init(columns: $elementos,titulos: $titulos,columndefs: $columndefs,filtro: $filtro);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $obj_link);
             print_r($error);

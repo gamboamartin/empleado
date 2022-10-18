@@ -68,25 +68,6 @@ class em_abono_anticipo extends modelo{
             $this->registro['alias'] .= $this->registro['descripcion'];
         }
 
-        $n_pago = $this->num_pago_siguiente(em_anticipo_id: $this->registro['em_anticipo_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener el numero de pago',data: $n_pago);
-        }
-
-        $em_anticipo = (new em_anticipo($this->link))->registro(registro_id: $this->registro['em_anticipo_id'],
-            columnas: ["em_anticipo_n_pagos"]);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
-        }
-
-        /**
-         * Revisar operacion ya que indepoendientemente de los pagos existe la posibilidad de que se tenga saldo pendiene
-         */
-
-        /**if ($n_pago >= $em_anticipo["em_anticipo_n_pagos"]){
-            return $this->error->error(mensaje: 'Error no hay pagos pendientes',data: $n_pago);
-        }
-         * */
 
         $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo(
             $this->registro['em_anticipo_id']);
@@ -101,7 +82,20 @@ class em_abono_anticipo extends modelo{
                 data: $this->registro['monto']);
         }
 
+        $n_pago = $this->num_pago_siguiente(em_anticipo_id: $this->registro['em_anticipo_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el numero de pago',data: $n_pago);
+        }
 
+        $em_anticipo = (new em_anticipo($this->link))->registro(registro_id: $this->registro['em_anticipo_id'],
+            columnas: ["em_anticipo_n_pagos"]);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
+        }
+
+        if ($n_pago >= $em_anticipo["em_anticipo_n_pagos"]){
+            return $this->error->error(mensaje: 'Error no hay pagos pendientes',data: $n_pago);
+        }
 
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){

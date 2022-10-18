@@ -30,6 +30,8 @@ class em_abono_anticipo extends modelo{
             columnas: $columnas,campos_view: $campos_view);
 
         $this->NAMESPACE = __NAMESPACE__;
+
+        $this->num_pago_siguiente(9);
     }
 
     public function alta_bd(): array|stdClass
@@ -66,6 +68,21 @@ class em_abono_anticipo extends modelo{
             $this->registro['alias'] .= $this->registro['descripcion'];
         }
 
+        $n_pago = $this->num_pago_siguiente(em_anticipo_id: $this->registro['em_anticipo_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el numero de pago',data: $n_pago);
+        }
+
+        $em_anticipo = (new em_anticipo($this->link))->registro(registro_id: $this->registro['em_anticipo_id'],
+            columnas: ["em_anticipo_n_pagos"]);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
+        }
+
+        if ($n_pago >= $em_anticipo["em_anticipo_n_pagos"]){
+            return $this->error->error(mensaje: 'Error no hay pagos pendientes',data: $n_pago);
+        }
+
         $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo(
             $this->registro['em_anticipo_id']);
         if(errores::$error){
@@ -78,6 +95,8 @@ class em_abono_anticipo extends modelo{
             return $this->error->error(mensaje: 'Error el monto ingresado es mayor al saldo pendiente',
                 data: $this->registro['monto']);
         }
+
+
 
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){
@@ -128,5 +147,20 @@ class em_abono_anticipo extends modelo{
         }
 
         return round($r_em_anticipo['total_abonado'],2);
+    }
+
+    public function num_pago_siguiente(int $em_anticipo_id): int|array
+    {
+        if($em_anticipo_id <= 0){
+            return $this->error->error(mensaje: 'Error $em_anticipo_id debe ser mayor a 0', data: $em_anticipo_id);
+        }
+
+        $filtro['em_abono_anticipo.em_anticipo_id'] = $em_anticipo_id;
+        $r_em_abono = $this->filtro_and(filtro:  $filtro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener los abonos', data: $r_em_abono);
+        }
+
+        return $r_em_abono->n_registros + 1;
     }
 }

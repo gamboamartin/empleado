@@ -8,6 +8,7 @@ use gamboamartin\empleado\models\em_tipo_abono_anticipo;
 use gamboamartin\empleado\models\em_tipo_anticipo;
 use gamboamartin\errores\errores;
 use gamboamartin\empleado\models\em_empleado;
+use gamboamartin\organigrama\models\org_puesto;
 use PDO;
 
 class base_test{
@@ -103,14 +104,22 @@ class base_test{
     }
 
 
-    public function alta_em_empleado(PDO $link, string $fecha_inicio_rel_laboral = '2020-01-01',
+    public function alta_em_empleado(PDO $link, string $fecha_inicio_rel_laboral = '2020-01-01', int $org_puesto_id = 1,
                                      float $salario_diario = 180, float $salario_diario_integrado = 180): array|\stdClass
     {
 
-        $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_puesto($link);
-        if(errores::$error){
-            return (new errores())->error('Error al dar de alta ', $alta);
 
+        $existe = (new org_puesto($link))->existe_by_id(registro_id: $org_puesto_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe ', $existe);
+
+        }
+        if(!$existe) {
+            $alta = (new base_test())->alta_org_puesto($link);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta ', $alta);
+
+            }
         }
 
         $registro = array();
@@ -119,7 +128,7 @@ class base_test{
         $registro['descripcion'] = 1;
         $registro['nombre'] = 1;
         $registro['ap'] = 1;
-        $registro['org_puesto_id'] = 1;
+        $registro['org_puesto_id'] = $org_puesto_id;
         $registro['dp_calle_pertenece_id'] = 1;
         $registro['salario_diario'] = $salario_diario;
         $registro['salario_diario_integrado'] = $salario_diario_integrado;
@@ -172,6 +181,16 @@ class base_test{
 
 
         $alta = (new em_tipo_anticipo($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
+
+    public function alta_org_puesto(PDO $link): array|\stdClass
+    {
+        $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_puesto($link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta ', $alta);
 

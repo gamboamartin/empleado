@@ -275,7 +275,7 @@ class controlador_em_empleado extends system {
         $elementos[] = "em_empleado_ap";
         $elementos[] = "em_empleado_am";
         $elementos[] = "em_empleado_rfc";
-        $elementos[] = "link_modifica";
+        $elementos[] = "modifica";
 
         $titulos[] = "ID";
         $titulos[] = "Codigo";

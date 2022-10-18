@@ -45,7 +45,7 @@ class controlador_em_abono_anticipo extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'em_anticipo_id', propiedades: ["label" => "Anticipo", "extra_params_keys" => ["em_anticipo_id"]]);
+        $this->asignar_propiedad(identificador:'em_anticipo_id', propiedades: ["label" => "Anticipo", "extra_params_keys" => ["em_anticipo_id","n_pago","pago_siguiente"]]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

@@ -93,9 +93,6 @@ class em_abono_anticipo extends modelo{
             return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
         }
 
-        if ($n_pago >= $em_anticipo["em_anticipo_n_pagos"]){
-            return $this->error->error(mensaje: 'Error no hay pagos pendientes',data: $n_pago);
-        }
 
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){

@@ -131,16 +131,16 @@ class base_test{
         return $alta;
     }
 
-    public function alta_em_cuenta_bancaria(PDO $link): array|\stdClass
+    public function alta_em_cuenta_bancaria(PDO $link, int $bn_sucursal_id = 1, int $em_empleado_id = 1, int $id = 1): array|\stdClass
     {
 
 
         $registro = array();
-        $registro['id'] = 1;
+        $registro['id'] = $id;
         $registro['codigo'] = 1;
         $registro['descripcion'] = 1;
-        $registro['bn_sucursal_id'] = 1;
-        $registro['em_empleado_id'] = 1;
+        $registro['bn_sucursal_id'] = $bn_sucursal_id;
+        $registro['em_empleado_id'] = $em_empleado_id;
         $registro['clabe'] = 1;
         $registro['num_cuenta'] = 1;
 

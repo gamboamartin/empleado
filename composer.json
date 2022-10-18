@@ -64,6 +64,8 @@
     "gamboa.martin/comercial": "dev-master",
     "gamboa.martin/facturacion": "dev-main",
     "gamboa.martin/xml_cfdi_4": "dev-master",
+    "gamboa.martin/nomina": "dev-master",
+    "gamboa.martin/proceso": "dev-main",
     "syamsoul/laravel-datatable-ssp": "^2.3"
   },
   "require-dev": {

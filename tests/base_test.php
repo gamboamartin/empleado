@@ -154,8 +154,9 @@ class base_test{
     }
 
 
-    public function alta_em_empleado(PDO $link, string $fecha_inicio_rel_laboral = '2020-01-01', int $org_puesto_id = 1,
-                                     float $salario_diario = 180, float $salario_diario_integrado = 180): array|\stdClass
+    public function alta_em_empleado(PDO $link, string $fecha_inicio_rel_laboral = '2020-01-01', int $id = 1,
+                                     int $org_puesto_id = 1, float $salario_diario = 180,
+                                     float $salario_diario_integrado = 180): array|\stdClass
     {
 
 
@@ -173,7 +174,7 @@ class base_test{
         }
 
         $registro = array();
-        $registro['id'] = 1;
+        $registro['id'] = $id;
         $registro['codigo'] = 1;
         $registro['descripcion'] = 1;
         $registro['nombre'] = 1;

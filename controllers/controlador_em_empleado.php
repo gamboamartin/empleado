@@ -243,7 +243,7 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador: 'fecha_inicio_rel_laboral',
             propiedades: ['place_holder'=> 'Fecha Inicio Relacion Laboral']);
 
-        $columns["em_empleado_id"] = "Id";
+        $columns["em_empleado_id"]["titulo"] = "Id";
         $columns["em_empleado_codigo"]["titulo"] = "Codigo";
         $columns["em_empleado_nombre"]["titulo"] = "Nombre";
         $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");

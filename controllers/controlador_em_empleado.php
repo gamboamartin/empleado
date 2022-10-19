@@ -243,75 +243,20 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador: 'fecha_inicio_rel_laboral',
             propiedades: ['place_holder'=> 'Fecha Inicio Relacion Laboral']);
 
-
-        $this->columnas_lista_data_table_full['em_empleado_id']['dt'] = 'em_empleado_id';
-        $this->columnas_lista_data_table_full['em_empleado_id']['filter'] = 'em_empleado.id';
-        $this->columnas_lista_data_table_full['em_empleado_id']['label'] = 'ID';
-
-        $this->columnas_lista_data_table_full['em_empleado_codigo']['dt'] = 'em_empleado_codigo';
-        $this->columnas_lista_data_table_full['em_empleado_codigo']['filter'] = 'em_empleado.codigo';
-        $this->columnas_lista_data_table_full['em_empleado_codigo']['label'] = 'Codigo';
-
-        $this->columnas_lista_data_table_full['em_empleado_nombre']['dt'] = 'em_empleado_nombre';
-        $this->columnas_lista_data_table_full['em_empleado_nombre']['filter'] = 'em_empleado.nombre';
-        $this->columnas_lista_data_table_full['em_empleado_nombre']['label'] = 'Nombre';
-
-        $this->columnas_lista_data_table_full['cat_sat_regimen_fiscal_codigo']['dt'] = 'cat_sat_regimen_fiscal_codigo';
-        $this->columnas_lista_data_table_full['cat_sat_regimen_fiscal_codigo']['label'] = 'Cod RF';
-
-
-        foreach ($this->columnas_lista_data_table_full as $column){
-            $this->columnas_lista_data_table[] = $column['dt'];
-            $this->columnas_lista_data_table_label[] = $column['label'];
-
-            if(isset($column['filter'])){
-                $this->columnas_lista_data_table_filter[] = $column['filter'];
-            }
-        }
-
-        $elementos[] = "em_empleado_id";
-        $elementos[] = "em_empleado_codigo";
-        $elementos[] = "em_empleado_nombre";
-        $elementos[] = "em_empleado_ap";
-        $elementos[] = "em_empleado_am";
-        $elementos[] = "em_empleado_rfc";
-        $elementos[] = "modifica";
-
-        $titulos[] = "ID";
-        $titulos[] = "Codigo";
-        $titulos[] = "Empleado";
-        $titulos[] = "RFC";
-        $titulos[] = "Otros";
-        $titulos[] = "Acciones";
-
-        $columndefs[0]["visible"] = false;
-        $columndefs[0]["targets"] = [ 3, 4 ];
-
-        $columndefs[1]["type"] = "button";
-        $columndefs[1]["targets"] = 6;
-        $columndefs[1]["rendered"][0]["index"] = "ver_anticipos";
-        $columndefs[1]["rendered"][0]["class"] = "btn-info";
-        $columndefs[1]["rendered"][0]["text"] = "Ver Anticipos";
-        $columndefs[1]["rendered"][1]["index"] = "anticipo";
-        $columndefs[1]["rendered"][1]["class"] = "btn-info";
-        $columndefs[1]["rendered"][1]["text"] = "Anticipo";
-        $columndefs[1]["rendered"][2]["index"] = "cuenta_bancaria";
-        $columndefs[1]["rendered"][2]["class"] = "btn-info";
-        $columndefs[1]["rendered"][2]["text"] = "Cuenta Bancaria";
-
-        $columndefs[2]["type"] = "button";
-        $columndefs[2]["targets"] = 7;
-        $columndefs[2]["rendered"][0]["index"] = "modifica";
-        $columndefs[2]["rendered"][0]["class"] = "btn-warning";
-        $columndefs[2]["rendered"][0]["text"] = "Modifica";
-        $columndefs[2]["rendered"][1]["index"] = "elimina_bd";
-        $columndefs[2]["rendered"][1]["class"] = "btn-danger";
-        $columndefs[2]["rendered"][1]["text"] = "Elimina";
+        $columns["em_empleado_id"] = "Id";
+        $columns["em_empleado_codigo"]["titulo"] = "Codigo";
+        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
+        $columns["em_empleado_rfc"]["titulo"] = "Rfc";
+        $columns["em_empleado_alias"]["titulo"] = "Rfc";
+        $columns["modifica"]["titulo"] = "Modifica";
+        $columns["modifica"]["type"] = "button";
+        $columns["modifica"]["campos"] = array("elimina_bd", "ver_anticipos");
 
         $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc",
             "em_empleado_nombre_completo","em_empleado_nombre_completo_inv");
 
-        $this->datatable_init(columns: $elementos,titulos: $titulos,columndefs: $columndefs,filtro: $filtro);
+        $this->datatable_init(columns: $columns);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $obj_link);
             print_r($error);

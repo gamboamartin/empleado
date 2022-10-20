@@ -53,7 +53,22 @@ class controlador_em_empleado extends system {
         $modelo = new em_empleado(link: $link);
         $html_ = new em_empleado_html(html: $html);
         $obj_link = new links_menu($this->registro_id);
-        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
+
+        $columns["em_empleado_id"]["titulo"] = "Id";
+        $columns["em_empleado_codigo"]["titulo"] = "Codigo";
+        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
+        $columns["em_empleado_rfc"]["titulo"] = "Rfc";
+        $columns["em_empleado_alias"]["titulo"] = "Rfc";
+
+        $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc",
+            "em_empleado_nombre_completo","em_empleado_nombre_completo_inv");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+
+        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
+            paths_conf: $paths_conf);
 
         $obj_link->genera_links($this);
         if (errores::$error) {
@@ -243,25 +258,7 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador: 'fecha_inicio_rel_laboral',
             propiedades: ['place_holder'=> 'Fecha Inicio Relacion Laboral']);
 
-        $columns["em_empleado_id"]["titulo"] = "Id";
-        $columns["em_empleado_codigo"]["titulo"] = "Codigo";
-        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
-        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
-        $columns["em_empleado_rfc"]["titulo"] = "Rfc";
-        $columns["em_empleado_alias"]["titulo"] = "Rfc";
-        $columns["modifica"]["titulo"] = "Modifica";
-        $columns["modifica"]["type"] = "button";
-        $columns["modifica"]["campos"] = array("elimina_bd", "ver_anticipos");
 
-        $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc",
-            "em_empleado_nombre_completo","em_empleado_nombre_completo_inv");
-
-        $this->datatable_init(columns: $columns);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $obj_link);
-            print_r($error);
-            die('Error');
-        }
     }
 
     public function alta(bool $header, bool $ws = false): array|string

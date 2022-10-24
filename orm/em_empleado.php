@@ -61,6 +61,7 @@ class em_empleado extends modelo{
         $campos_view['curp'] = array('type' => 'inputs');
         $campos_view['salario_diario'] = array('type' => 'inputs');
         $campos_view['salario_diario_integrado'] = array('type' => 'inputs');
+        $campos_view['campo_extra'] = array('type' => 'inputs');
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';

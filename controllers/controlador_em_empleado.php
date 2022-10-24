@@ -157,20 +157,30 @@ class controlador_em_empleado extends system {
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
         }
 
-        $this->asignar_propiedad(identificador:'dp_pais_id', propiedades: ["label" => "Pais"]);
-        $this->asignar_propiedad(identificador:'dp_estado_id', propiedades: ["label" => "Estado"]);
-        $this->asignar_propiedad(identificador:'dp_municipio_id', propiedades: ["label" => "Municipio"]);
-        $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP"]);
-        $this->asignar_propiedad(identificador:'dp_colonia_id', propiedades: ["label" => "Colonia"]);
-        $this->asignar_propiedad(identificador:'dp_colonia_postal_id', propiedades: ["label" => "Colonia Postal"]);
-        $this->asignar_propiedad(identificador:'dp_calle_id', propiedades: ["label" => "Calle"]);
+        $this->asignar_propiedad(identificador:'dp_pais_id', propiedades: ["label" => "Pais",
+            "extra_params_keys"=>array("dp_pais_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_estado_id', propiedades: ["label" => "Estado",
+            "extra_params_keys"=>array("dp_estado_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_municipio_id', propiedades: ["label" => "Municipio",
+            "extra_params_keys"=>array("dp_municipio_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP",
+            "extra_params_keys"=>array("dp_cp_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_colonia_id', propiedades: ["label" => "Colonia",
+            "extra_params_keys"=>array("dp_colonia_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_colonia_postal_id', propiedades: ["label" => "Colonia Postal",
+            "extra_params_keys"=>array("dp_colonia_postal_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_calle_id', propiedades: ["label" => "Calle",
+            "extra_params_keys"=>array("dp_calle_predeterminado")]);
 
-        $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece"]);
+        $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece",
+            "extra_params_keys"=>array("dp_calle_pertenece_predeterminado")]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
+
+        $this->asignar_propiedad(identificador:'campo_extra', propiedades: ["cols" => 12,'place_holder'=> 'Campo']);
 
         $this->asignar_propiedad(identificador:'cat_sat_regimen_fiscal_id', propiedades: ["label" => "Regimen Fiscal"]);
         if (errores::$error) {

@@ -157,6 +157,14 @@ class controlador_em_empleado extends system {
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
         }
 
+        $this->asignar_propiedad(identificador:'dp_pais_id', propiedades: ["label" => "Pais"]);
+        $this->asignar_propiedad(identificador:'dp_estado_id', propiedades: ["label" => "Estado"]);
+        $this->asignar_propiedad(identificador:'dp_municipio_id', propiedades: ["label" => "Municipio"]);
+        $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP"]);
+        $this->asignar_propiedad(identificador:'dp_colonia_id', propiedades: ["label" => "Colonia"]);
+        $this->asignar_propiedad(identificador:'dp_colonia_postal_id', propiedades: ["label" => "Colonia Postal"]);
+        $this->asignar_propiedad(identificador:'dp_calle_id', propiedades: ["label" => "Calle"]);
+
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
@@ -237,7 +245,7 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 12]);
+        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 6]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -673,6 +681,21 @@ class controlador_em_empleado extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
+
+        $this->asignar_propiedad(identificador:'dp_pais_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_pais_id]);
+        $this->asignar_propiedad(identificador:'dp_estado_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_estado_id]);
+        $this->asignar_propiedad(identificador:'dp_municipio_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_municipio_id]);
+        $this->asignar_propiedad(identificador:'dp_cp_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_cp_id]);
+        $this->asignar_propiedad(identificador:'dp_colonia_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_colonia_id]);
+        $this->asignar_propiedad(identificador:'dp_colonia_postal_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_colonia_postal_id]);
+        $this->asignar_propiedad(identificador:'dp_calle_id',
+            propiedades: ["id_selected"=>$this->row_upd->dp_calle_id]);
 
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id',
             propiedades: ["id_selected"=>$this->row_upd->dp_calle_pertenece_id]);

@@ -7,7 +7,14 @@ use DateTime;
 use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
+use gamboamartin\direccion_postal\models\dp_calle;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
+use gamboamartin\direccion_postal\models\dp_colonia;
+use gamboamartin\direccion_postal\models\dp_colonia_postal;
+use gamboamartin\direccion_postal\models\dp_cp;
+use gamboamartin\direccion_postal\models\dp_estado;
+use gamboamartin\direccion_postal\models\dp_municipio;
+use gamboamartin\direccion_postal\models\dp_pais;
 use gamboamartin\errores\errores;
 use gamboamartin\organigrama\models\org_puesto;
 use models\im_conf_pres_empresa;
@@ -30,18 +37,30 @@ class em_empleado extends modelo{
         $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis',
             'org_puesto_id','cat_sat_tipo_jornada_nom_id');
 
-        $campos_view = array(
-            'dp_calle_pertenece_id' => array('type' => 'selects', 'model' => new dp_calle_pertenece($link)),
-            'cat_sat_regimen_fiscal_id' => array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link)),
-            'org_puesto_id' => array('type' => 'selects', 'model' => new org_puesto($link)),
-            'cat_sat_tipo_regimen_nom_id' => array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link)),
-            'im_registro_patronal_id' => array('type' => 'selects', 'model' => new im_registro_patronal($link)),
-            'cat_sat_tipo_jornada_nom_id' => array('type' => 'selects', 'model' => new cat_sat_tipo_jornada_nom($link)),
-            'fecha_inicio_rel_laboral' => array('type' => 'dates'), 'codigo' => array('type' => 'inputs'),
-            'nombre' => array('type' => 'inputs'), 'ap' => array('type' => 'inputs'),'am' => array('type' => 'inputs'),
-            'telefono' => array('type' => 'inputs'), 'rfc' => array('type' => 'inputs'),
-            'curp' => array('type' => 'inputs'), 'nss' => array('type' => 'inputs'),
-            'salario_diario' => array('type' => 'inputs'), 'salario_diario_integrado' => array('type' => 'inputs'));
+        $campos_view['dp_pais_id'] = array('type' => 'selects', 'model' => new dp_pais($link));
+        $campos_view['dp_estado_id'] = array('type' => 'selects', 'model' => new dp_estado($link));
+        $campos_view['dp_municipio_id'] = array('type' => 'selects', 'model' => new dp_municipio($link));
+        $campos_view['dp_cp_id'] = array('type' => 'selects', 'model' => new dp_cp($link));
+        $campos_view['dp_colonia_id'] = array('type' => 'selects', 'model' => new dp_colonia($link));
+        $campos_view['dp_colonia_postal_id'] = array('type' => 'selects', 'model' => new dp_colonia_postal($link));
+        $campos_view['dp_calle_id'] = array('type' => 'selects', 'model' => new dp_calle($link));
+        $campos_view['dp_calle_pertenece_id'] = array('type' => 'selects', 'model' => new dp_calle_pertenece($link));
+        $campos_view['cat_sat_regimen_fiscal_id'] = array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link));
+        $campos_view['org_puesto_id'] = array('type' => 'selects', 'model' => new org_puesto($link));
+        $campos_view['cat_sat_tipo_regimen_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link));
+        $campos_view['im_registro_patronal_id'] = array('type' => 'selects', 'model' => new im_registro_patronal($link));
+        $campos_view['cat_sat_tipo_jornada_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_jornada_nom($link));
+        $campos_view['fecha_inicio_rel_laboral'] = array('type' => 'dates');
+        $campos_view['codigo'] = array('type' => 'inputs');
+        $campos_view['nombre'] = array('type' => 'inputs');
+        $campos_view['ap'] = array('type' => 'inputs');
+        $campos_view['am'] = array('type' => 'inputs');
+        $campos_view['telefono'] = array('type' => 'inputs');
+        $campos_view['rfc'] = array('type' => 'inputs');
+        $campos_view['nss'] = array('type' => 'inputs');
+        $campos_view['curp'] = array('type' => 'inputs');
+        $campos_view['salario_diario'] = array('type' => 'inputs');
+        $campos_view['salario_diario_integrado'] = array('type' => 'inputs');
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';

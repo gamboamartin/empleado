@@ -12,6 +12,7 @@ use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\direccion_postal\models\dp_colonia;
 use gamboamartin\direccion_postal\models\dp_colonia_postal;
 use gamboamartin\direccion_postal\models\dp_cp;
+use gamboamartin\direccion_postal\models\dp_direccion_pendiente;
 use gamboamartin\direccion_postal\models\dp_estado;
 use gamboamartin\direccion_postal\models\dp_municipio;
 use gamboamartin\direccion_postal\models\dp_pais;
@@ -87,7 +88,6 @@ class em_empleado extends modelo{
     {
         $registro = $this->registro;
 
-
         $keys = array('nombre','ap');
         $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $registro);
         if(errores::$error){
@@ -99,8 +99,12 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
         }
 
-
         $this->registro = $registro;
+
+        $alta = $this->direccion_pendiente();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $this->registro);
+        }
 
 
         $r_alta_bd = parent::alta_bd();
@@ -110,6 +114,42 @@ class em_empleado extends modelo{
 
         return $r_alta_bd;
 
+    }
+
+    private function direccion_pendiente(): array|stdClass
+    {
+        $resultado = array();
+
+        if (isset($this->registro["campo_extra_dp_pais_id"]) || isset($this->registro["campo_extra_dp_estado_id"]) ||
+            isset($this->registro["campo_extra_dp_municipio_id"]) || isset($this->registro["campo_extra_dp_cp_id"]) ||
+            isset($this->registro["campo_extra_dp_colonia_id"]) || isset($this->registro["campo_extra_dp_colonia_postal_id"]) ||
+            isset($this->registro["campo_extra_dp_calle_id"]) || isset($this->registro["campo_extra_dp_calle_pertenece_id"])){
+
+            $registros = array();
+            $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais_id"] ?? "";
+            $registros['descripcion_estado'] = $this->registro["campo_extra_dp_estado_id"] ?? "";
+            $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio_id"] ?? "";
+            $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp_id"] ?? "";
+            $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia_id"] ?? "";
+            $registros['descripcion_colonia_postal'] = $this->registro["campo_extra_dp_colonia_postal_id"] ?? "";
+            $registros['descripcion_calle'] = $this->registro["campo_extra_dp_calle_id"] ?? "";
+            $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece_id"] ?? "";
+
+            $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $resultado);
+            }
+        }
+
+        $this->registro = $this->limpia_campos(registro: $this->registro,
+            campos_limpiar: array('campo_extra', 'campo_extra_dp_pais_id', 'campo_extra_dp_estado_id'
+            ,'campo_extra_dp_municipio_id','campo_extra_dp_cp_id','campo_extra_dp_colonia_id'
+            ,'campo_extra_dp_colonia_postal_id','campo_extra_dp_calle_id','campo_extra_dp_calle_pertenece_id'));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
+        }
+
+        return $resultado;
     }
 
     /**
@@ -258,6 +298,16 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
         }
 
+        return $registro;
+    }
+
+    private function limpia_campos(array $registro, array $campos_limpiar): array
+    {
+        foreach ($campos_limpiar as $valor) {
+            if (isset($registro[$valor])) {
+                unset($registro[$valor]);
+            }
+        }
         return $registro;
     }
 

@@ -38,7 +38,7 @@ $("#modal-aceptar").click(function () {
         console.log($(id).length)
 
         if($(id).length <= 0){
-            let input = jQuery(`<input id="campo_extra_${name}" name="campo_extra_${name}" value="${value}">`);
+            let input = jQuery(`<input type="hidden" id="campo_extra_${name}" name="campo_extra_${name}" value="${value}">`);
             jQuery('.form-additional').append(input);
         }else{
             $(id).val(value)

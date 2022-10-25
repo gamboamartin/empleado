@@ -180,7 +180,8 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'campo_extra', propiedades: ["cols" => 12,'place_holder'=> 'Campo']);
+        $this->asignar_propiedad(identificador:'campo_extra', propiedades: ["cols" => 12,'place_holder'=> 'Campo',
+            'required' => false]);
 
         $this->asignar_propiedad(identificador:'cat_sat_regimen_fiscal_id', propiedades: ["label" => "Regimen Fiscal"]);
         if (errores::$error) {

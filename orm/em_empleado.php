@@ -104,7 +104,7 @@ class em_empleado extends modelo{
 
         $alta_direccion = $this->direccion_pendiente();
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $this->registro);
+            return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $alta_direccion);
         }
 
         $r_alta_bd = parent::alta_bd();
@@ -112,7 +112,13 @@ class em_empleado extends modelo{
             return $this->error->error(mensaje: 'Error al dar de alta empleado',data: $r_alta_bd);
         }
 
-
+        if(!empty($alta_direccion)){
+            $alta_emp_dir_pendiente = $this->emp_direccion_pendiente(em_empleado: $r_alta_bd,
+                dp_direccion_pendiente: $alta_direccion);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al asignar direccion pendiente al empleado',data: $alta_emp_dir_pendiente);
+            }
+        }
         return $r_alta_bd;
     }
 
@@ -226,6 +232,23 @@ class em_empleado extends modelo{
         return $registro;
     }
 
+    private function emp_direccion_pendiente(array|stdClass $em_empleado ,array|stdClass $dp_direccion_pendiente): array|stdClass
+    {
+        $registro['em_empleado_id'] = $em_empleado->registro_id;
+        $registro['dp_direccion_pendiente_id'] = $dp_direccion_pendiente->registro_id;
+        $registro['codigo'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_codigo"];
+        $registro['codigo_bis'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_codigo_bis"];
+        $registro['descripcion'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_descripcion"];
+        $registro['descripcion_select'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_descripcion_select"];
+        $registro['alias'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_alias"];
+        $alta = (new em_emp_dir_pendiente($this->link))->alta_registro(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener direccion', data: $alta);
+        }
+
+        return $alta;
+    }
+
     private function fecha_inicio_rel_laboral_default(array $registro): array
     {
         if (!isset($registro['fecha_inicio_rel_laboral'])) {
@@ -245,8 +268,8 @@ class em_empleado extends modelo{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener direccion', data: $dp_calle_pertenece);
         }
-        return $dp_calle_pertenece;
 
+        return $dp_calle_pertenece;
     }
 
     /**

@@ -692,20 +692,26 @@ class controlador_em_empleado extends system {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
+        $direccion = (new em_empleado($this->link))->get_direccion(
+            dp_calle_pertenece_id: $this->row_upd->dp_calle_pertenece_id);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al obtener direccion',data:  $direccion);
+        }
+
         $this->asignar_propiedad(identificador:'dp_pais_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_pais_id]);
+            propiedades: ["id_selected"=> $direccion["dp_pais_id"]]);
         $this->asignar_propiedad(identificador:'dp_estado_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_estado_id]);
+            propiedades: ["id_selected"=> $direccion["dp_estado_id"]]);
         $this->asignar_propiedad(identificador:'dp_municipio_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_municipio_id]);
+            propiedades: ["id_selected"=> $direccion["dp_municipio_id"]]);
         $this->asignar_propiedad(identificador:'dp_cp_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_cp_id]);
+            propiedades: ["id_selected"=> $direccion["dp_cp_id"]]);
         $this->asignar_propiedad(identificador:'dp_colonia_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_colonia_id]);
+            propiedades: ["id_selected"=> $direccion["dp_colonia_id"]]);
         $this->asignar_propiedad(identificador:'dp_colonia_postal_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_colonia_postal_id]);
+            propiedades: ["id_selected"=> $direccion["dp_colonia_postal_id"]]);
         $this->asignar_propiedad(identificador:'dp_calle_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_calle_id]);
+            propiedades: ["id_selected"=> $direccion["dp_calle_id"]]);
 
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id',
             propiedades: ["id_selected"=>$this->row_upd->dp_calle_pertenece_id]);

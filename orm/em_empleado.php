@@ -21,6 +21,7 @@ use gamboamartin\organigrama\models\org_puesto;
 use models\im_conf_pres_empresa;
 use models\im_detalle_conf_prestaciones;
 use models\im_registro_patronal;
+use models\nom_par_otro_pago;
 use PDO;
 use stdClass;
 use Throwable;
@@ -101,56 +102,20 @@ class em_empleado extends modelo{
 
         $this->registro = $registro;
 
-        $alta = $this->direccion_pendiente();
+        $alta_direccion = $this->direccion_pendiente();
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $this->registro);
         }
-
 
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al dar de alta empleado',data: $r_alta_bd);
         }
 
+
         return $r_alta_bd;
-
     }
 
-    private function direccion_pendiente(): array|stdClass
-    {
-        $resultado = array();
-
-        if (isset($this->registro["campo_extra_dp_pais_id"]) || isset($this->registro["campo_extra_dp_estado_id"]) ||
-            isset($this->registro["campo_extra_dp_municipio_id"]) || isset($this->registro["campo_extra_dp_cp_id"]) ||
-            isset($this->registro["campo_extra_dp_colonia_id"]) || isset($this->registro["campo_extra_dp_colonia_postal_id"]) ||
-            isset($this->registro["campo_extra_dp_calle_id"]) || isset($this->registro["campo_extra_dp_calle_pertenece_id"])){
-
-            $registros = array();
-            $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais_id"] ?? "";
-            $registros['descripcion_estado'] = $this->registro["campo_extra_dp_estado_id"] ?? "";
-            $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio_id"] ?? "";
-            $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp_id"] ?? "";
-            $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia_id"] ?? "";
-            $registros['descripcion_colonia_postal'] = $this->registro["campo_extra_dp_colonia_postal_id"] ?? "";
-            $registros['descripcion_calle'] = $this->registro["campo_extra_dp_calle_id"] ?? "";
-            $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece_id"] ?? "";
-
-            $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $resultado);
-            }
-        }
-
-        $this->registro = $this->limpia_campos(registro: $this->registro,
-            campos_limpiar: array('campo_extra', 'campo_extra_dp_pais_id', 'campo_extra_dp_estado_id'
-            ,'campo_extra_dp_municipio_id','campo_extra_dp_cp_id','campo_extra_dp_colonia_id'
-            ,'campo_extra_dp_colonia_postal_id','campo_extra_dp_calle_id','campo_extra_dp_calle_pertenece_id'));
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
-        }
-
-        return $resultado;
-    }
 
     /**
      * Maqueta el apellido materno en vacio si no existe
@@ -213,6 +178,44 @@ class em_empleado extends modelo{
         return $registro;
     }
 
+    private function direccion_pendiente(): array|stdClass
+    {
+        $resultado = array();
+
+        if (isset($this->registro["campo_extra_dp_pais_id"]) || isset($this->registro["campo_extra_dp_estado_id"]) ||
+            isset($this->registro["campo_extra_dp_municipio_id"]) || isset($this->registro["campo_extra_dp_cp_id"]) ||
+            isset($this->registro["campo_extra_dp_colonia_id"]) || isset($this->registro["campo_extra_dp_colonia_postal_id"]) ||
+            isset($this->registro["campo_extra_dp_calle_id"]) || isset($this->registro["campo_extra_dp_calle_pertenece_id"])){
+
+            $registros = array();
+            $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais_id"] ?? $this->registro["dp_pais_id"];
+            $registros['descripcion_estado'] = $this->registro["campo_extra_dp_estado_id"] ?? $this->registro["dp_estado_id"];
+            $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio_id"] ?? $this->registro["dp_municipio_id"];
+            $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp_id"] ?? $this->registro["dp_cp_id"];
+            $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia_id"] ?? $this->registro["dp_colonia_id"];
+            $registros['descripcion_colonia_postal'] = $this->registro["campo_extra_dp_colonia_postal_id"] ?? $this->registro["dp_colonia_postal_id"];
+            $registros['descripcion_calle'] = $this->registro["campo_extra_dp_calle_id"] ?? $this->registro["dp_calle_id"];
+            $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece_id"] ?? $this->registro["dp_calle_pertenece_id"];
+
+            $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $resultado);
+            }
+        }
+
+        $this->registro = $this->limpia_campos(registro: $this->registro,
+            campos_limpiar: array('campo_extra', 'campo_extra_dp_pais_id', 'campo_extra_dp_estado_id'
+            ,'campo_extra_dp_municipio_id','campo_extra_dp_cp_id','campo_extra_dp_colonia_id'
+            ,'campo_extra_dp_colonia_postal_id','campo_extra_dp_calle_id','campo_extra_dp_calle_pertenece_id',
+                "dp_pais_id","dp_estado_id","dp_municipio_id","dp_cp_id","dp_colonia_id","dp_colonia_postal_id",
+                "dp_calle_id"));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
+        }
+
+        return $resultado;
+    }
+
     private function descripcion_select(array $registro): array
     {
         if (!isset($registro['descripcion_select'])) {
@@ -229,6 +232,21 @@ class em_empleado extends modelo{
             $registro['fecha_inicio_rel_laboral'] = '1900-01-01';
         }
         return $registro;
+    }
+
+    public function get_direccion(int $dp_calle_pertenece_id): array|stdClass
+    {
+        if($dp_calle_pertenece_id <= 0){
+            return $this->error->error(mensaje: 'Error $dp_calle_pertenece_id debe ser mayor a 0', data: $dp_calle_pertenece_id);
+        }
+
+        $filtro['dp_calle_pertenece.id'] = $dp_calle_pertenece_id;
+        $dp_calle_pertenece = (new dp_calle_pertenece($this->link))->registro($dp_calle_pertenece_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener direccion', data: $dp_calle_pertenece);
+        }
+        return $dp_calle_pertenece;
+
     }
 
     /**

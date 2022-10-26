@@ -188,20 +188,20 @@ class em_empleado extends modelo{
     {
         $resultado = array();
 
-        if (isset($this->registro["campo_extra_dp_pais_id"]) || isset($this->registro["campo_extra_dp_estado_id"]) ||
-            isset($this->registro["campo_extra_dp_municipio_id"]) || isset($this->registro["campo_extra_dp_cp_id"]) ||
-            isset($this->registro["campo_extra_dp_colonia_id"]) || isset($this->registro["campo_extra_dp_colonia_postal_id"]) ||
-            isset($this->registro["campo_extra_dp_calle_id"]) || isset($this->registro["campo_extra_dp_calle_pertenece_id"])){
+        if (isset($this->registro["campo_extra_dp_pais"]) || isset($this->registro["campo_extra_dp_estado"]) ||
+            isset($this->registro["campo_extra_dp_municipio"]) || isset($this->registro["campo_extra_dp_cp"]) ||
+            isset($this->registro["campo_extra_dp_colonia"]) || isset($this->registro["campo_extra_dp_colonia_postal"]) ||
+            isset($this->registro["campo_extra_dp_calle"]) || isset($this->registro["campo_extra_dp_calle_pertenece"])){
 
             $registros = array();
-            $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais_id"] ?? $this->registro["dp_pais_id"];
-            $registros['descripcion_estado'] = $this->registro["campo_extra_dp_estado_id"] ?? $this->registro["dp_estado_id"];
-            $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio_id"] ?? $this->registro["dp_municipio_id"];
-            $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp_id"] ?? $this->registro["dp_cp_id"];
-            $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia_id"] ?? $this->registro["dp_colonia_id"];
-            $registros['descripcion_colonia_postal'] = $this->registro["campo_extra_dp_colonia_postal_id"] ?? $this->registro["dp_colonia_postal_id"];
-            $registros['descripcion_calle'] = $this->registro["campo_extra_dp_calle_id"] ?? $this->registro["dp_calle_id"];
-            $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece_id"] ?? $this->registro["dp_calle_pertenece_id"];
+            $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais"] ?? $this->registro["dp_pais_id"];
+            $registros['descripcion_estado'] = $this->registro["campo_extra_dp_estado"] ?? $this->registro["dp_estado_id"];
+            $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio"] ?? $this->registro["dp_municipio_id"];
+            $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp"] ?? $this->registro["dp_cp_id"];
+            $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia"] ?? $this->registro["dp_colonia_id"];
+            $registros['descripcion_colonia_postal'] = $this->registro["campo_extra_dp_colonia_postal"] ?? $this->registro["dp_colonia_postal_id"];
+            $registros['descripcion_calle'] = $this->registro["campo_extra_dp_calle"] ?? $this->registro["dp_calle_id"];
+            $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece"] ?? $this->registro["dp_calle_pertenece_id"];
 
             $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
             if(errores::$error){
@@ -210,9 +210,9 @@ class em_empleado extends modelo{
         }
 
         $this->registro = $this->limpia_campos(registro: $this->registro,
-            campos_limpiar: array('campo_extra', 'campo_extra_dp_pais_id', 'campo_extra_dp_estado_id'
-            ,'campo_extra_dp_municipio_id','campo_extra_dp_cp_id','campo_extra_dp_colonia_id'
-            ,'campo_extra_dp_colonia_postal_id','campo_extra_dp_calle_id','campo_extra_dp_calle_pertenece_id',
+            campos_limpiar: array('campo_extra', 'campo_extra_dp_pais', 'campo_extra_dp_estado'
+            ,'campo_extra_dp_municipio','campo_extra_dp_cp','campo_extra_dp_colonia'
+            ,'campo_extra_dp_colonia_postal','campo_extra_dp_calle','campo_extra_dp_calle_pertenece',
                 "dp_pais_id","dp_estado_id","dp_municipio_id","dp_cp_id","dp_colonia_id","dp_colonia_postal_id",
                 "dp_calle_id"));
         if (errores::$error) {

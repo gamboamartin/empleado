@@ -14,41 +14,202 @@ let in_campo_extra = $("#campo_extra");
 
 let input_seleccionado;
 
-$(function() {
-    var content = "<input type='text' class='bss-input' onKeyDown='event.stopPropagation();' onKeyPress='addSelectInpKeyPress(this,event)' onClick='event.stopPropagation()' placeholder='Add item'> <span class='glyphicon glyphicon-plus addnewicon' onClick='addSelectItem(this,event,1);'></span>";
+function appendInput(value){
+    var content = `<input type='text' class='bss-input' onKeyDown='event.stopPropagation();' onKeyPress='addSelectInpKeyPress(this,event)' onClick='event.stopPropagation()' placeholder='Add item'> <span class='bx bx-plus addnewicon' onClick='addSelectItem(this,event,${value});'></span>`;
+    var inputEle = $('.addItem.dropdown-item span.text');
+    $('.addItem.dropdown-item span.text').each(function(index, el) {
+        if ($(this).text() == '') {
+            $(this).html(content);
+        }
+    });
+}
 
+function addSelectItem(t,ev, value)
+{
+    ev.stopPropagation();
 
-    var addoption = $('<option/>', {class: 'addItem'})
-        .data('content', content)
+    var bs = $(t).closest('.bootstrap-select')
+    var txt=bs.find('.bss-input').val().replace(/[|]/g,"");
+    var txt=$(t).prev().val().replace(/[|]/g,"");
+    if ($.trim(txt)=='') return;
 
-    let sl_predeterminado = (identificador) => {
+    var p=bs.find('select');
+    var o=$('option', p).eq(-2);
+    o.before( $("<option>", { "selected": false, "text": txt, "value": value}) );
+    p.selectpicker('refresh');
+    appendInput(1212);
+}
 
-        identificador.change(function(){
-            let selected = identificador.find('option:selected');
-            let id = identificador.attr('id');
-            let objeto = id.substring(0, id.length - 2);
-            let predeterminado = selected.data(`${objeto}predeterminado`);
+function addSelectInpKeyPress(t,ev)
+{
+    ev.stopPropagation();
+    if (ev.which==124) ev.preventDefault();
+    if (ev.which==13)
+    {
+        ev.preventDefault();
+        addSelectItem($(t).next(),ev, 1233);
+    }
+}
 
-            if (predeterminado === 'activo'){
-                $(`#${id}`).siblings(".dropdown-menu").children(".inner").append('<li data-original-index="198"><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,1);"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>');
-                $(`#${id}`).prepend(addoption)
-            }
-        });
-    };
+sl_dp_pais.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_pais_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_pais" name="campo_extra_dp_pais" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
 
-    sl_predeterminado(sl_dp_pais);
-    sl_predeterminado(sl_dp_estado);
-    sl_predeterminado(sl_dp_municipio);
-    sl_predeterminado(sl_dp_cp);
-    sl_predeterminado(sl_dp_colonia);
-    sl_predeterminado(sl_dp_colonia_postal);
-    sl_predeterminado(sl_dp_calle);
-    sl_predeterminado(sl_dp_calle_pertenece);
+    if (predeterminado === 'activo'){
+        sl_dp_pais.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_pais").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_pais").val(text)
+        }
+    }
+})
 
+sl_dp_estado.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_estado_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_estado" name="campo_extra_dp_estado" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
 
+    if (predeterminado === 'activo'){
+        sl_dp_estado.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_estado").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_estado").val(text)
+        }
+    }
+})
 
+sl_dp_municipio.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_municipio_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_municipio" name="campo_extra_dp_municipio" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
 
-});
+    if (predeterminado === 'activo'){
+        sl_dp_municipio.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_municipio").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_municipio").val(text)
+        }
+    }
+})
+
+sl_dp_cp.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_cp_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_cp" name="campo_extra_dp_cp" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
+
+    if (predeterminado === 'activo'){
+        sl_dp_cp.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_cp").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_cp").val(text)
+        }
+    }
+})
+
+sl_dp_colonia.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_colonia_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_colonia" name="campo_extra_dp_colonia" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
+
+    if (predeterminado === 'activo'){
+        sl_dp_colonia.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_colonia").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_colonia").val(text)
+        }
+    }
+})
+
+sl_dp_colonia_postal.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_colonia_postal_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_estado" name="campo_extra_dp_colonia_postal" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
+
+    if (predeterminado === 'activo'){
+        sl_dp_colonia_postal.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_colonia_postal").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_colonia_postal").val(text)
+        }
+    }
+})
+
+sl_dp_calle.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_calle_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_calle" name="campo_extra_dp_calle" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
+
+    if (predeterminado === 'activo'){
+        sl_dp_calle.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_calle").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_calle").val(text)
+        }
+    }
+})
+
+sl_dp_calle_pertenece.change(function () {
+    let selected = $(this).find('option:selected');
+    let value = selected.val()
+    let text = selected.text()
+    let predeterminado = selected.data(`dp_calle_pertenece_predeterminado`);
+    let inputObject = `<input type="hidden" id="campo_extra_dp_calle_pertenece" name="campo_extra_dp_calle_pertenece" value="${text}">`
+    let append = `<li ><a tabindex="0" class="addItem"  data-tokens="null" style="display: flex;justify-content: space-evenly;align-items: center;" ><input type="text" class="bss-input" style="width: 90%;" onkeydown="event.stopPropagation();" onkeypress="addSelectInpKeyPress(this,event)" onclick="event.stopPropagation()" placeholder="Add item"> <span class="glyphicon glyphicon-plus addnewicon" onclick="addSelectItem(this,event,${value});"></span><span class="glyphicon glyphicon-ok check-mark"></span></a></li>`;
+
+    if (predeterminado === 'activo'){
+        sl_dp_calle_pertenece.siblings(".dropdown-menu").children(".inner").append(append);
+    } else if(typeof predeterminado === "undefined"){
+        if($("#campo_extra_dp_calle_pertenece").length <= 0){
+            let input = jQuery(inputObject);
+            jQuery('.form-additional').append(input);
+        }else{
+            $("#campo_extra_dp_calle_pertenece").val(text)
+        }
+    }
+})
 
 
 

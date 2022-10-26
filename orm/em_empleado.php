@@ -44,8 +44,6 @@ class em_empleado extends modelo{
         $campos_view['dp_municipio_id'] = array('type' => 'selects', 'model' => new dp_municipio($link));
         $campos_view['dp_cp_id'] = array('type' => 'selects', 'model' => new dp_cp($link));
         $campos_view['dp_colonia_id'] = array('type' => 'selects', 'model' => new dp_colonia($link));
-        $campos_view['dp_colonia_postal_id'] = array('type' => 'selects', 'model' => new dp_colonia_postal($link));
-        $campos_view['dp_calle_id'] = array('type' => 'selects', 'model' => new dp_calle($link));
         $campos_view['dp_calle_pertenece_id'] = array('type' => 'selects', 'model' => new dp_calle_pertenece($link));
         $campos_view['cat_sat_regimen_fiscal_id'] = array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link));
         $campos_view['org_puesto_id'] = array('type' => 'selects', 'model' => new org_puesto($link));
@@ -190,8 +188,7 @@ class em_empleado extends modelo{
 
         if (isset($this->registro["campo_extra_dp_pais"]) || isset($this->registro["campo_extra_dp_estado"]) ||
             isset($this->registro["campo_extra_dp_municipio"]) || isset($this->registro["campo_extra_dp_cp"]) ||
-            isset($this->registro["campo_extra_dp_colonia"]) || isset($this->registro["campo_extra_dp_colonia_postal"]) ||
-            isset($this->registro["campo_extra_dp_calle"]) || isset($this->registro["campo_extra_dp_calle_pertenece"])){
+            isset($this->registro["campo_extra_dp_colonia"]) || isset($this->registro["campo_extra_dp_calle_pertenece"])){
 
             $registros = array();
             $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais"] ?? $this->registro["dp_pais_id"];
@@ -199,8 +196,6 @@ class em_empleado extends modelo{
             $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio"] ?? $this->registro["dp_municipio_id"];
             $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp"] ?? $this->registro["dp_cp_id"];
             $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia"] ?? $this->registro["dp_colonia_id"];
-            $registros['descripcion_colonia_postal'] = $this->registro["campo_extra_dp_colonia_postal"] ?? $this->registro["dp_colonia_postal_id"];
-            $registros['descripcion_calle'] = $this->registro["campo_extra_dp_calle"] ?? $this->registro["dp_calle_id"];
             $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece"] ?? $this->registro["dp_calle_pertenece_id"];
 
             $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
@@ -209,12 +204,10 @@ class em_empleado extends modelo{
             }
         }
 
-        $this->registro = $this->limpia_campos(registro: $this->registro,
-            campos_limpiar: array('campo_extra', 'campo_extra_dp_pais', 'campo_extra_dp_estado'
-            ,'campo_extra_dp_municipio','campo_extra_dp_cp','campo_extra_dp_colonia'
-            ,'campo_extra_dp_colonia_postal','campo_extra_dp_calle','campo_extra_dp_calle_pertenece',
-                "dp_pais_id","dp_estado_id","dp_municipio_id","dp_cp_id","dp_colonia_id","dp_colonia_postal_id",
-                "dp_calle_id"));
+        $this->registro = $this->limpia_campos(registro: $this->registro, campos_limpiar: array('campo_extra',
+            'campo_extra_dp_pais', 'campo_extra_dp_estado','campo_extra_dp_municipio','campo_extra_dp_cp',
+            'campo_extra_dp_colonia','campo_extra_dp_calle_pertenece', "dp_pais_id","dp_estado_id","dp_municipio_id",
+            "dp_cp_id","dp_colonia_id"));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }

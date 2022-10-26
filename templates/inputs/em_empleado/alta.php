@@ -5,6 +5,7 @@
 <?php echo $controlador->inputs->ap; ?>
 <?php echo $controlador->inputs->am; ?>
 <?php echo $controlador->inputs->dp_pais_id; ?>
+<?php //echo $controlador->inputs->dp_pais_hidden; ?>
 <?php echo $controlador->inputs->dp_estado_id; ?>
 <?php echo $controlador->inputs->dp_municipio_id; ?>
 <?php echo $controlador->inputs->dp_cp_id; ?>

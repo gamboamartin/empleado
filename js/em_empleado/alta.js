@@ -51,7 +51,10 @@ function addSelectInpKeyPress(t,ev)
     }
 }
 
+$('#dp_pais_hidden').hide();
+
 sl_dp_pais.change(function () {
+
     let selected = $(this).find('option:selected');
     let value = selected.val()
     let text = selected.text()
@@ -69,7 +72,17 @@ sl_dp_pais.change(function () {
             $("#campo_extra_dp_pais").val(text)
         }
     }
-})
+    /*
+    $('#dp_pais_hidden').hide('slow');
+    let selected = $(this).find('option:selected');
+    let predeterminado = selected.data(`dp_pais_predeterminado`);
+    if (predeterminado === 'activo'){
+        $('#dp_pais_hidden').show('slow');
+    }
+
+     */
+
+});
 
 sl_dp_estado.change(function () {
     let selected = $(this).find('option:selected');

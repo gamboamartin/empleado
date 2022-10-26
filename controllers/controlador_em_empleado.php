@@ -16,6 +16,7 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
+use html\dp_pais_html;
 use html\em_abono_anticipo_html;
 use html\em_anticipo_html;
 use html\em_cuenta_bancaria_html;
@@ -297,6 +298,11 @@ class controlador_em_empleado extends system {
             print_r($error);
             die('Error');
         }
+
+        $dp_pais_hidden = (new dp_pais_html(html: $this->html_base))->directivas->input_text(
+            true, 'dp_pais_hidden', 'Pais nuevo', false, new stdClass(), false);
+        $this->inputs->dp_pais_hidden = $dp_pais_hidden;
+
         return $r_alta;
     }
 

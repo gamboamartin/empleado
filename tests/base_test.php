@@ -322,6 +322,17 @@ class base_test{
         return $del;
     }
 
+    public function del_em_emp_dir_pendiente(PDO $link): array
+    {
+
+
+        $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_emp_dir_pendiente');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
     public function del_em_empleado(PDO $link): array
     {
 
@@ -331,6 +342,10 @@ class base_test{
         }
 
         $del = $this->del_em_anticipo($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        $del = $this->del_em_emp_dir_pendiente($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

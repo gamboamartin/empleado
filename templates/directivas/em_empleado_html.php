@@ -237,7 +237,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'nombre',place_holder: 'Nombre',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'nombre',place_holder: 'Nombre',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -267,7 +267,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'ap',place_holder: 'Apellido paterno',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'ap',place_holder: 'Apellido paterno',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -288,7 +288,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text(disable: $disabled,name: 'am',place_holder: 'Apellido materno',
+        $html =$this->directivas->input_text(disabled: $disabled,name: 'am',place_holder: 'Apellido materno',
             required: false, row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -309,7 +309,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'telefono',place_holder: 'Telefono',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'telefono',place_holder: 'Telefono',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -330,7 +330,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'rfc',place_holder: 'Rfc',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'rfc',place_holder: 'Rfc',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -351,7 +351,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'curp',place_holder: 'Curp',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'curp',place_holder: 'Curp',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -372,7 +372,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'nss',place_holder: 'Nss',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'nss',place_holder: 'Nss',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -393,7 +393,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->fecha_required(disable: $disabled,name: 'fecha_inicio_rel_laboral',place_holder: 'Fecha inicio relacion laboral',
+        $html =$this->directivas->fecha_required(disabled: $disabled,name: 'fecha_inicio_rel_laboral',place_holder: 'Fecha inicio relacion laboral',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -414,7 +414,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'cuenta_bancaria',place_holder: 'Cuenta bancaria',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'cuenta_bancaria',place_holder: 'Cuenta bancaria',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -435,7 +435,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'salario_diario',place_holder: 'Salario diario',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'salario_diario',place_holder: 'Salario diario',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -456,7 +456,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disabled,name: 'salario_diario_integrado',place_holder: 'Salario diario integrado',
+        $html =$this->directivas->input_text_required(disabled: $disabled,name: 'salario_diario_integrado',place_holder: 'Salario diario integrado',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
@@ -652,7 +652,7 @@ class em_empleado_html extends em_html {
             return $this->error->error(mensaje: 'Error al validar columnas', data: $valida);
         }
 
-        $html =$this->directivas->input_text_required(disable: $disable,name: 'num_cuenta',place_holder: 'Nº cuenta',
+        $html =$this->directivas->input_text_required(disabled: $disable,name: 'num_cuenta',place_holder: 'Nº cuenta',
             row_upd: $row_upd, value_vacio: $value_vacio);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);

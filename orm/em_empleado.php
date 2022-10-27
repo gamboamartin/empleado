@@ -43,7 +43,7 @@ class em_empleado extends modelo{
         $campos_view['dp_estado_id'] = array('type' => 'selects', 'model' => new dp_estado($link));
         $campos_view['dp_municipio_id'] = array('type' => 'selects', 'model' => new dp_municipio($link));
         $campos_view['dp_cp_id'] = array('type' => 'selects', 'model' => new dp_cp($link));
-        $campos_view['dp_colonia_id'] = array('type' => 'selects', 'model' => new dp_colonia($link));
+        $campos_view['dp_colonia_postal_id'] = array('type' => 'selects', 'model' => new dp_colonia_postal($link));
         $campos_view['dp_calle_pertenece_id'] = array('type' => 'selects', 'model' => new dp_calle_pertenece($link));
         $campos_view['cat_sat_regimen_fiscal_id'] = array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link));
         $campos_view['org_puesto_id'] = array('type' => 'selects', 'model' => new org_puesto($link));

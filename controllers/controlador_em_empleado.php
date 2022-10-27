@@ -166,7 +166,7 @@ class controlador_em_empleado extends system {
             "con_registros" => false, "extra_params_keys"=>array("dp_municipio_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP","con_registros" => false,
             "extra_params_keys"=>array("dp_cp_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_colonia_id', propiedades: ["label" => "Colonia",
+        $this->asignar_propiedad(identificador:'dp_colonia_postal_id', propiedades: ["label" => "Colonia",
             "con_registros" => false, "extra_params_keys"=>array("dp_colonia_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece",
             "con_registros" => false, "extra_params_keys"=>array("dp_calle_pertenece_predeterminado")]);

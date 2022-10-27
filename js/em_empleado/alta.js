@@ -147,28 +147,20 @@ sl_dp_pais.change(function () {
 
     dp_asigna_estados(selected.val());
 
-    sl_dp_estado.empty();
-    integra_new_option("#sl_dp_estado",'Seleccione un estado','-1');
-    sl_dp_estado.selectpicker('refresh');
-
-    sl_dp_municipio.empty();
-    integra_new_option("#sl_dp_municipio",'Seleccione un municipio','-1');
-    sl_dp_municipio.selectpicker('refresh');
-
-    sl_dp_cp.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione un CP','-1');
-    sl_dp_cp.selectpicker('refresh');
-
-    sl_dp_colonia.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione una colonia','-1');
-    sl_dp_colonia.selectpicker('refresh');
-
-    sl_dp_calle_pertenece.empty();
-    integra_new_option("#sl_dp_calle_pertenece",'Seleccione una calle','-1');
-    sl_dp_calle_pertenece.selectpicker('refresh');
+    sl_dp_estado.prop( "disabled", false );
+    sl_dp_municipio.prop( "disabled", false );
+    sl_dp_cp.prop( "disabled", false );
+    sl_dp_colonia.prop( "disabled", false );
+    sl_dp_calle_pertenece.prop( "disabled", false );
 
     if (predeterminado === 'activo'){
         animaciones(["pais","estado","municipio","cp","colonia","calle_pertenece"],"slow", 20);
+
+        sl_dp_estado.prop( "disabled", true );
+        sl_dp_municipio.prop( "disabled", true );
+        sl_dp_cp.prop( "disabled", true );
+        sl_dp_colonia.prop( "disabled", true );
+        sl_dp_calle_pertenece.prop( "disabled", true );
     }
 });
 
@@ -180,24 +172,18 @@ sl_dp_estado.change(function () {
 
     dp_asigna_municipios(selected.val());
 
-    sl_dp_municipio.empty();
-    integra_new_option("#sl_dp_municipio",'Seleccione un municipio','-1');
-    sl_dp_municipio.selectpicker('refresh');
-
-    sl_dp_cp.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione un CP','-1');
-    sl_dp_cp.selectpicker('refresh');
-
-    sl_dp_colonia.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione una colonia','-1');
-    sl_dp_colonia.selectpicker('refresh');
-
-    sl_dp_calle_pertenece.empty();
-    integra_new_option("#sl_dp_calle_pertenece",'Seleccione una calle','-1');
-    sl_dp_calle_pertenece.selectpicker('refresh');
+    sl_dp_municipio.prop( "disabled", false );
+    sl_dp_cp.prop( "disabled", false );
+    sl_dp_colonia.prop( "disabled", false );
+    sl_dp_calle_pertenece.prop( "disabled", false );
 
     if (predeterminado === 'activo'){
         animaciones(["estado","municipio","cp","colonia","calle_pertenece"],"slow", 20);
+        sl_dp_municipio.prop( "disabled", true );
+        sl_dp_cp.prop( "disabled", true );
+        sl_dp_colonia.prop( "disabled", true );
+        sl_dp_calle_pertenece.prop( "disabled", true );
+
     }
 });
 
@@ -209,20 +195,16 @@ sl_dp_municipio.change(function () {
 
     dp_asigna_cps(selected.val());
 
-    sl_dp_cp.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione un CP','-1');
-    sl_dp_cp.selectpicker('refresh');
-
-    sl_dp_colonia.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione una colonia','-1');
-    sl_dp_colonia.selectpicker('refresh');
-
-    sl_dp_calle_pertenece.empty();
-    integra_new_option("#sl_dp_calle_pertenece",'Seleccione una calle','-1');
-    sl_dp_calle_pertenece.selectpicker('refresh');
+    sl_dp_cp.prop( "disabled", false );
+    sl_dp_colonia.prop( "disabled", false );
+    sl_dp_calle_pertenece.prop( "disabled", false );
 
     if (predeterminado === 'activo'){
         animaciones(["municipio","cp","colonia","calle_pertenece"],"slow", 20);
+        sl_dp_cp.prop( "disabled", true );
+        sl_dp_colonia.prop( "disabled", true );
+        sl_dp_calle_pertenece.prop( "disabled", true );
+
     }
 });
 
@@ -234,16 +216,14 @@ sl_dp_cp.change(function () {
 
     dp_asigna_colonias_postales(selected.val());
 
-    sl_dp_colonia.empty();
-    integra_new_option("#sl_dp_cp",'Seleccione una colonia','-1');
-    sl_dp_colonia.selectpicker('refresh');
-
-    sl_dp_calle_pertenece.empty();
-    integra_new_option("#sl_dp_calle_pertenece",'Seleccione una calle','-1');
-    sl_dp_calle_pertenece.selectpicker('refresh');
+    sl_dp_colonia.prop( "disabled", false );
+    sl_dp_calle_pertenece.prop( "disabled", false );
 
     if (predeterminado === 'activo'){
         animaciones(["cp","colonia","calle_pertenece"],"slow", 20);
+        sl_dp_colonia.prop( "disabled", true );
+        sl_dp_calle_pertenece.prop( "disabled", true );
+
     }
 });
 
@@ -255,12 +235,12 @@ sl_dp_colonia.change(function () {
 
     dp_asigna_calles_pertenece(selected.val());
 
-    sl_dp_calle_pertenece.empty();
-    integra_new_option("#sl_dp_calle_pertenece",'Seleccione una calle','-1');
-    sl_dp_calle_pertenece.selectpicker('refresh');
+    sl_dp_calle_pertenece.prop( "disabled", false );
 
     if (predeterminado === 'activo'){
         animaciones(["colonia","calle_pertenece"],"slow", 20);
+        sl_dp_calle_pertenece.prop( "disabled", true );
+
     }
 });
 

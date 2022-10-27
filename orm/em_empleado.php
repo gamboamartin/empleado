@@ -178,6 +178,17 @@ class em_empleado extends modelo{
         return $registro;
     }
 
+    private function dp_calle_pertenece_id(array $registro): array
+    {
+        if (!isset($registro['dp_calle_pertenece_id'])) {
+            $registro['dp_calle_pertenece_id'] =  (new dp_calle_pertenece($this->link))->get_calle_pertenece_default_id();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener calle_pertenece_default',data: $registro['dp_calle_pertenece_id']);
+            }
+        }
+        return $registro;
+    }
+
     private function descripcion(array $registro): array
     {
         if (!isset($registro['descripcion'])) {
@@ -191,17 +202,17 @@ class em_empleado extends modelo{
     {
         $resultado = array();
 
-        if (isset($this->registro["campo_extra_dp_pais"]) || isset($this->registro["campo_extra_dp_estado"]) ||
-            isset($this->registro["campo_extra_dp_municipio"]) || isset($this->registro["campo_extra_dp_cp"]) ||
-            isset($this->registro["campo_extra_dp_colonia"]) || isset($this->registro["campo_extra_dp_calle_pertenece"])){
+        if (isset($this->registro["direccion_pendiente_pais"]) || isset($this->registro["direccion_pendiente_estado"]) ||
+            isset($this->registro["direccion_pendiente_municipio"]) || isset($this->registro["direccion_pendiente_cp"]) ||
+            isset($this->registro["direccion_pendiente_colonia"]) || isset($this->registro["direccion_pendiente_calle_pertenece"])){
 
             $registros = array();
-            $registros['descripcion_pais'] = $this->registro["campo_extra_dp_pais"] ?? $this->registro["dp_pais_id"];
-            $registros['descripcion_estado'] = $this->registro["campo_extra_dp_estado"] ?? $this->registro["dp_estado_id"];
-            $registros['descripcion_municipio'] = $this->registro["campo_extra_dp_municipio"] ?? $this->registro["dp_municipio_id"];
-            $registros['descripcion_cp'] = $this->registro["campo_extra_dp_cp"] ?? $this->registro["dp_cp_id"];
-            $registros['descripcion_colonia'] = $this->registro["campo_extra_dp_colonia"] ?? $this->registro["dp_colonia_id"];
-            $registros['descripcion_calle_pertenece'] = $this->registro["campo_extra_dp_calle_pertenece"] ?? $this->registro["dp_calle_pertenece_id"];
+            $registros['descripcion_pais'] = $this->registro["direccion_pendiente_pais"] ?? "SIN REGISTRO";
+            $registros['descripcion_estado'] = $this->registro["direccion_pendiente_estado"] ?? "SIN REGISTRO";
+            $registros['descripcion_municipio'] = $this->registro["direccion_pendiente_municipio"] ?? "SIN REGISTRO";
+            $registros['descripcion_cp'] = $this->registro["direccion_pendiente_cp"] ?? "SIN REGISTRO";
+            $registros['descripcion_colonia'] = $this->registro["direccion_pendiente_colonia"] ?? "SIN REGISTRO";
+            $registros['descripcion_calle_pertenece'] = $this->registro["direccion_pendiente_calle_pertenece"] ?? "SIN REGISTRO";
 
             $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
             if(errores::$error){
@@ -209,10 +220,10 @@ class em_empleado extends modelo{
             }
         }
 
-        $this->registro = $this->limpia_campos(registro: $this->registro, campos_limpiar: array('campo_extra',
-            'campo_extra_dp_pais', 'campo_extra_dp_estado','campo_extra_dp_municipio','campo_extra_dp_cp',
-            'campo_extra_dp_colonia','campo_extra_dp_calle_pertenece', "dp_pais_id","dp_estado_id","dp_municipio_id",
-            "dp_cp_id","dp_colonia_id"));
+        $this->registro = $this->limpia_campos(registro: $this->registro, campos_limpiar: array(
+            'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
+            'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
+            "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_id"));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
@@ -324,6 +335,12 @@ class em_empleado extends modelo{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar org puesto',data: $registro);
         }
+
+        $registro = $this->dp_calle_pertenece_id(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar org puesto',data: $registro);
+        }
+
         $registro = $this->cat_sat_tipo_jornada_nom_id(registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar cat_sat_tipo_jornada_nom_id',data: $registro);

@@ -61,7 +61,12 @@ class em_empleado extends modelo{
         $campos_view['curp'] = array('type' => 'inputs');
         $campos_view['salario_diario'] = array('type' => 'inputs');
         $campos_view['salario_diario_integrado'] = array('type' => 'inputs');
-        $campos_view['campo_extra'] = array('type' => 'inputs');
+        $campos_view['direccion_pendiente_pais'] = array('type' => 'inputs');
+        $campos_view['direccion_pendiente_estado'] = array('type' => 'inputs');
+        $campos_view['direccion_pendiente_municipio'] = array('type' => 'inputs');
+        $campos_view['direccion_pendiente_cp'] = array('type' => 'inputs');
+        $campos_view['direccion_pendiente_colonia'] = array('type' => 'inputs');
+        $campos_view['direccion_pendiente_calle_pertenece'] = array('type' => 'inputs');
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';

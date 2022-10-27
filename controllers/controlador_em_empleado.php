@@ -161,20 +161,15 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador:'dp_pais_id', propiedades: ["label" => "Pais",
             "extra_params_keys"=>array("dp_pais_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_estado_id', propiedades: ["label" => "Estado",
-            "extra_params_keys"=>array("dp_estado_predeterminado")]);
+            "con_registros" => false, "extra_params_keys"=>array("dp_estado_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_municipio_id', propiedades: ["label" => "Municipio",
-            "extra_params_keys"=>array("dp_municipio_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP",
+            "con_registros" => false, "extra_params_keys"=>array("dp_municipio_predeterminado")]);
+        $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP","con_registros" => false,
             "extra_params_keys"=>array("dp_cp_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_colonia_id', propiedades: ["label" => "Colonia",
-            "extra_params_keys"=>array("dp_colonia_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_colonia_postal_id', propiedades: ["label" => "Colonia Postal",
-            "extra_params_keys"=>array("dp_colonia_postal_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_calle_id', propiedades: ["label" => "Calle",
-            "extra_params_keys"=>array("dp_calle_predeterminado")]);
-
+            "con_registros" => false, "extra_params_keys"=>array("dp_colonia_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece",
-            "extra_params_keys"=>array("dp_calle_pertenece_predeterminado")]);
+            "con_registros" => false, "extra_params_keys"=>array("dp_calle_pertenece_predeterminado")]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -291,6 +286,13 @@ class controlador_em_empleado extends system {
         $this->row_upd->fecha_inicio_rel_laboral = date('Y-m-d');
         $this->row_upd->salario_diario = 0;
         $this->row_upd->salario_diario_integrado = 0;
+
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_pais', propiedades: ['place_holder'=> 'Nuevo Pais']);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_estado', propiedades: ['place_holder'=> 'Nuevo Estado']);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_municipio', propiedades: ['place_holder'=> 'Nuevo Municipio']);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_cp', propiedades: ['place_holder'=> 'Nuevo CP']);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_colonia', propiedades: ['place_holder'=> 'Nueva Colonia']);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_calle_pertenece', propiedades: ['place_holder'=> 'Nueva Calle']);
 
         $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){

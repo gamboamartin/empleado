@@ -113,6 +113,34 @@ class em_empleadoTest extends test {
         errores::$error = false;
     }
 
+    public function test_limpia_campos(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $modelo = new em_empleado($this->link);
+        $modelo = new liberator($modelo);
+
+
+        $registro = array('a');
+        $campos_limpiar = array(0);
+        $resultado = $modelo->limpia_campos($registro, $campos_limpiar);
+
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEmpty($resultado);
+
+        errores::$error = false;
+
+
+
+    }
+
     public function test_registro(): void
     {
         errores::$error = false;

@@ -223,7 +223,7 @@ class em_empleado extends modelo{
         $this->registro = $this->limpia_campos(registro: $this->registro, campos_limpiar: array(
             'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
             'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
-            "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_id"));
+            "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
@@ -357,6 +357,13 @@ class em_empleado extends modelo{
         return $registro;
     }
 
+    /**
+     * Limpia los campos de un empleado previo a su alta
+     * @param array $registro Registro en proceso
+     * @param array $campos_limpiar Campos a limpiar
+     * @return array
+     * @version 0.174.5
+     */
     private function limpia_campos(array $registro, array $campos_limpiar): array
     {
         foreach ($campos_limpiar as $valor) {

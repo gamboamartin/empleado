@@ -40,7 +40,7 @@ class controlador_em_anticipo extends system {
 
         $this->titulo_lista = 'Anticipo';
 
-        $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo($this->link);
+        $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo(link: $this->link, paths_conf: $paths_conf);
         $this->abonos = new stdClass();
 
         $keys_rows_lista = $this->keys_rows_lista();

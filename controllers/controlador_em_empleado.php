@@ -706,15 +706,20 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador:'dp_pais_id',
             propiedades: ["id_selected"=> $direccion["dp_pais_id"]]);
         $this->asignar_propiedad(identificador:'dp_estado_id',
-            propiedades: ["id_selected"=> $direccion["dp_estado_id"],"con_registros"=>true]);
+            propiedades: ["id_selected"=> $direccion["dp_estado_id"],"con_registros"=>true,
+                "filtro" => array('dp_estado.id' => $direccion["dp_estado_id"])]);
         $this->asignar_propiedad(identificador:'dp_municipio_id',
-            propiedades: ["id_selected"=> $direccion["dp_municipio_id"],"con_registros"=>true]);
+            propiedades: ["id_selected"=> $direccion["dp_municipio_id"],"con_registros"=>true,
+                "filtro" => array('dp_municipio.id' => $direccion["dp_municipio_id"])]);
         $this->asignar_propiedad(identificador:'dp_cp_id',
-            propiedades: ["id_selected"=> $direccion["dp_cp_id"],"con_registros"=>true]);
+            propiedades: ["id_selected"=> $direccion["dp_cp_id"],"con_registros"=>true,
+                "filtro" => array('dp_cp.id' => $direccion["dp_cp_id"])]);
         $this->asignar_propiedad(identificador:'dp_colonia_postal_id',
-            propiedades: ["id_selected"=> $direccion["dp_colonia_postal_id"],"con_registros"=>true]);
+            propiedades: ["id_selected"=> $direccion["dp_colonia_postal_id"],"con_registros"=>true,
+                "filtro" => array('dp_colonia_postal.id' => $direccion["dp_colonia_postal_id"])]);
         $this->asignar_propiedad(identificador:'dp_calle_pertenece_id',
-            propiedades: ["id_selected"=>$this->row_upd->dp_calle_pertenece_id,"con_registros"=>true]);
+            propiedades: ["id_selected"=>$this->row_upd->dp_calle_pertenece_id,"con_registros"=>true,
+                "filtro" => array('dp_calle_pertenece.id' => $this->row_upd->dp_calle_pertenece_id)]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

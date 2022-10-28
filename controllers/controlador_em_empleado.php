@@ -16,14 +16,11 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
-use html\dp_pais_html;
-use html\em_abono_anticipo_html;
-use html\em_anticipo_html;
-use html\em_cuenta_bancaria_html;
+
 use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
-use SoulDoit\DataTable\SSP;
+
 use stdClass;
 use Throwable;
 
@@ -80,9 +77,9 @@ class controlador_em_empleado extends system {
 
         $this->titulo_lista = 'Empleados';
 
-        $this->controlador_em_cuenta_bancaria= new controlador_em_cuenta_bancaria($this->link);
-        $this->controlador_em_anticipo= new controlador_em_anticipo($this->link);
-        $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo($this->link);
+        $this->controlador_em_cuenta_bancaria= new controlador_em_cuenta_bancaria(link:$this->link, paths_conf: $paths_conf);
+        $this->controlador_em_anticipo= new controlador_em_anticipo(link:$this->link, paths_conf: $paths_conf);
+        $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo(link:$this->link, paths_conf: $paths_conf);
 
         $keys_rows_lista = $this->keys_rows_lista();
         if (errores::$error) {

@@ -234,7 +234,7 @@ sl_dp_cp.change(function () {
 
 sl_dp_colonia.change(function () {
     let selected = $(this).find('option:selected');
-    let predeterminado = selected.data(`dp_colonia_predeterminado`);
+    let predeterminado = selected.data(`dp_colonia_postal_predeterminado`);
 
     animaciones(["colonia","calle_pertenece"],"slow");
 

@@ -105,9 +105,17 @@ class em_empleado extends modelo{
 
         $this->registro = $registro;
 
-        $alta_direccion = $this->direccion_pendiente();
+        $alta_direccion = $this->direccion_pendiente($this->registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $alta_direccion);
+        }
+
+        $this->registro = $this->limpia_campos(registro: $registro, campos_limpiar: array(
+            'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
+            'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
+            "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
 
         $r_alta_bd = parent::alta_bd();
@@ -198,36 +206,28 @@ class em_empleado extends modelo{
         return $registro;
     }
 
-    private function direccion_pendiente(): array|stdClass
+    private function direccion_pendiente(array $registro): array|stdClass
     {
         $resultado = array();
 
-        if (isset($this->registro["direccion_pendiente_pais"]) || isset($this->registro["direccion_pendiente_estado"]) ||
-            isset($this->registro["direccion_pendiente_municipio"]) || isset($this->registro["direccion_pendiente_cp"]) ||
-            isset($this->registro["direccion_pendiente_colonia"]) || isset($this->registro["direccion_pendiente_calle_pertenece"])){
+        if (isset($registro["direccion_pendiente_pais"]) || isset($registro["direccion_pendiente_estado"]) ||
+            isset($registro["direccion_pendiente_municipio"]) || isset($registro["direccion_pendiente_cp"]) ||
+            isset($registro["direccion_pendiente_colonia"]) || isset($registro["direccion_pendiente_calle_pertenece"])){
 
             $registros = array();
-            $registros['descripcion_pais'] = $this->registro["direccion_pendiente_pais"] ?? "SIN REGISTRO";
-            $registros['descripcion_estado'] = $this->registro["direccion_pendiente_estado"] ?? "SIN REGISTRO";
-            $registros['descripcion_municipio'] = $this->registro["direccion_pendiente_municipio"] ?? "SIN REGISTRO";
-            $registros['descripcion_cp'] = $this->registro["direccion_pendiente_cp"] ?? "SIN REGISTRO";
-            $registros['descripcion_colonia'] = $this->registro["direccion_pendiente_colonia"] ?? "SIN REGISTRO";
-            $registros['descripcion_calle_pertenece'] = $this->registro["direccion_pendiente_calle_pertenece"] ?? "SIN REGISTRO";
+            $registros['codigo'] = $registro["direccion_pendiente_pais"];
+            $registros['descripcion_pais'] = $registro["direccion_pendiente_pais"] ?? "SIN REGISTRO";
+            $registros['descripcion_estado'] = $registro["direccion_pendiente_estado"] ?? "SIN REGISTRO";
+            $registros['descripcion_municipio'] = $registro["direccion_pendiente_municipio"] ?? "SIN REGISTRO";
+            $registros['descripcion_cp'] = $registro["direccion_pendiente_cp"] ?? "SIN REGISTRO";
+            $registros['descripcion_colonia'] = $registro["direccion_pendiente_colonia"] ?? "SIN REGISTRO";
+            $registros['descripcion_calle_pertenece'] = $registro["direccion_pendiente_calle_pertenece"] ?? "SIN REGISTRO";
 
             $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
             if(errores::$error){
                 return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $resultado);
             }
         }
-
-        $this->registro = $this->limpia_campos(registro: $this->registro, campos_limpiar: array(
-            'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
-            'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
-            "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
-        }
-
         return $resultado;
     }
 
@@ -389,16 +389,35 @@ class em_empleado extends modelo{
 
             $registro['alias'] = $registro['descripcion'];
         }
+
+        $alta_direccion = $this->direccion_pendiente($registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $alta_direccion);
+        }
+
+        $registro = $this->limpia_campos(registro: $registro, campos_limpiar: array(
+            'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
+            'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
+            "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
+        }
+
         $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva); // TODO: Change the autogenerated stub
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al modificar empleado',data: $r_modifica_bd);
         }
 
+        if(!empty($alta_direccion)){
+            $alta_emp_dir_pendiente = $this->emp_direccion_pendiente(em_empleado: $r_modifica_bd,
+                dp_direccion_pendiente: $alta_direccion);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al asignar direccion pendiente al empleado',data: $alta_emp_dir_pendiente);
+            }
+        }
+
         return $r_modifica_bd;
-
     }
-
-
 
     public function obten_conf(int $em_empleado_id): array
     {

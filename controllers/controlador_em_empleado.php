@@ -155,6 +155,19 @@ class controlador_em_empleado extends system {
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
         }
 
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_pais',
+            propiedades: ['place_holder'=> 'Nuevo Pais',"required"=>false]);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_estado',
+            propiedades: ['place_holder'=> 'Nuevo Estado',"required"=>false]);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_municipio',
+            propiedades: ['place_holder'=> 'Nuevo Municipio',"required"=>false]);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_cp',
+            propiedades: ['place_holder'=> 'Nuevo CP',"required"=>false]);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_colonia',
+            propiedades: ['place_holder'=> 'Nueva Colonia',"required"=>false]);
+        $this->asignar_propiedad(identificador: 'direccion_pendiente_calle_pertenece',
+            propiedades: ['place_holder'=> 'Nueva Calle',"required"=>false]);
+
         $this->asignar_propiedad(identificador:'dp_pais_id', propiedades: ["label" => "Pais","required"=>false,
             "extra_params_keys"=>array("dp_pais_predeterminado")]);
         $this->asignar_propiedad(identificador:'dp_estado_id', propiedades: ["label" => "Estado","required"=>false,
@@ -283,13 +296,6 @@ class controlador_em_empleado extends system {
         $this->row_upd->fecha_inicio_rel_laboral = date('Y-m-d');
         $this->row_upd->salario_diario = 0;
         $this->row_upd->salario_diario_integrado = 0;
-
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_pais', propiedades: ['place_holder'=> 'Nuevo Pais',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_estado', propiedades: ['place_holder'=> 'Nuevo Estado',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_municipio', propiedades: ['place_holder'=> 'Nuevo Municipio',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_cp', propiedades: ['place_holder'=> 'Nuevo CP',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_colonia', propiedades: ['place_holder'=> 'Nueva Colonia',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_calle_pertenece', propiedades: ['place_holder'=> 'Nueva Calle',"required"=>false]);
 
         $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){

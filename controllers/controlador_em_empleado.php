@@ -50,7 +50,7 @@ class controlador_em_empleado extends system {
                                 stdClass $paths_conf = new stdClass()){
         $modelo = new em_empleado(link: $link);
         $html_ = new em_empleado_html(html: $html);
-        $obj_link = new links_menu($this->registro_id);
+        $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
         $columns["em_empleado_id"]["titulo"] = "Id";
         $columns["em_empleado_codigo"]["titulo"] = "Codigo";
@@ -89,8 +89,8 @@ class controlador_em_empleado extends system {
         }
         $this->keys_row_lista = $keys_rows_lista;
 
-        $link_em_anticipo_alta_bd = $obj_link->link_con_id(accion: 'anticipo_alta_bd', registro_id: $this->registro_id,
-            seccion: $this->seccion);
+        $link_em_anticipo_alta_bd = $obj_link->link_con_id(accion: 'anticipo_alta_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_alta_bd);
             print_r($error);
@@ -98,8 +98,8 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_anticipo_alta_bd = $link_em_anticipo_alta_bd;
 
-        $link_em_cuenta_bancaria_alta_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_alta_bd', registro_id: $this->registro_id,
-            seccion: $this->seccion);
+        $link_em_cuenta_bancaria_alta_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_alta_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_alta_bd);
             print_r($error);
@@ -107,8 +107,8 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_cuenta_bancaria_alta_bd = $link_em_cuenta_bancaria_alta_bd;
 
-        $link_em_abono_anticipo_alta_bd = $obj_link->link_con_id(accion: 'abono_alta_bd', registro_id: $this->registro_id,
-            seccion: $this->seccion);
+        $link_em_abono_anticipo_alta_bd = $obj_link->link_con_id(accion: 'abono_alta_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_alta_bd);
             print_r($error);
@@ -116,8 +116,8 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_abono_anticipo_alta_bd = $link_em_abono_anticipo_alta_bd;
 
-        $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd', registro_id: $this->registro_id,
-            seccion: $this->seccion);
+        $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd',
+            link: $link, registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_cuenta_bancaria_modifica_bd);
             print_r($error);
@@ -125,8 +125,8 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_cuenta_bancaria_modifica_bd = $link_em_cuenta_bancaria_modifica_bd;
 
-        $link_em_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'anticipo_modifica_bd', registro_id: $this->registro_id,
-            seccion: $this->seccion);
+        $link_em_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'anticipo_modifica_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_modifica_bd);
             print_r($error);
@@ -134,8 +134,8 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_anticipo_modifica_bd = $link_em_anticipo_modifica_bd;
 
-        $link_em_abono_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'abono_modifica_bd', registro_id: $this->registro_id,
-            seccion: $this->seccion);
+        $link_em_abono_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'abono_modifica_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_modifica_bd);
             print_r($error);
@@ -670,7 +670,7 @@ class controlador_em_empleado extends system {
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
         }
 
-        $link = $this->obj_link->link_con_id(accion: $accion,registro_id:  $row->em_empleado_id,
+        $link = $this->obj_link->link_con_id(accion: $accion, link: $this->link,registro_id:  $row->em_empleado_id,
             seccion:  $this->tabla);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera link',data:  $link);

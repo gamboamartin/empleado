@@ -64,4 +64,21 @@ class em_cuenta_bancaria extends modelo{
 
         return $r_em_cuenta_bancaria;
     }
+
+    public function get_empleado(int $em_cuenta_bancaria_id): array|stdClass
+    {
+        if($em_cuenta_bancaria_id <=0){
+            return $this->error->error(mensaje: 'Error $em_cuenta_bancaria_id debe ser mayor a 0', data: $em_cuenta_bancaria_id);
+        }
+
+        $r_em_cuenta_bancaria = $this->registro(registro_id: $em_cuenta_bancaria_id,columnas:
+            array("em_cuenta_bancaria_em_empleado_id"));
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener cuentas bancarias', data: $r_em_cuenta_bancaria);
+        }
+
+        return $r_em_cuenta_bancaria;
+    }
+
+
 }

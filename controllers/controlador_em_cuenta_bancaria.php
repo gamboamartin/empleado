@@ -180,8 +180,7 @@ class controlador_em_cuenta_bancaria extends system {
 
 
 
-    public function modifica(bool $header, bool $ws = false, string $breadcrumbs = '', bool $aplica_form = true,
-                             bool $muestra_btn = true): array|string
+    public function modifica(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
         if(errores::$error){

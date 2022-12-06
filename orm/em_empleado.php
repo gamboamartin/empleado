@@ -7,9 +7,7 @@ use DateTime;
 use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
-use gamboamartin\direccion_postal\models\dp_calle;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
-use gamboamartin\direccion_postal\models\dp_colonia;
 use gamboamartin\direccion_postal\models\dp_colonia_postal;
 use gamboamartin\direccion_postal\models\dp_cp;
 use gamboamartin\direccion_postal\models\dp_direccion_pendiente;
@@ -21,7 +19,6 @@ use gamboamartin\organigrama\models\org_puesto;
 use models\im_conf_pres_empresa;
 use models\im_detalle_conf_prestaciones;
 use models\im_registro_patronal;
-use models\nom_par_otro_pago;
 use PDO;
 use stdClass;
 use Throwable;
@@ -37,7 +34,7 @@ class em_empleado extends modelo{
             'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla);
 
         $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis',
-            'org_puesto_id','cat_sat_tipo_jornada_nom_id');
+            'org_puesto_id','cat_sat_tipo_jornada_nom_id','curp');
 
         $campos_view['dp_pais_id'] = array('type' => 'selects', 'model' => new dp_pais($link));
         $campos_view['dp_estado_id'] = array('type' => 'selects', 'model' => new dp_estado($link));
@@ -182,6 +179,14 @@ class em_empleado extends modelo{
     {
         if(!isset($registro['codigo_bis'])){
             $registro['codigo_bis'] = strtoupper($registro['codigo']);
+        }
+        return $registro;
+    }
+
+    private function curp(array $registro): array
+    {
+        if(!isset($registro['curp'])){
+            $registro['curp'] = 'XEXX010101HNEXXXA4';
         }
         return $registro;
     }
@@ -352,6 +357,11 @@ class em_empleado extends modelo{
         $registro = $this->fecha_inicio_rel_laboral_default(registro: $registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
+        }
+
+        $registro = $this->curp(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al asignar curp',data: $registro);
         }
 
         return $registro;

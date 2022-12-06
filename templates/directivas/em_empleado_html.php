@@ -101,9 +101,9 @@ class em_empleado_html extends em_html {
         return $inputs_;
     }
 
-    public function genera_inputs_alta(controlador_em_empleado $controler,modelo $modelo, PDO $link, array $keys_selects = array()): array|stdClass
+    public function genera_inputs_alta(controlador_em_empleado $controler,modelo $modelo, array $keys_selects = array(), stdClass $row_upd = new stdClass()): array|stdClass
     {
-        $inputs = $this->init_alta2(modelo: $modelo, link: $link,keys_selects:$keys_selects, );
+        $inputs = $this->init_alta2(row_upd: $row_upd, modelo: $modelo,keys_selects:$keys_selects, );
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
 

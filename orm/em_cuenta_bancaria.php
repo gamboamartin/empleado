@@ -1,8 +1,8 @@
 <?php
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
+use gamboamartin\banco\models\bn_sucursal;
 use gamboamartin\errores\errores;
-use models\bn_sucursal;
 use PDO;
 use stdClass;
 

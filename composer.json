@@ -59,7 +59,7 @@
     "gamboa.martin/js_base": "^1.0.0",
     "gamboa.martin/documento": "^2.0.0",
     "gamboa.martin/proceso": "^2.0.0",
-    "gamboa.martin/im_registro_patronal": "^1.0.0",
+    "gamboa.martin/im_registro_patronal": "dev-main",
     "gamboa.martin/organigrama": "^2.0.0",
     "gamboa.martin/comercial": "^1.0.0",
     "gamboa.martin/facturacion": "^1.0.0",

@@ -8,6 +8,7 @@
  */
 namespace gamboamartin\empleado\controllers;
 
+use gamboamartin\documento\models\doc_documento;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
@@ -21,6 +22,8 @@ use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use stdClass;
 use Throwable;
 
@@ -1234,6 +1237,110 @@ class controlador_em_empleado extends system {
         $this->anticipos = $anticipos;
 
         return $this->anticipos;
+    }
+
+    public function lee_archivo(bool $header, bool $ws = false)
+    {
+        $doc_documento_modelo = new doc_documento($this->link);
+        $doc_documento_modelo->registro['descripcion'] = rand();
+        $doc_documento_modelo->registro['descripcion_select'] = rand();
+        $doc_documento_modelo->registro['doc_tipo_documento_id'] = 1;
+        $doc_documento = $doc_documento_modelo->alta_bd(file: $_FILES['archivo']);
+        if (errores::$error) {
+            $error =  $this->errores->error(mensaje: 'Error al dar de alta el documento', data: $doc_documento);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        $empleados_excel = $this->obten_empleados_excel(
+            ruta_absoluta: $doc_documento->registro['doc_documento_ruta_absoluta']);
+        if (errores::$error) {
+            $error =  $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        foreach ($empleados_excel as $empleado){
+
+            $registro = array();
+            $keys = array('codigo','nombre','ap','am','telefono','curp','rfc','nss','fecha_inicio_rel_laboral',
+                'salario_diario','salario_diario');
+            foreach ($keys as $key){
+                if(isset($empleado->$key)){
+                    $registro[$key] = $empleado->$key;
+                }
+            }
+
+            $em_empleado = new em_empleado($this->link);
+            $em_empleado->registro = $registro;
+            $r_alta = $em_empleado->alta_bd();
+            if (errores::$error) {
+                $error = $this->errores->error(mensaje: 'Error al dar de alta registro', data: $r_alta);
+                if (!$header) {
+                    return $error;
+                }
+                print_r($error);
+                die('Error');
+            }
+        }
+
+        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
+
+    public function obten_empleados_excel(string $ruta_absoluta){
+        $documento = IOFactory::load($ruta_absoluta);
+        $empleados = array();
+        $hojaActual = $documento->getSheet(0);
+
+        $registros = array();
+        foreach ($hojaActual->getRowIterator() as $fila) {
+            foreach ($fila->getCellIterator() as $celda) {
+                $fila = $celda->getRow();
+                $columna = $celda->getColumn();
+
+                if($fila >= 2){
+                    if($columna === "A"){
+                        $reg = new stdClass();
+                        $reg->fila = $fila;
+                        $registros[] = $reg;
+                    }
+                }
+            }
+        }
+
+        foreach ($registros as $registro) {
+            $reg = new stdClass();
+            $reg->codigo = $hojaActual->getCell('A' . $registro->fila)->getValue();
+            $reg->nombre = $hojaActual->getCell('B' . $registro->fila)->getValue();
+            $reg->ap = $hojaActual->getCell('C' . $registro->fila)->getValue();
+            $reg->am = $hojaActual->getCell('D' . $registro->fila)->getValue();
+            $reg->telefono = $hojaActual->getCell('E' . $registro->fila)->getValue();
+            $reg->curp = $hojaActual->getCell('F' . $registro->fila)->getValue();
+            $reg->rfc = $hojaActual->getCell('G' . $registro->fila)->getValue();
+            $reg->nss = $hojaActual->getCell('H' . $registro->fila)->getValue();
+
+            $fecha = $hojaActual->getCell('I' . $registro->fila)->getCalculatedValue();
+            $reg->fecha_inicio_rel_laboral  = Date::excelToDateTimeObject($fecha)->format('Y-m-d');
+
+            $reg->sd = $hojaActual->getCell('J' . $registro->fila)->getValue();
+            $reg->fi = $hojaActual->getCell('K' . $registro->fila)->getValue();
+            $reg->sdi = $hojaActual->getCell('L' . $registro->fila)->getValue();
+
+            $reg->numero_cuenta = $hojaActual->getCell('M' . $registro->fila)->getValue();
+            $reg->clabe = $hojaActual->getCell('N' . $registro->fila)->getValue();
+            $empleados[] = $reg;
+        }
+
+        return $empleados;
     }
 
 }

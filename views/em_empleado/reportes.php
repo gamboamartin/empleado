@@ -10,14 +10,18 @@
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
                     <div class="table-head" style="display: flex; justify-content: space-between; ">
                         <?php include (new views())->ruta_templates . "head/subtitulo.php"; ?>
-                        <div class="botones">
+                        <div class="botones" style="display: flex; justify-content: space-around; align-items: center">
+                            <div>
+                                <?php echo $controlador->inputs->codigo; ?>
+                            </div>
+
                             <a href="<?php echo $controlador->link_em_empleado_reportes; ?>" class="btn btn-success" style="border-radius: 5px">
-                                <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: #ffffff; margin-right: 5px"></span>
-                                Reportes
+                                <span class="glyphicon glyphicon-file" aria-hidden="true" style="color: #ffffff; margin-right: 5px"></span>
+                                Exportar
                             </a>
                         </div>
                     </div>
-                    <table class="table table-striped datatable"></table>
+                    <table id="em_empleado"  class="table table-striped "></table>
                 </div>
 
             </div>

@@ -39,6 +39,8 @@ class controlador_em_empleado extends system {
     public string $link_em_cuenta_bancaria_modifica_bd = '';
     public string $link_em_anticipo_modifica_bd = '';
     public string $link_em_abono_anticipo_modifica_bd = '';
+
+    public string $link_em_empleado_reportes = '';
     public int $em_cuenta_bancaria_id = -1;
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
@@ -60,7 +62,7 @@ class controlador_em_empleado extends system {
         $columns["em_empleado_nombre"]["titulo"] = "Nombre";
         $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
         $columns["em_empleado_rfc"]["titulo"] = "Rfc";
-        $columns["em_empleado_alias"]["titulo"] = "Rfc";
+        $columns["em_empleado_alias"]["titulo"] = "Alias";
 
         $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc",
             "em_empleado_nombre_completo","em_empleado_nombre_completo_inv");
@@ -145,6 +147,16 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->link_em_abono_anticipo_modifica_bd = $link_em_abono_anticipo_modifica_bd;
+
+        $link_em_empleado_reportes = $obj_link->link_con_id(accion: 'reportes', link: $link, registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_empleado_reportes);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_empleado_reportes = $link_em_empleado_reportes;
+
 
         if (isset($_GET['em_cuenta_bancaria_id'])){
             $this->em_cuenta_bancaria_id = $_GET['em_cuenta_bancaria_id'];
@@ -1192,6 +1204,37 @@ class controlador_em_empleado extends system {
         return $r_modifica_bd;
     }
 
+    public function reportes(bool $header, bool $ws = false): array|stdClass
+    {
+        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
+        $columns["em_empleado_nss"]["titulo"] = "NSS";
+        $columns["em_empleado_rfc"]["titulo"] = "RFC";
+        $columns["em_empleado_salario_diario"]["titulo"] = "Salario Diario";
+        $columns["em_empleado_salario_diario_integrado"]["titulo"] = "Salario Diario Integrado";
+        $columns["org_puesto_descripcion"]["titulo"] = "Puesto";
+        $columns["org_departamento_descripcion"]["titulo"] = "Departamento";
+
+        $filtro = array();
+
+        $datatable = $this->datatable_init(columns: $columns,identificador: "#em_empleado");
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al inicializar datatable',data:  $datatable,
+                header: $header,ws:$ws);
+        }
+
+
+
+        $r_alta =  parent::alta(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        }
+
+
+
+        return $this->inputs;
+    }
+
     private function upd_base(array $keys_generales): array|stdClass
     {
         $registro = $this->asigna_keys_post(keys_generales: $keys_generales);
@@ -1205,6 +1248,8 @@ class controlador_em_empleado extends system {
         }
         return $r_modifica_bd;
     }
+
+
 
     public function ver_anticipos(bool $header, bool $ws = false): array|stdClass
     {

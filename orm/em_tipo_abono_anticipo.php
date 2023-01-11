@@ -2,6 +2,7 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 
+use gamboamartin\errores\errores;
 use PDO;
 
 class em_tipo_abono_anticipo extends modelo{
@@ -15,5 +16,32 @@ class em_tipo_abono_anticipo extends modelo{
             columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
+    }
+
+    public function alta_bd(): array|stdClass
+    {
+        if (!isset($this->registro['codigo'])) {
+            $this->registro['codigo'] = rand();
+        }
+
+        if (!isset($this->registro['descripcion_select'])) {
+            $this->registro['descripcion_select'] = $this->registro['descripcion'];
+        }
+
+        if (!isset($this->registro['codigo_bis'])) {
+            $this->registro['codigo_bis'] = $this->registro['codigo'];
+        }
+
+        if (!isset($this->registro['alias'])) {
+            $this->registro['alias'] = $this->registro['codigo'];
+            $this->registro['alias'] .= $this->registro['descripcion'];
+        }
+
+        $r_alta_bd = parent::alta_bd();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al dar de alta anticipo',data: $r_alta_bd);
+        }
+
+        return $r_alta_bd;
     }
 }

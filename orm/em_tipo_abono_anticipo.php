@@ -4,6 +4,7 @@ use base\orm\modelo;
 
 use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
 class em_tipo_abono_anticipo extends modelo{
 

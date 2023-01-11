@@ -57,13 +57,7 @@ class controlador_em_centro_costo extends _ctl_base
             return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $keys_selects = $this->init_selects_inputs();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
-                ws: $ws);
-        }
-
-        $inputs = $this->inputs(keys_selects: $keys_selects);
+        $inputs = $this->inputs(keys_selects: array());
         if (errores::$error) {
             return $this->retorno_error(
                 mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
@@ -79,7 +73,6 @@ class controlador_em_centro_costo extends _ctl_base
         $keys->selects = array();
 
         $init_data = array();
-        $init_data['em_empleado'] = "gamboamartin\\empleado";
 
         $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
         if (errores::$error) {
@@ -102,7 +95,6 @@ class controlador_em_centro_costo extends _ctl_base
         $columns["em_centro_costo_id"]["titulo"] = "Id";
         $columns["em_centro_costo_codigo"]["titulo"] = "Código";
         $columns["em_centro_costo_descripcion"]["titulo"] = "Descripción";
-        $columns["em_empleado_nombre"]["titulo"] = "Empleado";
 
         $filtro = array("em_centro_costo.id", "em_centro_costo.codigo", "em_centro_costo.descripcion");
 
@@ -155,15 +147,7 @@ class controlador_em_centro_costo extends _ctl_base
                 mensaje: 'Error al generar salida de template', data: $r_modifica, header: $header, ws: $ws);
         }
 
-        $keys_selects = $this->init_selects_inputs();
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
-                ws: $ws);
-        }
-
-        $keys_selects['em_empleado_id']->id_selected = $this->registro['em_empleado_id'];
-
-        $base = $this->base_upd(keys_selects: $keys_selects, not_actions: array(), params: array(), params_ajustados: array());
+        $base = $this->base_upd(keys_selects: array(), not_actions: array(), params: array(), params_ajustados: array());
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
         }

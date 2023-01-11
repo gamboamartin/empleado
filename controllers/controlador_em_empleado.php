@@ -41,6 +41,7 @@ class controlador_em_empleado extends system {
     public string $link_em_abono_anticipo_modifica_bd = '';
 
     public string $link_em_empleado_reportes = '';
+    public string $link_em_empleado_exportar = '';
     public int $em_cuenta_bancaria_id = -1;
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
@@ -156,6 +157,15 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->link_em_empleado_reportes = $link_em_empleado_reportes;
+
+        $link_em_empleado_exportar = $obj_link->link_con_id(accion: 'exportar', link: $link, registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_empleado_exportar);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_empleado_exportar = $link_em_empleado_exportar;
 
 
         if (isset($_GET['em_cuenta_bancaria_id'])){
@@ -1223,18 +1233,61 @@ class controlador_em_empleado extends system {
                 header: $header,ws:$ws);
         }
 
-
+        $this->asignar_propiedad(identificador: 'filtro_fecha_inicio', propiedades: ['place_holder'=> 'Fecha Inicio',
+            'cols' => 6, 'required' => false]);
+        $this->asignar_propiedad(identificador: 'filtro_fecha_final', propiedades: ['place_holder'=> 'Fecha Final',
+            'cols' => 6]);
 
         $r_alta =  parent::alta(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-
+        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
+            print_r($error);
+            die('Error');
+        }
 
         return $this->inputs;
     }
 
+    public function exportar(bool $header, bool $ws = false): array|stdClass
+    {
+        $fecha_inicio = "";
+        $fecha_fin = "";
+
+        if (isset($_POST['filtro_fecha_inicio'])){
+            $fecha_inicio = $_POST['filtro_fecha_inicio'];
+        }
+
+        if (isset($_POST['filtro_fecha_final'])){
+            $fecha_fin = $_POST['filtro_fecha_final'];
+        }
+
+        $filtro_especial[0][$fecha_fin]['operador'] = '>=';
+        $filtro_especial[0][$fecha_fin]['valor'] = 'em_empleado.fecha_inicio_rel_laboral';
+        $filtro_especial[0][$fecha_fin]['comparacion'] = 'AND';
+        $filtro_especial[0][$fecha_fin]['valor_es_campo'] = true;
+
+        $filtro_especial[1][$fecha_inicio]['operador'] = '<=';
+        $filtro_especial[1][$fecha_inicio]['valor'] = 'em_empleado.fecha_inicio_rel_laboral';
+        $filtro_especial[1][$fecha_inicio]['comparacion'] = 'AND';
+        $filtro_especial[1][$fecha_inicio]['valor_es_campo'] = true;
+
+        $data = (new em_empleado($this->link))->filtro_and(filtro_especial: $filtro_especial);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al obtener registros',data:  $data);
+            print_r($error);
+            die('Error');
+        }
+
+        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
     private function upd_base(array $keys_generales): array|stdClass
     {
         $registro = $this->asigna_keys_post(keys_generales: $keys_generales);

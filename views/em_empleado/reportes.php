@@ -8,20 +8,21 @@
                 <?php include (new views())->ruta_templates . "head/lista/title.php"; ?>
                 <?php include (new views())->ruta_templates . "mensajes.php"; ?>
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
-                    <div class="table-head" style="display: flex; justify-content: space-between; ">
+                    <div class="table-head" style="display: flex; justify-content: space-between; align-items: center ">
                         <?php include (new views())->ruta_templates . "head/subtitulo.php"; ?>
                         <div class="botones" style="display: flex; justify-content: space-around; align-items: center">
-                            <div>
-                                <?php echo $controlador->inputs->codigo; ?>
-                            </div>
-
-                            <a href="<?php echo $controlador->link_em_empleado_reportes; ?>" class="btn btn-success" style="border-radius: 5px">
-                                <span class="glyphicon glyphicon-file" aria-hidden="true" style="color: #ffffff; margin-right: 5px"></span>
+                            <form method="post" action="<?php echo $controlador->link_em_empleado_exportar; ?> "
+                                  class="form-additional" id="form_export">
+                                <?php echo $controlador->inputs->filtro_fecha_inicio; ?>
+                                <?php echo $controlador->inputs->filtro_fecha_final; ?>
+                            </form>
+                            <button type="submit" class="btn btn-success" name="btn_action_next"
+                                    style="border-radius: 5px" value="exportar" form="form_export">
                                 Exportar
-                            </a>
+                            </button>
                         </div>
                     </div>
-                    <table id="em_empleado"  class="table table-striped "></table>
+                    <table id="em_empleado" class="table table-striped "></table>
                 </div>
 
             </div>

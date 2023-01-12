@@ -31,7 +31,7 @@ class em_empleado extends modelo{
 
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
-            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla);
+            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla );
 
         $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis',
             'org_puesto_id','cat_sat_tipo_jornada_nom_id','curp');
@@ -47,6 +47,7 @@ class em_empleado extends modelo{
         $campos_view['cat_sat_tipo_regimen_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link));
         $campos_view['im_registro_patronal_id'] = array('type' => 'selects', 'model' => new im_registro_patronal($link));
         $campos_view['cat_sat_tipo_jornada_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_jornada_nom($link));
+        $campos_view['em_centro_costo_id'] = array('type' => 'selects', 'model' => new em_centro_costo($link));
         $campos_view['fecha_inicio_rel_laboral'] = array('type' => 'dates');
         $campos_view['codigo'] = array('type' => 'inputs');
         $campos_view['nombre'] = array('type' => 'inputs');

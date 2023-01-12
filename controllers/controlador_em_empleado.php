@@ -251,6 +251,8 @@ class controlador_em_empleado extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'em_centro_costo_id', propiedades: ["label" => "Centro Costo","required"=>false, 'cols' => 12]);
+
         $this->asignar_propiedad(identificador:'fecha_inicio_rel_laboral',
             propiedades: ["place_holder" => "Fecha Inicio Rel Laboral"]);
         if (errores::$error) {
@@ -1225,7 +1227,7 @@ class controlador_em_empleado extends system {
         $columns["em_empleado_salario_diario_integrado"]["titulo"] = "Salario Diario Integrado";
         $columns["org_puesto_descripcion"]["titulo"] = "Puesto";
         $columns["org_departamento_descripcion"]["titulo"] = "Departamento";
-
+        $columns["em_centro_costo_descripcion"]["titulo"] = "Centro Costos";
         $filtro = array();
 
         $datatable = $this->datatable_init(columns: $columns,identificador: "#em_empleado");
@@ -1299,6 +1301,7 @@ class controlador_em_empleado extends system {
             $row["salario_diario_integrado"] = $registro['em_empleado_salario_diario_integrado'];
             $row["puesto"] = $registro['org_puesto_descripcion'];
             $row["departamento"] = $registro['org_departamento_descripcion'];
+            $row["centro_costo"] = $registro['em_centro_costo_descripcion'];
             $registros_xls[] = $row;
         }
 

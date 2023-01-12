@@ -24,6 +24,7 @@
 <?php echo $controlador->inputs->rfc; ?>
 <?php echo $controlador->inputs->curp; ?>
 <?php echo $controlador->inputs->nss; ?>
+<?php echo $controlador->inputs->em_centro_costo_id; ?>
 <?php echo $controlador->inputs->im_registro_patronal_id; ?>
 <?php echo $controlador->inputs->fecha_inicio_rel_laboral; ?>
 <?php echo $controlador->inputs->salario_diario; ?>

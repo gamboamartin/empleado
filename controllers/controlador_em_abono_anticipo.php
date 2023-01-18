@@ -59,7 +59,7 @@ class controlador_em_abono_anticipo extends system {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'num_pago', propiedades: ["place_holder" => "Nº. Pago", "disable" => true]);
+        $this->asignar_propiedad(identificador:'num_pago', propiedades: ["place_holder" => "Nº. Pago", "disabled" => true]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

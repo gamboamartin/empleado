@@ -504,4 +504,18 @@ class controlador_em_anticipo extends system {
 
         return $abono;
     }
+
+
+
+    public function get_anticipos(bool $header, bool $ws = true): array|stdClass
+    {
+        $keys['em_empleado'] = array('id', 'descripcion', 'codigo', 'codigo_bis');
+
+        $salida = $this->get_out(header: $header, keys: $keys, ws: $ws);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar salida', data: $salida, header: $header, ws: $ws);
+        }
+
+        return $salida;
+    }
 }

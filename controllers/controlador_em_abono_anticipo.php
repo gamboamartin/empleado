@@ -73,7 +73,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
     protected function campos_view(): array
     {
         $keys = new stdClass();
-        $keys->inputs = array('codigo', 'descripcion', 'monto', 'anticipo', 'saldo', 'num_pago');
+        $keys->inputs = array('codigo', 'descripcion', 'monto', 'anticipo', 'saldo', 'num_pago', 'n_pagos');
         $keys->fechas = array('fecha');
 
         $keys->selects = array();
@@ -138,7 +138,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_tipo_abono_anticipo_id",
             label: "Tipo de Abono");
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_anticipo_id", label: "Anticipo",
-            con_registros: false);
+            cols: 12, con_registros: false);
         return $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_forma_pago_id", label: "Forma Pago");
     }
 
@@ -157,7 +157,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
         }
 
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'monto',
-            keys_selects: $keys_selects, place_holder: 'Monto');
+            keys_selects: $keys_selects, place_holder: 'Abono');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
@@ -169,7 +169,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
         }
 
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'anticipo',
-            keys_selects: $keys_selects, place_holder: 'Anticipo');
+            keys_selects: $keys_selects, place_holder: 'Monto Anticipo');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
@@ -181,11 +181,18 @@ class controlador_em_abono_anticipo extends _ctl_base {
         }
 
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'num_pago',
-            keys_selects: $keys_selects, place_holder: 'Nº Pago');
+            keys_selects: $keys_selects, place_holder: 'Nº Pago Actual');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'n_pagos',
+            keys_selects: $keys_selects, place_holder: 'Num Pagos');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects['n_pagos']->disabled = true;
         $keys_selects['num_pago']->disabled = true;
         $keys_selects['anticipo']->disabled = true;
         $keys_selects['saldo']->disabled = true;

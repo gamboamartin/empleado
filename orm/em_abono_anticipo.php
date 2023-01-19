@@ -88,6 +88,20 @@ class em_abono_anticipo extends _modelo_parent{
         return $r_alta_bd;
     }
 
+    public function get_abono_anticipo(int $em_abono_anticipo_id): array|stdClass
+    {
+        if($em_abono_anticipo_id <=0){
+            return $this->error->error(mensaje: 'Error $em_abono_anticipo_id debe ser mayor a 0', data: $em_abono_anticipo_id);
+        }
+
+        $registro = $this->registro(registro_id: $em_abono_anticipo_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtene abono', data: $registro);
+        }
+
+        return $registro;
+    }
+
     /**
      * Obtiene los abonos de un anticipo
      * @param int $em_anticipo_id Identificador del anticipo

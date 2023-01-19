@@ -214,14 +214,34 @@ class controlador_em_abono_anticipo extends _ctl_base {
                 ws: $ws);
         }
 
+        $abono = (new em_abono_anticipo($this->link))->get_abono_anticipo(em_abono_anticipo_id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener abono', data: $abono, header: $header, ws: $ws);
+        }
+
+        $keys_selects['em_empleado_id']->id_selected = $abono['em_empleado_id'];
+        $keys_selects['em_empleado_id']->disabled = true;
         $keys_selects['em_tipo_abono_anticipo_id']->id_selected = $this->registro['em_tipo_abono_anticipo_id'];
         $keys_selects['em_anticipo_id']->id_selected = $this->registro['em_anticipo_id'];
+        $keys_selects['em_anticipo_id']->con_registros = true;
+        $keys_selects['em_anticipo_id']->filtro = array('em_empleado.id' => $abono['em_empleado_id']);
+        $keys_selects['em_anticipo_id']->disabled = true;
         $keys_selects['cat_sat_forma_pago_id']->id_selected = $this->registro['cat_sat_forma_pago_id'];
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'monto',
+            keys_selects: $keys_selects, place_holder: 'Abono');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['monto']->disabled = true;
+        $this->row_upd->anticipo = $abono['em_anticipo_monto'];
+        $this->row_upd->n_pagos = $abono['em_anticipo_n_pagos'];
+
 
         $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
         }
+
 
         return $r_modifica;
     }

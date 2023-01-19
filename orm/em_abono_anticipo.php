@@ -1,5 +1,6 @@
 <?php
 namespace gamboamartin\empleado\models;
+use base\orm\_modelo_parent;
 use base\orm\modelo;
 
 use gamboamartin\cat_sat\models\cat_sat_forma_pago;
@@ -8,7 +9,7 @@ use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
 
-class em_abono_anticipo extends modelo{
+class em_abono_anticipo extends _modelo_parent{
 
     public function __construct(PDO $link){
         $tabla = 'em_abono_anticipo';
@@ -19,55 +20,36 @@ class em_abono_anticipo extends modelo{
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_abono_anticipo_id','em_anticipo_id','cat_sat_forma_pago_id','monto','fecha');
 
-        $campos_view = array('em_anticipo_id' => array('type' => 'selects', 'model' => new em_anticipo($link)),
-            'em_tipo_abono_anticipo_id' => array('type' => 'selects', 'model' => new em_tipo_abono_anticipo($link)),
-            'cat_sat_forma_pago_id' => array('type' => 'selects', 'model' => new cat_sat_forma_pago($link)),
-            'id' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
-            'num_pago' => array('type' => 'inputs'),
-            'fecha' => array('type' => 'dates'), 'monto' => array('type' => 'inputs'));
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view);
+            columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
-
-        $this->num_pago_siguiente(9);
     }
 
-    public function alta_bd(): array|stdClass
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-
-        $keys = array('em_anticipo_id');
-        $valida = $this->validacion->valida_ids(keys: $keys,registro:  $this->registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar registro',data: $valida);
-        }
-        $keys = array('monto');
-        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys,registro:  $this->registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar registro',data: $valida);
-        }
-
         if (!isset($this->registro['codigo'])) {
-            $this->registro['codigo'] = $this->registro['em_anticipo_id'];
-            $this->registro['codigo'] .= $this->registro['em_tipo_abono_anticipo_id'];
-            $this->registro['codigo'] .= $this->registro['cat_sat_forma_pago_id'];
-            $this->registro['codigo'] .= $this->registro['descripcion'];
+            $this->registro['codigo'] = $this->get_codigo_aleatorio();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar codigo aleatorio', data: $this->registro);
+            }
         }
 
-        if (!isset($this->registro['descripcion_select'])) {
-            $this->registro['descripcion_select'] = $this->registro['descripcion'];
+        $this->registro = $this->campos_base(data: $this->registro, modelo: $this);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al inicializar campos base', data: $this->registro);
         }
 
-        if (!isset($this->registro['codigo_bis'])) {
-            $this->registro['codigo_bis'] = $this->registro['codigo'];
+        $validacion = $this->validaciones(data: $this->registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar datos', data: $validacion);
         }
 
-        if (!isset($this->registro['alias'])) {
-            $this->registro['alias'] = $this->registro['codigo'];
-            $this->registro['alias'] .= $this->registro['descripcion'];
+        $this->registro = $this->limpia_campos(registro: $this->registro, campos_limpiar: array('em_empleado_id'));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
-
 
         $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo(
             $this->registro['em_anticipo_id']);
@@ -93,10 +75,14 @@ class em_abono_anticipo extends modelo{
             return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
         }
 
+        if ($n_pago > $em_anticipo['em_anticipo_n_pagos']){
+            return $this->error->error(mensaje: 'Error el numero de pago actual es mayor al total de pagos',
+                data: $n_pago);
+        }
 
         $r_alta_bd = parent::alta_bd();
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta anticipo',data: $r_alta_bd);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error registrar partida', data: $r_alta_bd);
         }
 
         return $r_alta_bd;
@@ -123,6 +109,19 @@ class em_abono_anticipo extends modelo{
         return $registros;
     }
 
+    public function get_codigo_aleatorio(int $longitud = 6): string
+    {
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $random_string = '';
+
+        for ($i = 0; $i < $longitud; $i++) {
+            $random_character = $chars[mt_rand(0, strlen($chars) - 1)];
+            $random_string .= $random_character;
+        }
+
+        return $random_string;
+    }
+
     /**
      * Obtiene el monto total abonado de un anticipo
      * @param int $em_anticipo_id Identificador del anticipo
@@ -145,6 +144,16 @@ class em_abono_anticipo extends modelo{
         return round($r_em_anticipo['total_abonado'],2);
     }
 
+    private function limpia_campos(array $registro, array $campos_limpiar): array
+    {
+        foreach ($campos_limpiar as $valor) {
+            if (isset($registro[$valor])) {
+                unset($registro[$valor]);
+            }
+        }
+        return $registro;
+    }
+
     public function num_pago_siguiente(int $em_anticipo_id): int|array
     {
         if($em_anticipo_id <= 0){
@@ -159,4 +168,28 @@ class em_abono_anticipo extends modelo{
 
         return $r_em_abono->n_registros + 1;
     }
+
+    private function validaciones(array $data): bool|array
+    {
+        $keys = array('descripcion', 'codigo','monto');
+        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $data);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al validar campos', data: $valida);
+        }
+
+        $keys = array('em_tipo_abono_anticipo_id', 'em_anticipo_id', 'cat_sat_forma_pago_id');
+        $valida = $this->validacion->valida_ids(keys: $keys, registro: $this->registro);
+        if (errores::$error) {
+            return $this->error->error(mensaje: "Error al validar foraneas", data: $valida);
+        }
+
+        $keys = array('monto');
+        $valida = $this->validacion->valida_double_mayores_igual_0(keys: $keys,registro:  $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cantidades',data: $valida);
+        }
+
+        return true;
+    }
+
 }

@@ -8,63 +8,215 @@
  */
 namespace gamboamartin\empleado\controllers;
 
+use base\controller\controler;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\errores\errores;
+use gamboamartin\system\_ctl_base;
 use gamboamartin\system\links_menu;
-use gamboamartin\system\system;
 use gamboamartin\template\html;
 use html\em_abono_anticipo_html;
 use PDO;
 use stdClass;
 
-class controlador_em_abono_anticipo extends system {
+class controlador_em_abono_anticipo extends _ctl_base {
 
     public array $keys_selects = array();
 
-    public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
-                                stdClass $paths_conf = new stdClass()){
+    public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
+                                stdClass $paths_conf = new stdClass())
+    {
         $modelo = new em_abono_anticipo(link: $link);
         $html_ = new em_abono_anticipo_html(html: $html);
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
-        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
-        $this->titulo_lista = 'Anticipo';
-
-        $keys_rows_lista = $this->keys_rows_lista();
+        $datatables = $this->init_datatable();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $keys_rows_lista);
-            print_r($error);
-            die('Error');
-        }
-        $this->keys_row_lista = $keys_rows_lista;
-
-        $this->asignar_propiedad(identificador:'em_tipo_abono_anticipo_id', propiedades: ["label" => "Tipo Abono"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $datatables);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'em_anticipo_id', propiedades: ["label" => "Anticipo", "extra_params_keys" => ["em_anticipo_id","n_pago","pago_siguiente"]]);
+        parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
+            paths_conf: $paths_conf);
+
+        $configuraciones = $this->init_configuraciones();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            $error = $this->errores->error(mensaje: 'Error al inicializar configuraciones', data: $configuraciones);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'cat_sat_forma_pago_id', propiedades: ["label" => "Forma Pago"]);
+    }
+
+    public function alta(bool $header, bool $ws = false): array|string
+    {
+        $r_alta = $this->init_alta();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $this->asignar_propiedad(identificador:'num_pago', propiedades: ["place_holder" => "Nº. Pago", "disabled" => true]);
+        $keys_selects = $this->init_selects_inputs();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
         }
+
+        $inputs = $this->inputs(keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
+        }
+
+        return $r_alta;
+    }
+
+    protected function campos_view(): array
+    {
+        $keys = new stdClass();
+        $keys->inputs = array('codigo', 'descripcion', 'monto', 'anticipo', 'saldo', 'num_pago');
+        $keys->fechas = array('fecha');
+
+        $keys->selects = array();
+
+        $init_data = array();
+        $init_data['em_empleado'] = "gamboamartin\\empleado";
+        $init_data['em_tipo_abono_anticipo'] = "gamboamartin\\empleado";
+        $init_data['em_anticipo'] = "gamboamartin\\empleado";
+        $init_data['cat_sat_forma_pago'] = "gamboamartin\\cat_sat";
+
+        $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al inicializar campo view', data: $campos_view);
+        }
+
+        return $campos_view;
+    }
+
+    private function init_configuraciones(): controler
+    {
+        $this->seccion_titulo = 'Abonos';
+        $this->titulo_lista = 'Registro de Abonos';
+
+        return $this;
+    }
+
+    private function init_datatable(): stdClass
+    {
+        $columns["em_abono_anticipo_id"]["titulo"] = "Id";
+        $columns["em_empleado_nombre"]["titulo"] = "Empleado";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
+        $columns["em_tipo_abono_anticipo_descripcion"]["titulo"] = "Tipo Abono";
+        $columns["em_anticipo_codigo"]["titulo"] = "Anticipo";
+        $columns["em_abono_anticipo_monto"]["titulo"] = "Monto";
+        $columns["em_abono_anticipo_fecha"]["titulo"] = "Fecha";
+
+        $filtro = array("em_abono_anticipo.id", "em_empleado.codigo", "em_tipo_abono_anticipo.descripcion",
+            "em_anticipo.codigo","cat_sat_forma_pago.descripcion");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        return $datatables;
+    }
+
+    private function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+                                  bool  $con_registros = true, array $filtro = array()): array
+    {
+        $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
+            keys_selects: $keys_selects, id_selected: $id_selected, label: $label);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
+    }
+
+    public function init_selects_inputs(): array
+    {
+        $keys_selects = $this->init_selects(keys_selects: array(), key: "em_empleado_id", label: "Empleado", cols: 12);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_tipo_abono_anticipo_id",
+            label: "Tipo de Abono");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_anticipo_id", label: "Anticipo",
+            con_registros: false);
+        return $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_forma_pago_id", label: "Forma Pago");
+    }
+
+    protected function key_selects_txt(array $keys_selects): array
+    {
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'codigo',
+            keys_selects: $keys_selects, place_holder: 'Código');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'descripcion',
+            keys_selects: $keys_selects, place_holder: 'Descripción');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'monto',
+            keys_selects: $keys_selects, place_holder: 'Monto');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha',
+            keys_selects: $keys_selects, place_holder: 'Fecha');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'anticipo',
+            keys_selects: $keys_selects, place_holder: 'Anticipo');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'saldo',
+            keys_selects: $keys_selects, place_holder: 'Saldo');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'num_pago',
+            keys_selects: $keys_selects, place_holder: 'Nº Pago');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects['num_pago']->disabled = true;
+        $keys_selects['anticipo']->disabled = true;
+        $keys_selects['saldo']->disabled = true;
+
+        return $keys_selects;
+    }
+
+    public function modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_modifica = $this->init_modifica();
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar salida de template', data: $r_modifica, header: $header, ws: $ws);
+        }
+
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
+        }
+
+        $keys_selects['em_tipo_abono_anticipo_id']->id_selected = $this->registro['em_tipo_abono_anticipo_id'];
+        $keys_selects['em_anticipo_id']->id_selected = $this->registro['em_anticipo_id'];
+        $keys_selects['cat_sat_forma_pago_id']->id_selected = $this->registro['cat_sat_forma_pago_id'];
+
+        $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
+        }
+
+        return $r_modifica;
     }
 
     public function asignar_propiedad(string $identificador, mixed $propiedades)
@@ -77,118 +229,5 @@ class controlador_em_abono_anticipo extends system {
             $this->keys_selects[$identificador]->$key = $value;
         }
     }
-
-    public function alta(bool $header, bool $ws = false): array|string
-    {
-        $r_alta =  parent::alta(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
-        }
-
-        $this->row_upd->fecha = date('Y-m-d');
-        $this->row_upd->monto = 0;
-        $this->row_upd->num_pago = 0;
-
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
-            print_r($error);
-            die('Error');
-        }
-        return $r_alta;
-    }
-
-    private function base(): array|stdClass
-    {
-        $r_modifica =  parent::modifica(header: false);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
-        }
-
-        $this->asignar_propiedad(identificador:'id', propiedades: ["disable" => true]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_tipo_abono_anticipo_id',
-            propiedades: ["id_selected"=>$this->row_upd->em_tipo_abono_anticipo_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_anticipo_id',
-            propiedades: ["id_selected"=>$this->row_upd->em_anticipo_id, "disabled" => true,
-                "filtro" => array('em_anticipo.id' => $this->row_upd->em_anticipo_id)]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'cat_sat_forma_pago_id',
-            propiedades: ["id_selected"=>$this->row_upd->cat_sat_forma_pago_id]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al inicializar inputs',data:  $inputs);
-        }
-
-        $data = new stdClass();
-        $data->template = $r_modifica;
-        $data->inputs = $inputs;
-
-        return $data;
-    }
-
-    private function keys_rows_lista(): array
-    {
-        $keys_rows_lista = array();
-        $keys = array('em_abono_anticipo_id','em_abono_anticipo_descripcion','em_empleado_codigo','em_empleado_nombre','em_empleado_ap',
-            'em_empleado_am','em_abono_anticipo_monto','cat_sat_forma_pago_descripcion','em_abono_anticipo_fecha');
-
-        foreach ($keys as $campo) {
-            $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
-            if (errores::$error){
-                return $this->errores->error(mensaje: "error al inicializar key",data: $keys_rows_lista);
-            }
-        }
-
-        return $keys_rows_lista;
-    }
-
-    private function key_row_lista_init(string $campo, array $keys_rows_lista): array
-    {
-        $data = new stdClass();
-        $data->campo = $campo;
-
-        $campo = str_replace(array("em_abono_anticipo", "em_", "_"), '', $campo);
-        $campo = ucfirst(strtolower($campo));
-
-        $data->name_lista = $campo;
-        $keys_rows_lista[] = $data;
-
-        return $keys_rows_lista;
-    }
-
-    public function modifica(bool $header, bool $ws = false): array|stdClass
-    {
-        $base = $this->base();
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
-                header: $header,ws:$ws);
-        }
-
-        return $base->template;
-    }
-
 
 }

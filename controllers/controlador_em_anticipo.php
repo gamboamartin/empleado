@@ -120,6 +120,7 @@ class controlador_em_anticipo extends system {
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
         }
 
+        $this->lista_get_data = true;
     }
 
     public function asignar_propiedad(string $identificador, mixed $propiedades)

@@ -22,6 +22,7 @@ class controlador_dp_estado extends \controllers\controlador_dp_estado {
 
         $this->titulo_lista = 'Estados';
 
+        $this->lista_get_data = true;
     }
 
 

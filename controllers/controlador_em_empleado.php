@@ -311,7 +311,7 @@ class controlador_em_empleado extends system {
         $this->asignar_propiedad(identificador: 'fecha_inicio_rel_laboral',
             propiedades: ['place_holder'=> 'Fecha Inicio Relacion Laboral']);
 
-
+        $this->lista_get_data = true;
     }
 
     public function alta(bool $header, bool $ws = false): array|string

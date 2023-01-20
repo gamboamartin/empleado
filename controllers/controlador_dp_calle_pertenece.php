@@ -23,6 +23,7 @@ class controlador_dp_calle_pertenece extends \controllers\controlador_dp_calle_p
 
         $this->titulo_lista = 'Calles con colonia';
 
+        $this->lista_get_data = true;
     }
 
 

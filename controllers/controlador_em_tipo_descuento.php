@@ -48,6 +48,8 @@ class controlador_em_tipo_descuento extends system {
             print_r($error);
             die('Error');
         }
+
+        $this->lista_get_data = true;
     }
 
     public function asignar_propiedad(string $identificador, mixed $propiedades)

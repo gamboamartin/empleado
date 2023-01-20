@@ -23,6 +23,7 @@ class controlador_dp_cp extends \controllers\controlador_dp_cp {
 
         $this->titulo_lista = 'Codigos Postales';
 
+        $this->lista_get_data = true;
     }
 
 

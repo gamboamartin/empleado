@@ -23,6 +23,7 @@ class controlador_dp_colonia_postal extends \controllers\controlador_dp_colonia_
 
         $this->titulo_lista = 'Colonias';
 
+        $this->lista_get_data = true;
     }
 
 

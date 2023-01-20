@@ -23,6 +23,7 @@ class controlador_dp_municipio extends \controllers\controlador_dp_municipio {
 
         $this->titulo_lista = 'Municipios';
 
+        $this->lista_get_data = true;
     }
 
 

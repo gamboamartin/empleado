@@ -59,6 +59,8 @@ class controlador_em_cuenta_bancaria extends system {
             print_r($error);
             die('Error');
         }
+
+        $this->lista_get_data = true;
     }
 
     public function asignar_propiedad(string $identificador, mixed $propiedades)

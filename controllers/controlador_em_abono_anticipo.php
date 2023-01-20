@@ -46,6 +46,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
             die('Error');
         }
 
+        $this->lista_get_data = true;
     }
 
     public function alta(bool $header, bool $ws = false): array|string

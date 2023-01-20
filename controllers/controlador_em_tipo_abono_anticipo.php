@@ -26,6 +26,8 @@ class controlador_em_tipo_abono_anticipo extends system {
         parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Tipo Abono';
+
+        $this->lista_get_data = true;
     }
 
 }

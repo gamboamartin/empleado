@@ -48,6 +48,7 @@ class controlador_em_centro_costo extends _ctl_base
             die('Error');
         }
 
+        $this->lista_get_data = true;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
@@ -147,7 +148,7 @@ class controlador_em_centro_costo extends _ctl_base
                 mensaje: 'Error al generar salida de template', data: $r_modifica, header: $header, ws: $ws);
         }
 
-        $base = $this->base_upd(keys_selects: array(), not_actions: array(), params: array(), params_ajustados: array());
+        $base = $this->base_upd(keys_selects: array(), params: array(), params_ajustados: array());
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
         }

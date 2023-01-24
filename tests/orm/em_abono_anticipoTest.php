@@ -22,6 +22,28 @@ class em_abono_anticipoTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+    public function test_get_abono_anticipo(): void
+    {
+        errores::$error = false;
+
+        $_GET['seccion'] = 'cat_sat_tipo_persona';
+        $_GET['accion'] = 'lista';
+        $_SESSION['grupo_id'] = 1;
+        $_SESSION['usuario_id'] = 2;
+        $_GET['session_id'] = '1';
+
+        $modelo = new em_abono_anticipo($this->link);
+        //$modelo = new liberator($modelo);
+
+        $em_anticipo_id = 1;
+        $resultado = $modelo->get_abono_anticipo(em_abono_anticipo_id: $em_anticipo_id);
+        $this->assertIsArray($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals($em_anticipo_id, $resultado['em_abono_anticipo_id']);
+        errores::$error = false;
+
+    }
+
     public function test_get_abonos_anticipo(): void
     {
         errores::$error = false;

@@ -13,6 +13,8 @@ use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
+use gamboamartin\nomina\controllers\controlador_nom_conf_empleado;
+use gamboamartin\nomina\models\nom_conf_empleado;
 use gamboamartin\plugins\exportador;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
@@ -34,21 +36,26 @@ class controlador_em_empleado extends system {
     public stdClass $cuentas_bancarias;
     public stdClass $anticipos;
     public stdClass $abonos;
+    public stdClass $confs_empleados;
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_alta_bd = '';
     public string $link_em_abono_anticipo_alta_bd = '';
+    public string $link_nom_conf_empleado_alta_bd = '';
     public string $link_em_cuenta_bancaria_modifica_bd = '';
     public string $link_em_anticipo_modifica_bd = '';
     public string $link_em_abono_anticipo_modifica_bd = '';
+    public string $link_nom_conf_empleado_modifica_bd = '';
 
     public string $link_em_empleado_reportes = '';
     public string $link_em_empleado_exportar = '';
     public int $em_cuenta_bancaria_id = -1;
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
+    public int $nom_conf_empleado_id = -1;
     public controlador_em_cuenta_bancaria $controlador_em_cuenta_bancaria;
     public controlador_em_anticipo $controlador_em_anticipo;
     public controlador_em_abono_anticipo $controlador_em_abono_anticipo;
+    public controlador_nom_conf_empleado $controlador_nom_conf_empleado;
     public array $columnas_lista_data_table_full = array();
     public array $columnas_lista_data_table_label = array();
 
@@ -87,6 +94,7 @@ class controlador_em_empleado extends system {
         $this->controlador_em_cuenta_bancaria= new controlador_em_cuenta_bancaria(link:$this->link, paths_conf: $paths_conf);
         $this->controlador_em_anticipo= new controlador_em_anticipo(link:$this->link, paths_conf: $paths_conf);
         $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo(link:$this->link, paths_conf: $paths_conf);
+        $this->controlador_nom_conf_empleado= new controlador_nom_conf_empleado(link:$this->link, paths_conf: $paths_conf);
 
         $keys_rows_lista = $this->keys_rows_lista();
         if (errores::$error) {
@@ -123,6 +131,15 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_abono_anticipo_alta_bd = $link_em_abono_anticipo_alta_bd;
 
+        $link_nom_conf_empleado_alta_bd = $obj_link->link_con_id(accion: 'conf_empleado_alta_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_empleado_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_nom_conf_empleado_alta_bd = $link_nom_conf_empleado_alta_bd;
+
         $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd',
             link: $link, registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
@@ -149,6 +166,15 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->link_em_abono_anticipo_modifica_bd = $link_em_abono_anticipo_modifica_bd;
+
+        $link_nom_conf_empleado_modifica_bd = $obj_link->link_con_id(accion: 'conf_empleado_modifica_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_empleado_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_nom_conf_empleado_modifica_bd = $link_nom_conf_empleado_modifica_bd;
 
         $link_em_empleado_reportes = $obj_link->link_con_id(accion: 'reportes', link: $link, registro_id: $this->registro_id,
             seccion: $this->seccion);
@@ -179,6 +205,10 @@ class controlador_em_empleado extends system {
 
         if (isset($_GET['em_abono_anticipo_id'])){
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
+        }
+
+        if (isset($_GET['nom_conf_empleado_id'])){
+            $this->nom_conf_empleado_id = $_GET['nom_conf_empleado_id'];
         }
 
         $this->asignar_propiedad(identificador: 'direccion_pendiente_pais',
@@ -666,6 +696,168 @@ class controlador_em_empleado extends system {
             exit;
         }
         $r_elimina->siguiente_view = "anticipo";
+
+        return $r_elimina;
+    }
+
+    public function asigna_configuracion_nomina(bool $header, bool $ws = false): array|stdClass
+    {
+        $alta = $this->controlador_nom_conf_empleado->alta(header: false);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
+        }
+
+        $this->controlador_nom_conf_empleado->asignar_propiedad(identificador: 'em_empleado_id',
+            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
+                "filtro" => array('em_empleado.id' => $this->registro_id)]);
+
+        $this->inputs = $this->controlador_nom_conf_empleado->genera_inputs(
+            keys_selects:  $this->controlador_nom_conf_empleado->keys_selects);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        /**$this->confs_empleados = $this->ver_anticipos(header: $header,ws: $ws);
+        if(errores::$error){
+        return $this->retorno_error(mensaje: 'Error al obtener los anticipos',data:  $this->anticipos, header: $header,ws:$ws);
+        }**/
+
+        return $this->inputs;
+    }
+
+    public function asigna_configuracion_nomina_alta_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+        $_POST['em_empleado_id'] = $this->registro_id;
+
+        $alta = (new nom_conf_empleado($this->link))->alta_registro(registro: $_POST);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al dar de alta conf empleado', data: $alta,
+                header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
+                siguiente_view: "conf_empleado", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($alta, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $alta->siguiente_view = "conf_empleado";
+
+        return $alta;
+    }
+
+    public function asigna_configuracion_nomina_modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->controlador_nom_conf_empleado->registro_id = $this->nom_conf_empleado_id;
+
+        $modifica = $this->controlador_nom_conf_empleado->modifica(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
+        }
+
+        $this->inputs = $this->controlador_nom_conf_empleado->genera_inputs(
+            keys_selects:  $this->controlador_nom_conf_empleado->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $this->inputs;
+    }
+
+    public function asigna_configuracion_nomina_modifica_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $registros = $_POST;
+
+        $r_modifica = (new nom_conf_empleado($this->link))->modifica_bd(registro: $registros,
+            id: $this->nom_conf_empleado_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al modificar conf empleado', data: $r_modifica, header: $header, ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
+                siguiente_view: "conf_empleado", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_modifica->siguiente_view = "conf_empleado";
+
+        return $r_modifica;
+    }
+
+    public function asigna_configuracion_nomina_elimina_bd(bool $header, bool $ws = false): array|stdClass
+    {
+        $this->link->beginTransaction();
+
+        $siguiente_view = (new actions())->init_alta_bd();
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
+                header: $header, ws: $ws);
+        }
+
+        if (isset($_POST['btn_action_next'])) {
+            unset($_POST['btn_action_next']);
+        }
+
+        $r_elimina = (new nom_conf_empleado($this->link))->elimina_bd(id: $this->nom_conf_empleado_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al eliminar conf empleado', data: $r_elimina, header: $header,
+                ws: $ws);
+        }
+
+        $this->link->commit();
+
+        if ($header) {
+            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
+                siguiente_view: "conf_empleado", ws:  $ws);
+        }
+        if ($ws) {
+            header('Content-Type: application/json');
+            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
+            exit;
+        }
+        $r_elimina->siguiente_view = "conf_empleado";
 
         return $r_elimina;
     }

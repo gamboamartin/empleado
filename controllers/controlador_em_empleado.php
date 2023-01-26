@@ -1292,7 +1292,7 @@ class controlador_em_empleado extends system {
         return $abono;
     }
 
-    private function data_asigna_conf_nomina_btn(array $conf_nomina): array
+    protected function data_asigna_conf_nomina_btn(array $conf_nomina): array
     {
         $params['nom_conf_empleado_id'] = $conf_nomina['nom_conf_empleado_id'];
         $params['nom_conf_nomina_id'] = $conf_nomina['nom_conf_nomina_id'];

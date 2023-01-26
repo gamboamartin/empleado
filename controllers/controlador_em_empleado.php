@@ -36,7 +36,7 @@ class controlador_em_empleado extends system {
     public stdClass $cuentas_bancarias;
     public stdClass $anticipos;
     public stdClass $abonos;
-    public stdClass $confs_empleados;
+    public stdClass $conf_nominas;
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_cuenta_bancaria_alta_bd = '';
     public string $link_em_abono_anticipo_alta_bd = '';
@@ -707,9 +707,9 @@ class controlador_em_empleado extends system {
             return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
         }
 
-        $this->controlador_nom_conf_empleado->asignar_propiedad(identificador: 'em_empleado_id',
-            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
-                "filtro" => array('em_empleado.id' => $this->registro_id)]);
+        $this->controlador_nom_conf_empleado->asignar_propiedad(identificador: 'em_cuenta_bancaria_id',
+            propiedades: ["id_selected" => $this->em_cuenta_bancaria_id, "disabled" => true,
+                "filtro" => array('em_cuenta_bancaria.id' => $this->em_cuenta_bancaria_id)]);
 
         $this->inputs = $this->controlador_nom_conf_empleado->genera_inputs(
             keys_selects:  $this->controlador_nom_conf_empleado->keys_selects);
@@ -718,6 +718,21 @@ class controlador_em_empleado extends system {
             print_r($error);
             die('Error');
         }
+
+        $conf_nominas = (new nom_conf_empleado($this->link))->get_configuraciones_empleado(em_cuenta_bancaria_id: $this->em_cuenta_bancaria_id);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al obtener configuraciones de empleados',data:  $conf_nominas,header: $header,ws:$ws);
+        }
+
+        foreach ($conf_nominas->registros as $indice => $conf_nomina) {
+            $conf_nomina = $this->data_asigna_conf_nomina_btn(conf_nomina: $conf_nomina);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $conf_nomina, header: $header, ws: $ws);
+            }
+            $conf_nominas->registros[$indice] = $conf_nomina;
+        }
+
+        $this->conf_nominas = $conf_nominas;
 
         /**$this->confs_empleados = $this->ver_anticipos(header: $header,ws: $ws);
         if(errores::$error){
@@ -741,7 +756,7 @@ class controlador_em_empleado extends system {
         if (isset($_POST['btn_action_next'])) {
             unset($_POST['btn_action_next']);
         }
-        $_POST['em_empleado_id'] = $this->registro_id;
+        $_POST['em_cuenta_bancaria_id'] = $this->em_cuenta_bancaria_id;
 
         $alta = (new nom_conf_empleado($this->link))->alta_registro(registro: $_POST);
         if (errores::$error) {
@@ -1275,6 +1290,28 @@ class controlador_em_empleado extends system {
         $abono['link_modifica'] = $btn_modifica;
 
         return $abono;
+    }
+
+    private function data_asigna_conf_nomina_btn(array $conf_nomina): array
+    {
+        $params['nom_conf_empleado_id'] = $conf_nomina['nom_conf_empleado_id'];
+        $params['nom_conf_nomina_id'] = $conf_nomina['nom_conf_nomina_id'];
+
+        $btn_elimina = $this->html_base->button_href(accion: 'conf_nomina_elimina_bd', etiqueta: 'Elimina',
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
+        }
+        $conf_nomina['link_elimina'] = $btn_elimina;
+
+        $btn_modifica = $this->html_base->button_href(accion: 'conf_nomina_modifica', etiqueta: 'Modifica',
+            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
+        }
+        $conf_nomina['link_modifica'] = $btn_modifica;
+
+        return $conf_nomina;
     }
 
     public function fiscales(bool $header, bool $ws = false): array|stdClass

@@ -14,6 +14,7 @@ use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
 use gamboamartin\nomina\controllers\controlador_nom_conf_empleado;
+use gamboamartin\nomina\controllers\controlador_nom_conf_nomina;
 use gamboamartin\nomina\models\nom_conf_empleado;
 use gamboamartin\plugins\exportador;
 use gamboamartin\system\actions;
@@ -95,6 +96,8 @@ class controlador_em_empleado extends system {
         $this->controlador_em_anticipo= new controlador_em_anticipo(link:$this->link, paths_conf: $paths_conf);
         $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo(link:$this->link, paths_conf: $paths_conf);
         $this->controlador_nom_conf_empleado= new controlador_nom_conf_empleado(link:$this->link, paths_conf: $paths_conf);
+        $this->controlador_nom_conf_nomina= new controlador_nom_conf_nomina(link:$this->link, paths_conf: $paths_conf);
+
 
         $keys_rows_lista = $this->keys_rows_lista();
         if (errores::$error) {
@@ -140,6 +143,15 @@ class controlador_em_empleado extends system {
         }
         $this->link_nom_conf_empleado_alta_bd = $link_nom_conf_empleado_alta_bd;
 
+        $link_nom_conf_nomina_alta_bd = $obj_link->link_con_id(accion: 'conf_nomina_alta_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_nomina_alta_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_nom_conf_nomina_alta_bd = $link_nom_conf_nomina_alta_bd;
+
         $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd',
             link: $link, registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
@@ -175,6 +187,16 @@ class controlador_em_empleado extends system {
             die('Error');
         }
         $this->link_nom_conf_empleado_modifica_bd = $link_nom_conf_empleado_modifica_bd;
+
+        $link_nom_conf_empleado_modifica_bd = $obj_link->link_con_id(accion: 'conf_empleado_modifica_bd', link: $link,
+            registro_id: $this->registro_id, seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_empleado_modifica_bd);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_nom_conf_empleado_modifica_bd = $link_nom_conf_empleado_modifica_bd;
+
 
         $link_em_empleado_reportes = $obj_link->link_con_id(accion: 'reportes', link: $link, registro_id: $this->registro_id,
             seccion: $this->seccion);

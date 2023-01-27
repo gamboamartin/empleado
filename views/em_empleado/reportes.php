@@ -15,6 +15,7 @@
                                   class="form-additional" id="form_export">
                                 <?php echo $controlador->inputs->filtro_fecha_inicio; ?>
                                 <?php echo $controlador->inputs->filtro_fecha_final; ?>
+                                <?php echo $controlador->inputs->nom_conf_nomina; ?>
                             </form>
                             <button type="submit" class="btn btn-success" name="btn_action_next"
                                     style="border-radius: 5px" value="exportar" form="form_export">

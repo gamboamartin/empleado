@@ -179,6 +179,8 @@ class controlador_em_empleado extends system {
         }
         $this->link_em_abono_anticipo_modifica_bd = $link_em_abono_anticipo_modifica_bd;
 
+
+
         $link_nom_conf_empleado_modifica_bd = $obj_link->link_con_id(accion: 'conf_empleado_modifica_bd', link: $link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {

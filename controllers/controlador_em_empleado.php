@@ -1511,15 +1511,15 @@ class controlador_em_empleado extends system {
 
     public function exportar(bool $header, bool $ws = false): array|stdClass
     {
-        $fecha_inicio = "";
-        $fecha_fin = "";
+        $fecha_inicio = date('Y-m-d');
+        $fecha_fin = date('Y-m-d');
 
-        if (isset($_POST['filtro_fecha_inicio'])){
-            $fecha_inicio = $_POST['filtro_fecha_inicio'];
+        if (isset($_POST['fecha_inicio'])){
+            $fecha_inicio = $_POST['fecha_inicio'];
         }
 
-        if (isset($_POST['filtro_fecha_final'])){
-            $fecha_fin = $_POST['filtro_fecha_final'];
+        if (isset($_POST['fecha_final'])){
+            $fecha_fin = $_POST['fecha_final'];
         }
 
         $filtro_especial[0][$fecha_fin]['operador'] = '>=';

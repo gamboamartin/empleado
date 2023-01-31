@@ -11,45 +11,18 @@
                     <?php include (new views())->ruta_templates . "head/subtitulo.php"; ?>
                     <div class="filtros">
 
-                        <h3>Estimado usuario, por favor seleccione una opción de busqueda:</h3>
-
-                        <div class="categorias">
-                            <h4>Seleccione una categoría</h4>
-                            <div class="lista_categorias" style="display: flex; justify-content:space-around">
-                                <input type="checkbox" class="filter-checkbox" value="Programador"/> Programador
-                                <input type="checkbox" class="filter-checkbox" value="Docente"/> Docente
-                            </div>
+                        <div class="filtro-titulo">
+                            <h3>Estimado usuario, por favor seleccione una opción de busqueda:</h3>
                         </div>
-                        <div class="inputs">
-                            <!--<div class="inputs_filter" style="display: flex; flex-direction: column">
-                                <label for="alianzas">Alianza</label>
-                                <select name="alianzas" id="alianzas">
-                                    <option value="">--Please choose an option--</option>
-                                    <option value="dog">Dog</option>
-                                    <option value="cat">Cat</option>
-                                    <option value="hamster">Hamster</option>
-                                    <option value="parrot">Parrot</option>
-                                    <option value="spider">Spider</option>
-                                    <option value="goldfish">Goldfish</option>
-                                </select>
-                            </div>
-                            <div class="inputs_filter" style="display: flex; flex-direction: column">
-                                <label for="registros_patronales">Registros Patronales</label>
-                                <select name="registros_patronales" id="registros_patronales">
-                                    <option value="">--Please choose an option--</option>
-                                    <option value="dog">Dog</option>
-                                    <option value="cat">Cat</option>
-                                    <option value="hamster">Hamster</option>
-                                    <option value="parrot">Parrot</option>
-                                    <option value="spider">Spider</option>
-                                    <option value="goldfish">Goldfish</option>
-                                </select>
-                            </div>-->
-                            <div class="inputs_filter" style="display: flex; flex-direction: column">
-                                <label >Rango Fechas</label>
-                                <div class="fechas">
-                                    <input type="date" id="remunerado" name="fecha_inicio">
-                                    <input type="date" id="remunerado" name="fecha_fin">
+
+                        <div class="filtro-categorias">
+                        </div>
+                        <div class="filtro-reportes">
+                            <div class="filtro-fechas">
+                                <label>Rango Fechas</label>
+                                <div class="fechas form-main widget-form-cart">
+                                    <?php echo $controlador->inputs->fecha_inicio; ?>
+                                    <?php echo $controlador->inputs->fecha_final; ?>
                                 </div>
                             </div>
 
@@ -57,17 +30,8 @@
 
                     </div>
 
-                    <div class="table-head" style="display: flex; justify-content: space-between; align-items: center ">
-
-                        <div class="botones" style="display: flex; justify-content: space-around; align-items: center">
-                            <form method="post" action="<?php echo $controlador->link_em_empleado_exportar; ?> "
-                                  class="form-additional" id="form_export">
-                            </form>
-                            <button type="submit" class="btn btn-success" name="btn_action_next"
-                                    style="border-radius: 5px" value="exportar" form="form_export">
-                                Exportar
-                            </button>
-                        </div>
+                    <div class="botones">
+                        <a href="<?php echo $controlador->link_em_empleado_exportar; ?>" class="btn btn-success export" >Exportar</a>
                     </div>
                     <table id="em_empleado" class="datatables table table-striped "></table>
                 </div>

@@ -65,8 +65,8 @@ class em_empleado extends modelo{
         $campos_view['direccion_pendiente_cp'] = array('type' => 'inputs');
         $campos_view['direccion_pendiente_colonia'] = array('type' => 'inputs');
         $campos_view['direccion_pendiente_calle_pertenece'] = array('type' => 'inputs');
-        $campos_view['filtro_fecha_inicio'] = array('type' => 'dates');
-        $campos_view['filtro_fecha_final'] = array('type' => 'dates');
+        $campos_view['fecha_inicio'] = array('type' => 'dates');
+        $campos_view['fecha_final'] = array('type' => 'dates');
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';

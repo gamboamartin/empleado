@@ -1483,16 +1483,16 @@ class controlador_em_empleado extends system {
         $columns["em_centro_costo_descripcion"]["titulo"] = "Centro Costos";
         $filtro = array();
 
-        $datatable = $this->datatable_init(columns: $columns,identificador: "#em_empleado");
+        /*$datatable = $this->datatable_init(columns: $columns,identificador: "#em_empleado",);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al inicializar datatable',data:  $datatable,
                 header: $header,ws:$ws);
-        }
+        }*/
 
-        $this->asignar_propiedad(identificador: 'filtro_fecha_inicio', propiedades: ['place_holder'=> 'Fecha Inicio',
-            'cols' => 6, 'required' => false]);
-        $this->asignar_propiedad(identificador: 'filtro_fecha_final', propiedades: ['place_holder'=> 'Fecha Final',
-            'cols' => 6]);
+        $this->asignar_propiedad(identificador: 'fecha_inicio', propiedades: ['place_holder'=> 'Fecha Inicio',
+            'cols' => 4, 'required' => false]);
+        $this->asignar_propiedad(identificador: 'fecha_final', propiedades: ['place_holder'=> 'Fecha Final',
+            'cols' => 4, 'required' => false]);
 
         $r_alta =  parent::alta(header: false);
         if(errores::$error){

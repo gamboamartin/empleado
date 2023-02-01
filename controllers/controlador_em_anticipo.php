@@ -15,6 +15,7 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
 use gamboamartin\template\html;
+use html\com_sucursal_html;
 use html\em_anticipo_html;
 use PDO;
 use stdClass;
@@ -24,9 +25,11 @@ class controlador_em_anticipo extends system {
     public array $keys_selects = array();
     public string $link_em_abono_anticipo_alta_bd = '';
     public string $link_em_abono_anticipo_modifica_bd = '';
+    public string $link_em_abono_anticipo_reporte_empresa = '';
 
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
+    public int $com_sucursal_id = -1;
 
     public controlador_em_abono_anticipo $controlador_em_abono_anticipo;
     public stdClass $abonos;
@@ -112,12 +115,25 @@ class controlador_em_anticipo extends system {
         }
         $this->link_em_abono_anticipo_modifica_bd = $link_em_abono_anticipo_modifica_bd;
 
+        $link_em_abono_anticipo_reporte_empresa = $obj_link->link_con_id(accion: 'reporte_empresa', link: $link, registro_id: $this->registro_id,
+            seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_reporte_empresa);
+            print_r($error);
+            die('Error');
+        }
+        $this->link_em_abono_anticipo_reporte_empresa = $link_em_abono_anticipo_reporte_empresa;
+
         if (isset($_GET['em_anticipo_id'])){
             $this->em_anticipo_id = $_GET['em_anticipo_id'];
         }
 
         if (isset($_GET['em_abono_anticipo_id'])){
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
+        }
+
+        if (isset($_GET['com_sucursal_id'])){
+            $this->com_sucursal_id = $_GET['com_sucursal_id'];
         }
 
         $this->lista_get_data = true;
@@ -506,8 +522,6 @@ class controlador_em_anticipo extends system {
         return $abono;
     }
 
-
-
     public function get_anticipos(bool $header, bool $ws = true): array|stdClass
     {
         $keys['em_empleado'] = array('id', 'descripcion', 'codigo', 'codigo_bis');
@@ -518,5 +532,48 @@ class controlador_em_anticipo extends system {
         }
 
         return $salida;
+    }
+
+    public function reporte_empresa(bool $header, bool $ws = false){
+
+        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'fecha_inicio', propiedades: ["place_holder" => "Fecha Inicio"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'fecha_final', propiedades: ["place_holder" => "Fecha Final"]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        /**
+         * $this->row_upd->fecha_inicio = date('Y-m-d');
+         * $this->row_upd->fecha_final = date('Y-m-d');
+         */
+
+        $r_alta =  parent::alta(header: false);
+        if(errores::$error){
+            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        }
+
+        $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        return $this->inputs;
     }
 }

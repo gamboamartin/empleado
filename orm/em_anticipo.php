@@ -2,8 +2,10 @@
 namespace gamboamartin\empleado\models;
 use base\orm\modelo;
 
+use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\errores\errores;
 
+use html\com_sucursal_html;
 use PDO;
 use stdClass;
 
@@ -33,11 +35,15 @@ class em_anticipo extends modelo{
         $campos_view['em_tipo_anticipo_id']['model'] = new em_tipo_anticipo($link);
         $campos_view['em_tipo_descuento_id']['type'] = "selects";
         $campos_view['em_tipo_descuento_id']['model'] = new em_tipo_descuento($link);
+        $campos_view['com_sucursal_id']['type'] = "selects";
+        $campos_view['com_sucursal_id']['model'] = new com_sucursal($link);
         $campos_view['id']['type'] = "inputs";
         $campos_view['codigo']['type'] = "inputs";
         $campos_view['monto']['type'] = "inputs";
         $campos_view['n_pagos']['type'] = "inputs";
         $campos_view['fecha_prestacion']['type'] = "dates";
+        $campos_view['fecha_inicio']['type'] = "dates";
+        $campos_view['fecha_final']['type'] = "dates";
         $campos_view['fecha_inicio_descuento']['type'] = "dates";
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,

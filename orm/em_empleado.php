@@ -1,7 +1,6 @@
 <?php
 namespace gamboamartin\empleado\models;
 
-
 use base\orm\modelo;
 use DateTime;
 use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
@@ -15,10 +14,10 @@ use gamboamartin\direccion_postal\models\dp_estado;
 use gamboamartin\direccion_postal\models\dp_municipio;
 use gamboamartin\direccion_postal\models\dp_pais;
 use gamboamartin\errores\errores;
+use gamboamartin\im_registro_patronal\models\im_conf_pres_empresa;
+use gamboamartin\im_registro_patronal\models\im_detalle_conf_prestaciones;
+use gamboamartin\im_registro_patronal\models\im_registro_patronal;
 use gamboamartin\organigrama\models\org_puesto;
-use models\im_conf_pres_empresa;
-use models\im_detalle_conf_prestaciones;
-use models\im_registro_patronal;
 use PDO;
 use stdClass;
 use Throwable;

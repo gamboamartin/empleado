@@ -1,50 +1,48 @@
 <?php
 namespace gamboamartin\empleado\models;
-use base\orm\modelo;
-use gamboamartin\banco\models\bn_sucursal;
+use base\orm\_modelo_parent;
 use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
 
 
-class em_cuenta_bancaria extends modelo{
+class em_cuenta_bancaria extends _modelo_parent{
 
     public function __construct(PDO $link){
         $tabla = 'em_cuenta_bancaria';
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla,'bn_sucursal'=>$tabla,'bn_banco'=>'bn_sucursal');
         $campos_obligatorios = array('bn_sucursal_id','em_empleado_id','descripcion_select','clabe','num_cuenta',
             'alias','codigo_bis');
-        $campos_view = array('bn_sucursal_id' => array('type' => 'selects', 'model' => new bn_sucursal($link)),
-            'em_empleado_id' => array('type' => 'selects', 'model' => new em_empleado($link)),
-            'id' => array('type' => 'inputs'),'codigo' => array('type' => 'inputs'),
-            'clabe' => array('type' => 'inputs'),'num_cuenta' => array('type' => 'inputs'));
+
+        $no_duplicados = array('num_cuenta');
+
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view);
+            columnas: $columnas,no_duplicados: $no_duplicados);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
 
-    public function alta_bd(): array|stdClass
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-        if (!isset($this->registro['codigo'])) {
-            $this->registro['codigo'] = $this->registro['num_cuenta'];
+        if(!isset($this->registro['codigo'])){
+
+            $this->registro['codigo'] =  $this->get_codigo_aleatorio();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar codigo aleatorio',data:  $this->registro);
+            }
+
+            if (isset($this->registro['num_cuenta'])){
+                $this->registro['codigo'] = $this->registro['num_cuenta'];
+            }
         }
 
-        if (!isset($this->registro['descripcion_select'])) {
-            $this->registro['descripcion_select'] = $this->registro['descripcion'];
-        }
-
-        if (!isset($this->registro['codigo_bis'])) {
-            $this->registro['codigo_bis'] = $this->registro['codigo'];
-        }
-
-        if (!isset($this->registro['alias'])) {
-            $this->registro['alias'] = $this->registro['codigo'];
-            $this->registro['alias'] .= $this->registro['descripcion'];
+        $this->registro = $this->campos_base(data: $this->registro,modelo: $this);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar campos base',data: $this->registro);
         }
 
         $filtro['em_cuenta_bancaria.num_cuenta'] = $this->registro['num_cuenta'];
-        $existe = (new em_cuenta_bancaria(link: $this->link))->existe(filtro: $filtro);
+        $existe = $this->existe(filtro: $filtro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al validar si existe numero de cuenta', data: $existe);
         }
@@ -53,10 +51,11 @@ class em_cuenta_bancaria extends modelo{
             return $this->error->error(mensaje: "Error el numero de cuenta ya existe en el registro", data: $existe);
         }
 
-        $r_alta_bd = parent::alta_bd();
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta cuenta', data: $r_alta_bd);
+        $r_alta_bd =  parent::alta_bd();
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al dar de alta cuenta bancaria', data: $r_alta_bd);
         }
+
         return $r_alta_bd;
     }
 
@@ -90,41 +89,23 @@ class em_cuenta_bancaria extends modelo{
         return $r_em_cuenta_bancaria;
     }
 
-    public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
+    public function modifica_bd(array $registro, int $id, bool $reactiva = false,
+                                array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-        if (!isset($registro['codigo'])) {
-            $registro['codigo'] = $registro['num_cuenta'];
-        }
-
-        if (!isset($registro['descripcion_select'])) {
-            $registro['descripcion_select'] = $registro['descripcion'];
-        }
-
-        if (!isset($registro['codigo_bis'])) {
-            $registro['codigo_bis'] = $registro['codigo'];
-        }
-
-        if (!isset($registro['alias'])) {
-            $registro['alias'] = $registro['codigo'];
-            $registro['alias'] .= $registro['descripcion'];
-        }
-
         $filtro['em_cuenta_bancaria.num_cuenta'] = $registro['num_cuenta'];
-        $existe = (new em_cuenta_bancaria(link: $this->link))->existe(filtro: $filtro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar si existe numero de cuenta', data: $existe);
-        }
+        $not_in['llave'] = 'em_cuenta_bancaria.id';
+        $not_in['values'] = array($this->registro_id);
+        $existe = $this->filtro_and(filtro: $filtro, limit: 1, not_in: $not_in);
 
-        if ($existe){
+        if ($existe->n_registros){
             return $this->error->error(mensaje: "Error el numero de cuenta ya existe en el registro", data: $existe);
         }
 
-        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva); // TODO: Change the autogenerated stub
+        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al modificar cuenta', data: $r_modifica_bd);
+            return $this->error->error(mensaje: 'Error al modificar cuenta bancaria', data: $r_modifica_bd);
         }
+
         return $r_modifica_bd;
     }
-
-
 }

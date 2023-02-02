@@ -11,6 +11,7 @@ namespace gamboamartin\empleado\controllers;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\errores\errores;
+use gamboamartin\system\_ctl_base;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\system\system;
@@ -19,7 +20,7 @@ use html\em_anticipo_html;
 use PDO;
 use stdClass;
 
-class controlador_em_anticipo extends system {
+class controlador_em_anticipo extends _ctl_base {
 
     public array $keys_selects = array();
     public string $link_em_abono_anticipo_alta_bd = '';
@@ -151,22 +152,115 @@ class controlador_em_anticipo extends system {
 
     public function alta(bool $header, bool $ws = false): array|string
     {
-        $r_alta =  parent::alta(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
         }
 
         $this->row_upd->fecha_prestacion = date('Y-m-d');
         $this->row_upd->fecha_inicio_descuento = date('Y-m-d');
         $this->row_upd->monto = 0;
+        $this->row_upd->n_pagos = 1;
 
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
-            print_r($error);
-            die('Error');
+        $inputs = $this->inputs(keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
         }
+
         return $r_alta;
+    }
+
+    protected function campos_view(): array
+    {
+        $keys = new stdClass();
+        $keys->inputs = array('codigo','descripcion','monto', 'n_pagos');
+        $keys->fechas = array('fecha_prestacion', 'fecha_inicio_descuento');
+        $keys->selects = array();
+
+        $init_data = array();
+        $init_data['em_tipo_anticipo'] = "gamboamartin\\empleado";
+        $init_data['em_empleado'] = "gamboamartin\\empleado";
+        $init_data['em_tipo_descuento'] = "gamboamartin\\empleado";
+
+        $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al inicializar campo view', data: $campos_view);
+        }
+
+        return $campos_view;
+    }
+
+    /**
+     * Integra los selects
+     * @param array $keys_selects Key de selcta integrar
+     * @param string $key key a validar
+     * @param string $label Etiqueta a mostrar
+     * @param int $id_selected  selected
+     * @param int $cols cols css
+     * @param bool $con_registros Intrega valores
+     * @param array $filtro Filtro de datos
+     * @return array
+     */
+    private function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+                                  bool  $con_registros = true, array $filtro = array()): array
+    {
+        $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
+            keys_selects: $keys_selects, id_selected: $id_selected, label: $label);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
+    }
+
+    public function init_selects_inputs(): array
+    {
+        $keys_selects = $this->init_selects(keys_selects: array(), key: "em_tipo_anticipo_id", label: "Tipo Anticipo");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_empleado_id", label: "Empleado",
+            cols: 12);
+        return $this->init_selects(keys_selects: $keys_selects, key: "em_tipo_descuento_id", label: "Tipo Descuento");
+    }
+
+    protected function key_selects_txt(array $keys_selects): array
+    {
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'descripcion',
+            keys_selects: $keys_selects, place_holder: 'Descripción');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'monto',
+            keys_selects: $keys_selects, place_holder: 'Monto');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'n_pagos',
+            keys_selects: $keys_selects, place_holder: 'Número Pagos');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha_prestacion',
+            keys_selects: $keys_selects, place_holder: 'Fecha Prestación');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha_inicio_descuento',
+            keys_selects: $keys_selects, place_holder: 'Fecha Inicio Descuento');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
     }
 
     private function base(): array|stdClass

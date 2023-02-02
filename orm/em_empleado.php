@@ -1,6 +1,7 @@
 <?php
 namespace gamboamartin\empleado\models;
 
+use base\orm\_modelo_parent;
 use base\orm\modelo;
 use DateTime;
 use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
@@ -22,7 +23,7 @@ use PDO;
 use stdClass;
 use Throwable;
 
-class em_empleado extends modelo{
+class em_empleado extends _modelo_parent{
     public errores $error;
     public function __construct(PDO $link){
         $this->error = new errores();
@@ -32,86 +33,52 @@ class em_empleado extends modelo{
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
             'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla );
 
-        $campos_obligatorios = array('nombre','descripcion','codigo','descripcion_select','alias','codigo_bis',
+        $campos_obligatorios = array('nombre','ap','descripcion','codigo','descripcion_select','alias','codigo_bis',
             'org_puesto_id','cat_sat_tipo_jornada_nom_id','curp');
 
-        $campos_view['dp_pais_id'] = array('type' => 'selects', 'model' => new dp_pais($link));
-        $campos_view['dp_estado_id'] = array('type' => 'selects', 'model' => new dp_estado($link));
-        $campos_view['dp_municipio_id'] = array('type' => 'selects', 'model' => new dp_municipio($link));
-        $campos_view['dp_cp_id'] = array('type' => 'selects', 'model' => new dp_cp($link));
-        $campos_view['dp_colonia_postal_id'] = array('type' => 'selects', 'model' => new dp_colonia_postal($link));
-        $campos_view['dp_calle_pertenece_id'] = array('type' => 'selects', 'model' => new dp_calle_pertenece($link));
-        $campos_view['cat_sat_regimen_fiscal_id'] = array('type' => 'selects', 'model' => new cat_sat_regimen_fiscal($link));
-        $campos_view['org_puesto_id'] = array('type' => 'selects', 'model' => new org_puesto($link));
-        $campos_view['cat_sat_tipo_regimen_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_regimen_nom($link));
-        $campos_view['im_registro_patronal_id'] = array('type' => 'selects', 'model' => new im_registro_patronal($link));
-        $campos_view['cat_sat_tipo_jornada_nom_id'] = array('type' => 'selects', 'model' => new cat_sat_tipo_jornada_nom($link));
-        $campos_view['em_centro_costo_id'] = array('type' => 'selects', 'model' => new em_centro_costo($link));
-        $campos_view['fecha_inicio_rel_laboral'] = array('type' => 'dates');
-        $campos_view['codigo'] = array('type' => 'inputs');
-        $campos_view['nombre'] = array('type' => 'inputs');
-        $campos_view['ap'] = array('type' => 'inputs');
-        $campos_view['am'] = array('type' => 'inputs');
-        $campos_view['telefono'] = array('type' => 'inputs');
-        $campos_view['rfc'] = array('type' => 'inputs');
-        $campos_view['nss'] = array('type' => 'inputs');
-        $campos_view['curp'] = array('type' => 'inputs');
-        $campos_view['salario_diario'] = array('type' => 'inputs');
-        $campos_view['salario_diario_integrado'] = array('type' => 'inputs');
-        $campos_view['direccion_pendiente_pais'] = array('type' => 'inputs');
-        $campos_view['direccion_pendiente_estado'] = array('type' => 'inputs');
-        $campos_view['direccion_pendiente_municipio'] = array('type' => 'inputs');
-        $campos_view['direccion_pendiente_cp'] = array('type' => 'inputs');
-        $campos_view['direccion_pendiente_colonia'] = array('type' => 'inputs');
-        $campos_view['direccion_pendiente_calle_pertenece'] = array('type' => 'inputs');
-        $campos_view['fecha_inicio'] = array('type' => 'dates');
-        $campos_view['fecha_final'] = array('type' => 'dates');
+
+
+
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';
 
         $columnas_extra['em_empleado_nombre_completo'] = 'CONCAT (IFNULL(em_empleado.nombre,"")," ",IFNULL(em_empleado.ap, "")," ",IFNULL(em_empleado.am,""))';
         $columnas_extra['em_empleado_nombre_completo_inv'] = 'CONCAT (IFNULL(em_empleado.ap,"")," ",IFNULL(em_empleado.am, "")," ",IFNULL(em_empleado.nombre,""))';
+        $columnas_extra['em_empleado_n_cuentas_bancarias'] = "(SELECT COUNT(*) FROM em_cuenta_bancaria 
+        WHERE em_cuenta_bancaria.em_empleado_id = em_empleado.id)";
 
         parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas, campos_view: $campos_view, columnas_extra: $columnas_extra, tipo_campos: $tipo_campos);
+            columnas: $columnas, columnas_extra: $columnas_extra, tipo_campos: $tipo_campos);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
-    private function alias(array $registro): array
+
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-        if(!isset($registro['alias'])){
-            $registro['alias'] = strtoupper($registro['descripcion']);
+        if(!isset($this->registro['codigo'])){
+
+            $this->registro['codigo'] =  $this->get_codigo_aleatorio();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al generar codigo aleatorio',data:  $this->registro);
+            }
+
+            if (isset($this->registro['rfc'])){
+                $this->registro['codigo'] = $this->registro['rfc'];
+            }
         }
-        return $registro;
-    }
 
+        if(!isset($this->registro['descripcion'])){
+            $this->registro['codigo'] = $this->registro['nombre']. ' ';
+            $this->registro['descripcion'] .= $this->registro['ap'];
+        }
 
-    public function alta_bd(): array|stdClass
-    {
-        $registro = $this->registro;
-
-        $keys = array('nombre','ap');
-        $valida = $this->validacion->valida_existencia_keys(keys: $keys, registro: $registro);
+        $this->registro = $this->campos_base(data:$this->registro,modelo: $this);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al validar registro',data: $valida);
+            return $this->error->error(mensaje: 'Error al inicializar campo base',data: $this->registro);
         }
 
-        $registro = $this->init_alta(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
-        }
-
-        $this->registro = $registro;
-
-        $alta_direccion = $this->direccion_pendiente($this->registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $alta_direccion);
-        }
-
-        $this->registro = $this->limpia_campos(registro: $registro, campos_limpiar: array(
-            'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
-            'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
+        $this->registro = $this->limpia_campos_extras(registro: $this->registro, campos_limpiar: array("dp_pais_id",
             "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
@@ -119,33 +86,11 @@ class em_empleado extends modelo{
 
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta empleado',data: $r_alta_bd);
-        }
-
-        if(!empty($alta_direccion)){
-            $alta_emp_dir_pendiente = $this->emp_direccion_pendiente(em_empleado: $r_alta_bd,
-                dp_direccion_pendiente: $alta_direccion);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al asignar direccion pendiente al empleado',data: $alta_emp_dir_pendiente);
-            }
+            return $this->error->error(mensaje: 'Error al dar de alta empleado',data:  $r_alta_bd);
         }
         return $r_alta_bd;
     }
 
-
-    /**
-     * Maqueta el apellido materno en vacio si no existe
-     * @param array $registro Registro en proceso
-     * @return array
-     * @version 0.125.0
-     */
-    private function am(array $registro): array
-    {
-        if(!isset($registro['am'])){
-            $registro['am'] = '';
-        }
-        return $registro;
-    }
 
     public function calcula_sdi(int $em_empleado_id, string $fecha_inicio_rel, float $salario_diario): float|array
     {
@@ -177,22 +122,6 @@ class em_empleado extends modelo{
         return $registro;
     }
 
-    private function codigo_bis(array $registro): array
-    {
-        if(!isset($registro['codigo_bis'])){
-            $registro['codigo_bis'] = strtoupper($registro['codigo']);
-        }
-        return $registro;
-    }
-
-    private function curp(array $registro): array
-    {
-        if(!isset($registro['curp'])){
-            $registro['curp'] = 'XEXX010101HNEXXXA4';
-        }
-        return $registro;
-    }
-
     private function dp_calle_pertenece_id(array $registro): array
     {
         if (!isset($registro['dp_calle_pertenece_id'])) {
@@ -202,67 +131,6 @@ class em_empleado extends modelo{
             }
         }
         return $registro;
-    }
-
-    private function descripcion(array $registro): array
-    {
-        if (!isset($registro['descripcion'])) {
-            $registro['descripcion'] = $registro['nombre'].' '.$registro['ap'].' ';
-            $registro['descripcion'] .= $registro['am'];
-        }
-        return $registro;
-    }
-
-    private function direccion_pendiente(array $registro): array|stdClass
-    {
-        $resultado = array();
-
-        if (isset($registro["direccion_pendiente_pais"]) || isset($registro["direccion_pendiente_estado"]) ||
-            isset($registro["direccion_pendiente_municipio"]) || isset($registro["direccion_pendiente_cp"]) ||
-            isset($registro["direccion_pendiente_colonia"]) || isset($registro["direccion_pendiente_calle_pertenece"])){
-
-            $registros = array();
-            $registros['codigo'] = $registro["direccion_pendiente_pais"];
-            $registros['descripcion_pais'] = $registro["direccion_pendiente_pais"] ?? "SIN REGISTRO";
-            $registros['descripcion_estado'] = $registro["direccion_pendiente_estado"] ?? "SIN REGISTRO";
-            $registros['descripcion_municipio'] = $registro["direccion_pendiente_municipio"] ?? "SIN REGISTRO";
-            $registros['descripcion_cp'] = $registro["direccion_pendiente_cp"] ?? "SIN REGISTRO";
-            $registros['descripcion_colonia'] = $registro["direccion_pendiente_colonia"] ?? "SIN REGISTRO";
-            $registros['descripcion_calle_pertenece'] = $registro["direccion_pendiente_calle_pertenece"] ?? "SIN REGISTRO";
-
-            $resultado = (new dp_direccion_pendiente($this->link))->alta_registro($registros);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $resultado);
-            }
-        }
-        return $resultado;
-    }
-
-    private function descripcion_select(array $registro): array
-    {
-        if (!isset($registro['descripcion_select'])) {
-            $registro['descripcion_select'] = $registro['nombre'].' '.$registro['ap'].' ';
-            $registro['descripcion_select'] .= $registro['am'];
-            $registro['descripcion_select'] = strtoupper($registro['descripcion_select']);
-        }
-        return $registro;
-    }
-
-    private function emp_direccion_pendiente(array|stdClass $em_empleado ,array|stdClass $dp_direccion_pendiente): array|stdClass
-    {
-        $registro['em_empleado_id'] = $em_empleado->registro_id;
-        $registro['dp_direccion_pendiente_id'] = $dp_direccion_pendiente->registro_id;
-        $registro['codigo'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_codigo"];
-        $registro['codigo_bis'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_codigo_bis"];
-        $registro['descripcion'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_descripcion"];
-        $registro['descripcion_select'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_descripcion_select"];
-        $registro['alias'] = $dp_direccion_pendiente->registro["dp_direccion_pendiente_alias"];
-        $alta = (new em_emp_dir_pendiente($this->link))->alta_registro(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener direccion', data: $alta);
-        }
-
-        return $alta;
     }
 
     private function fecha_inicio_rel_laboral_default(array $registro): array
@@ -310,122 +178,34 @@ class em_empleado extends modelo{
         return $r_registro_patronal;
     }
 
-    private function init_alta(array $registro): array
+    public function modifica_bd(array $registro, int $id, bool $reactiva = false,
+                                array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-        $registro = $this->am(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
-        }
-
-
-        $registro = $this->descripcion(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion',data: $registro);
-        }
-
-        $registro = $this->alias(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar alias',data: $registro);
-        }
-
-        $registro = $this->descripcion_select(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar descripcion',data: $registro);
-        }
-
-        $registro = $this->codigo_bis(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar codigo_bis',data: $registro);
-        }
-
-        $registro = $this->org_puesto_id(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar org puesto',data: $registro);
-        }
-
-        $registro = $this->dp_calle_pertenece_id(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar org puesto',data: $registro);
-        }
-
-        $registro = $this->cat_sat_tipo_jornada_nom_id(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar cat_sat_tipo_jornada_nom_id',data: $registro);
-        }
-        $registro = $this->rfc(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
-        }
-        $registro = $this->fecha_inicio_rel_laboral_default(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar am',data: $registro);
-        }
-
-        $registro = $this->curp(registro: $registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al asignar curp',data: $registro);
-        }
-
-        return $registro;
-    }
-
-    /**
-     * Limpia los campos de un empleado previo a su alta
-     * @param array $registro Registro en proceso
-     * @param array $campos_limpiar Campos a limpiar
-     * @return array
-     * @version 0.174.5
-     */
-    private function limpia_campos(array $registro, array $campos_limpiar): array
-    {
-        foreach ($campos_limpiar as $valor) {
-            if (isset($registro[$valor])) {
-                unset($registro[$valor]);
+        if(!isset($this->registro['codigo'])){
+            if (isset($this->registro['rfc'])){
+                $this->registro['codigo'] = $this->registro['rfc'];
             }
         }
-        return $registro;
-    }
 
-    public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
-    {
-        if(isset($registro['codigo'])){
-            $registro['codigo_bis'] = $registro['codigo'];
+        if(!isset($this->registro['descripcion'])){
+            $this->registro['codigo'] = $this->registro['nombre']. ' ';
+            $this->registro['descripcion'] .= $this->registro['ap'];
         }
 
-        if(isset($registro['nombre']) && isset($registro['ap']) && isset($registro['am']) && isset($registro['rfc'])) {
-            $registro['descripcion_select'] = $registro['nombre'] . ' ' . $registro['ap'] . ' ';
-            $registro['descripcion_select'] .= $registro['am'] . ' ' . $registro['rfc'];
-
-            $registro['descripcion'] = $registro['nombre'] . ' ' . $registro['ap'] . ' ';
-            $registro['descripcion'] .= $registro['am'] . ' ' . $registro['rfc'];
-
-            $registro['alias'] = $registro['descripcion'];
-        }
-
-        $alta_direccion = $this->direccion_pendiente($registro);
+        $registro = $this->campos_base(data:$registro,modelo: $this,id: $id);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta direccion pendiente',data: $alta_direccion);
+            return $this->error->error(mensaje: 'Error al inicializar campo base',data: $this->registro);
         }
 
-        $registro = $this->limpia_campos(registro: $registro, campos_limpiar: array(
-            'direccion_pendiente_pais', 'direccion_pendiente_estado','direccion_pendiente_municipio',
-            'direccion_pendiente_cp', 'direccion_pendiente_colonia','direccion_pendiente_calle_pertenece', "dp_pais_id",
+        $registro = $this->limpia_campos_extras(registro: $registro, campos_limpiar: array("dp_pais_id",
             "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
         if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
+            return $this->error->error(mensaje: 'Error al limpiar campos', data: $registro);
         }
 
-        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva); // TODO: Change the autogenerated stub
+        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al modificar empleado',data: $r_modifica_bd);
-        }
-
-        if(!empty($alta_direccion)){
-            $alta_emp_dir_pendiente = $this->emp_direccion_pendiente(em_empleado: $r_modifica_bd,
-                dp_direccion_pendiente: $alta_direccion);
-            if(errores::$error){
-                return $this->error->error(mensaje: 'Error al asignar direccion pendiente al empleado',data: $alta_emp_dir_pendiente);
-            }
         }
 
         return $r_modifica_bd;

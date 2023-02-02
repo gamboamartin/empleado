@@ -1,4 +1,4 @@
-let url = get_url("em_empleado", "get_data", {cat_sat_tipo_producto_id: "1"});
+let url = get_url("em_empleado", "data_ajax", {em_empleado_id: "1"});
 
 var datatable = $(".datatables").DataTable({
     processing: true,

@@ -8,18 +8,16 @@
  */
 namespace gamboamartin\empleado\controllers;
 
+use base\controller\controler;
+use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\documento\models\doc_documento;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
-use gamboamartin\empleado\models\em_cuenta_bancaria;
 use gamboamartin\errores\errores;
-use gamboamartin\nomina\controllers\controlador_nom_conf_empleado;
-use gamboamartin\nomina\controllers\controlador_nom_conf_nomina;
-use gamboamartin\nomina\models\nom_conf_empleado;
 use gamboamartin\plugins\exportador;
+use gamboamartin\system\_ctl_base;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
-use gamboamartin\system\system;
 use gamboamartin\template\html;
 
 use html\em_empleado_html;
@@ -31,363 +29,593 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use stdClass;
 use Throwable;
 
-class controlador_em_empleado extends system {
+class controlador_em_empleado extends _ctl_base {
 
-    public array $keys_selects = array();
-    public stdClass $cuentas_bancarias;
-    public stdClass $anticipos;
-    public stdClass $abonos;
-    public stdClass $conf_nominas;
-    public string $link_em_anticipo_alta_bd = '';
-    public string $link_em_cuenta_bancaria_alta_bd = '';
-    public string $link_em_abono_anticipo_alta_bd = '';
-    public string $link_nom_conf_empleado_alta_bd = '';
-    public string $link_em_cuenta_bancaria_modifica_bd = '';
-    public string $link_em_anticipo_modifica_bd = '';
-    public string $link_em_abono_anticipo_modifica_bd = '';
-    public string $link_nom_conf_empleado_modifica_bd = '';
-
-    public string $link_em_empleado_reportes = '';
-    public string $link_em_empleado_exportar = '';
-    public int $em_cuenta_bancaria_id = -1;
-    public int $em_anticipo_id = -1;
-    public int $em_abono_anticipo_id = -1;
-    public int $nom_conf_empleado_id = -1;
     public controlador_em_cuenta_bancaria $controlador_em_cuenta_bancaria;
     public controlador_em_anticipo $controlador_em_anticipo;
     public controlador_em_abono_anticipo $controlador_em_abono_anticipo;
-    public controlador_nom_conf_empleado $controlador_nom_conf_empleado;
-    public array $columnas_lista_data_table_full = array();
-    public array $columnas_lista_data_table_label = array();
+    public string $link_em_cuenta_bancaria_alta_bd = '';
+    public string $link_em_anticipo_alta_bd = '';
+    public string $link_em_abono_anticipo_alta_bd = '';
+    public string $link_em_empleado_reportes = '';
+    public string $link_em_empleado_exportar = '';
 
-
-    public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
-                                stdClass $paths_conf = new stdClass()){
+    public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
+                                stdClass $paths_conf = new stdClass())
+    {
         $modelo = new em_empleado(link: $link);
         $html_ = new em_empleado_html(html: $html);
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
-        $columns["em_empleado_id"]["titulo"] = "Id";
-        $columns["em_empleado_codigo"]["titulo"] = "Codigo";
-        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
-        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
-        $columns["em_empleado_rfc"]["titulo"] = "Rfc";
-        $columns["em_empleado_alias"]["titulo"] = "Alias";
-
-        $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc",
-            "em_empleado_nombre_completo","em_empleado_nombre_completo_inv");
-
-        $datatables = new stdClass();
-        $datatables->columns = $columns;
+        $datatables = $this->init_datatable();
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al inicializar datatable', data: $datatables);
+            print_r($error);
+            die('Error');
+        }
 
         parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,
             paths_conf: $paths_conf);
 
-        $obj_link->genera_links($this);
+        $configuraciones = $this->init_configuraciones();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al inicializar links', data: $obj_link);
+            $error = $this->errores->error(mensaje: 'Error al inicializar configuraciones', data: $configuraciones);
             print_r($error);
             die('Error');
         }
 
-        $this->titulo_lista = 'Empleados';
-
-        $this->controlador_em_cuenta_bancaria= new controlador_em_cuenta_bancaria(link:$this->link, paths_conf: $paths_conf);
-        $this->controlador_em_anticipo= new controlador_em_anticipo(link:$this->link, paths_conf: $paths_conf);
-        $this->controlador_em_abono_anticipo= new controlador_em_abono_anticipo(link:$this->link, paths_conf: $paths_conf);
-        $this->controlador_nom_conf_empleado= new controlador_nom_conf_empleado(link:$this->link, paths_conf: $paths_conf);
-        $this->controlador_nom_conf_nomina= new controlador_nom_conf_nomina(link:$this->link, paths_conf: $paths_conf);
-
-
-        $keys_rows_lista = $this->keys_rows_lista();
+        $init_controladores = $this->init_controladores(paths_conf: $paths_conf);
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar keys de lista', data: $keys_rows_lista);
-            print_r($error);
-            die('Error');
-        }
-        $this->keys_row_lista = $keys_rows_lista;
-
-        $link_em_anticipo_alta_bd = $obj_link->link_con_id(accion: 'anticipo_alta_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_alta_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_anticipo_alta_bd = $link_em_anticipo_alta_bd;
-
-        $link_em_cuenta_bancaria_alta_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_alta_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_alta_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_cuenta_bancaria_alta_bd = $link_em_cuenta_bancaria_alta_bd;
-
-        $link_em_abono_anticipo_alta_bd = $obj_link->link_con_id(accion: 'abono_alta_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_alta_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_abono_anticipo_alta_bd = $link_em_abono_anticipo_alta_bd;
-
-        $link_nom_conf_empleado_alta_bd = $obj_link->link_con_id(accion: 'conf_empleado_alta_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_empleado_alta_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_nom_conf_empleado_alta_bd = $link_nom_conf_empleado_alta_bd;
-
-        $link_nom_conf_nomina_alta_bd = $obj_link->link_con_id(accion: 'conf_nomina_alta_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_nomina_alta_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_nom_conf_nomina_alta_bd = $link_nom_conf_nomina_alta_bd;
-
-        $link_em_cuenta_bancaria_modifica_bd = $obj_link->link_con_id(accion: 'cuenta_bancaria_modifica_bd',
-            link: $link, registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_cuenta_bancaria_modifica_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_cuenta_bancaria_modifica_bd = $link_em_cuenta_bancaria_modifica_bd;
-
-        $link_em_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'anticipo_modifica_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_anticipo_modifica_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_anticipo_modifica_bd = $link_em_anticipo_modifica_bd;
-
-        $link_em_abono_anticipo_modifica_bd = $obj_link->link_con_id(accion: 'abono_modifica_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_abono_anticipo_modifica_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_abono_anticipo_modifica_bd = $link_em_abono_anticipo_modifica_bd;
-
-
-
-        $link_nom_conf_empleado_modifica_bd = $obj_link->link_con_id(accion: 'conf_empleado_modifica_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_empleado_modifica_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_nom_conf_empleado_modifica_bd = $link_nom_conf_empleado_modifica_bd;
-
-        $link_nom_conf_empleado_modifica_bd = $obj_link->link_con_id(accion: 'conf_empleado_modifica_bd', link: $link,
-            registro_id: $this->registro_id, seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_nom_conf_empleado_modifica_bd);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_nom_conf_empleado_modifica_bd = $link_nom_conf_empleado_modifica_bd;
-
-
-        $link_em_empleado_reportes = $obj_link->link_con_id(accion: 'reportes', link: $link, registro_id: $this->registro_id,
-            seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_empleado_reportes);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_empleado_reportes = $link_em_empleado_reportes;
-
-        $link_em_empleado_exportar = $obj_link->link_con_id(accion: 'exportar', link: $link, registro_id: $this->registro_id,
-            seccion: $this->seccion);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar link', data: $link_em_empleado_exportar);
-            print_r($error);
-            die('Error');
-        }
-        $this->link_em_empleado_exportar = $link_em_empleado_exportar;
-
-
-        if (isset($_GET['em_cuenta_bancaria_id'])){
-            $this->em_cuenta_bancaria_id = $_GET['em_cuenta_bancaria_id'];
-        }
-
-        if (isset($_GET['em_anticipo_id'])){
-            $this->em_anticipo_id = $_GET['em_anticipo_id'];
-        }
-
-        if (isset($_GET['em_abono_anticipo_id'])){
-            $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
-        }
-
-        if (isset($_GET['nom_conf_empleado_id'])){
-            $this->nom_conf_empleado_id = $_GET['nom_conf_empleado_id'];
-        }
-
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_pais',
-            propiedades: ['place_holder'=> 'Nuevo Pais',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_estado',
-            propiedades: ['place_holder'=> 'Nuevo Estado',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_municipio',
-            propiedades: ['place_holder'=> 'Nuevo Municipio',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_cp',
-            propiedades: ['place_holder'=> 'Nuevo CP',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_colonia',
-            propiedades: ['place_holder'=> 'Nueva Colonia',"required"=>false]);
-        $this->asignar_propiedad(identificador: 'direccion_pendiente_calle_pertenece',
-            propiedades: ['place_holder'=> 'Nueva Calle',"required"=>false]);
-
-        $this->asignar_propiedad(identificador:'dp_pais_id', propiedades: ["label" => "Pais","required"=>false,
-            "extra_params_keys"=>array("dp_pais_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_estado_id', propiedades: ["label" => "Estado","required"=>false,
-            "con_registros" => false, "extra_params_keys"=>array("dp_estado_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_municipio_id', propiedades: ["label" => "Municipio","required"=>false,
-            "con_registros" => false, "extra_params_keys"=>array("dp_municipio_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_cp_id', propiedades: ["label" => "CP","con_registros" => false,
-            "required"=>false,"extra_params_keys"=>array("dp_cp_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_colonia_postal_id', propiedades: ["label" => "Colonia",
-            "required"=>false,"con_registros" => false, "extra_params_keys"=>array("dp_colonia_predeterminado")]);
-        $this->asignar_propiedad(identificador:'dp_calle_pertenece_id', propiedades: ["label" => "Calle Pertenece",
-            "required"=>false,"con_registros" => false, "extra_params_keys"=>array("dp_calle_pertenece_predeterminado")]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            $error = $this->errores->error(mensaje: 'Error al inicializar controladores', data: $init_controladores);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'campo_extra', propiedades: ["cols" => 12,'place_holder'=> 'Campo',
-            'required' => false]);
-
-        $this->asignar_propiedad(identificador:'cat_sat_regimen_fiscal_id', propiedades: ["label" => "Regimen Fiscal"]);
+        $init_links = $this->init_links();
         if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            $error = $this->errores->error(mensaje: 'Error al inicializar links', data: $init_links);
             print_r($error);
             die('Error');
         }
-
-        $this->asignar_propiedad(identificador:'im_registro_patronal_id', propiedades: ["label" => "Registro Patronal"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'org_puesto_id', propiedades: ["label" => "Puesto", "required"=>false]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'cat_sat_tipo_regimen_nom_id', propiedades: ["label" => "Tipo Regimen"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'cat_sat_tipo_jornada_nom_id', propiedades: ["label" => "Tipo Jornada",
-            "required"=>false]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_centro_costo_id', propiedades: ["label" => "Centro Costo","required"=>false, 'cols' => 12]);
-
-        $this->asignar_propiedad(identificador:'fecha_inicio_rel_laboral',
-            propiedades: ["place_holder" => "Fecha Inicio Rel Laboral"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'salario_diario', propiedades: ["place_holder" => "Salario Diario"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'salario_diario_integrado',
-            propiedades: ["place_holder" => "Salario Diario Integrado"]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'rfc', propiedades: ["cols" => 6]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'curp', propiedades: ["cols" => 6]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'nss', propiedades: ["cols" => 6]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        /**
-         * VALIDAR ERRORES
-         */
-        $this->asignar_propiedad(identificador: 'codigo', propiedades: ['place_holder'=> 'Codigo']);
-        $this->asignar_propiedad(identificador: 'nombre', propiedades: ['place_holder'=> 'Nombre']);
-        $this->asignar_propiedad(identificador: 'ap', propiedades: ['place_holder'=> 'Apellido Paterno']);
-        $this->asignar_propiedad(identificador: 'am', propiedades: ['place_holder'=> 'Apellido Materno']);
-        $this->asignar_propiedad(identificador: 'telefono', propiedades: ['place_holder'=> 'Telefono']);
-        $this->asignar_propiedad(identificador: 'rfc', propiedades: ['place_holder'=> 'RFC']);
-        $this->asignar_propiedad(identificador: 'nss', propiedades: ['place_holder'=> 'NSS']);
-        $this->asignar_propiedad(identificador: 'curp', propiedades: ['place_holder'=> 'CURP']);
-        $this->asignar_propiedad(identificador: 'fecha_inicio_rel_laboral',
-            propiedades: ['place_holder'=> 'Fecha Inicio Relacion Laboral']);
-
-        $this->lista_get_data = true;
     }
 
     public function alta(bool $header, bool $ws = false): array|string
     {
-        $r_alta =  parent::alta(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
         }
 
         $this->row_upd->fecha_inicio_rel_laboral = date('Y-m-d');
         $this->row_upd->salario_diario = 0;
         $this->row_upd->salario_diario_integrado = 0;
 
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
-            print_r($error);
-            die('Error');
+        $inputs = $this->inputs(keys_selects: $keys_selects);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
         }
 
         return $r_alta;
     }
+
+    public function anticipo(bool $header = true, bool $ws = false, array $not_actions = array()): array|string
+    {
+        $seccion = "em_anticipo";
+
+        $data_view = new stdClass();
+        $data_view->names = array('Id', 'Tipo Anticipo', 'Monto', 'Fecha Prestación','Acciones');
+        $data_view->keys_data = array($seccion . "_id", 'em_tipo_anticipo_descripcion', $seccion . '_monto',
+            $seccion . '_fecha_prestacion');
+        $data_view->key_actions = 'acciones';
+        $data_view->namespace_model = 'gamboamartin\\empleado\\models';
+        $data_view->name_model_children = $seccion;
+
+        $contenido_table = $this->contenido_children(data_view: $data_view, next_accion: __FUNCTION__,
+            not_actions: $not_actions);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener tbody', data: $contenido_table, header: $header, ws: $ws);
+        }
+
+        return $contenido_table;
+    }
+
+    protected function campos_view(): array
+    {
+        $keys = new stdClass();
+        $keys->inputs = array('codigo', 'descripcion', 'nombre', 'ap', 'am',  'rfc', 'curp', 'nss', 'salario_diario',
+            'salario_diario_integrado');
+        $keys->telefonos = array('telefono');
+        $keys->fechas = array('fecha_inicio_rel_laboral', 'fecha_inicio', 'fecha_final');
+        $keys->selects = array();
+
+        $init_data = array();
+        $init_data['dp_pais'] = "gamboamartin\\direccion_postal";
+        $init_data['dp_estado'] = "gamboamartin\\direccion_postal";
+        $init_data['dp_municipio'] = "gamboamartin\\direccion_postal";
+        $init_data['dp_cp'] = "gamboamartin\\direccion_postal";
+        $init_data['dp_colonia_postal'] = "gamboamartin\\direccion_postal";
+        $init_data['dp_calle_pertenece'] = "gamboamartin\\direccion_postal";
+        $init_data['cat_sat_regimen_fiscal'] = "gamboamartin\\cat_sat";
+        $init_data['cat_sat_tipo_regimen_nom'] = "gamboamartin\\cat_sat";
+        $init_data['cat_sat_tipo_jornada_nom'] = "gamboamartin\\cat_sat";
+        $init_data['org_puesto'] = "gamboamartin\\organigrama";
+        $init_data['em_centro_costo'] = "gamboamartin\\empleado";
+        $init_data['im_registro_patronal'] = "gamboamartin\\im_registro_patronal";
+
+        $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al inicializar campo view', data: $campos_view);
+        }
+
+        return $campos_view;
+    }
+
+    public function cuenta_bancaria(bool $header = true, bool $ws = false, array $not_actions = array()): array|string
+    {
+        $seccion = "em_cuenta_bancaria";
+
+        $data_view = new stdClass();
+        $data_view->names = array('Id', 'Banco Sucursal', 'Número  Cuenta', 'Acciones');
+        $data_view->keys_data = array($seccion . "_id", 'bn_sucursal_descripcion', $seccion . '_num_cuenta');
+        $data_view->key_actions = 'acciones';
+        $data_view->namespace_model = 'gamboamartin\\empleado\\models';
+        $data_view->name_model_children = $seccion;
+
+        $contenido_table = $this->contenido_children(data_view: $data_view, next_accion: __FUNCTION__,
+            not_actions: $not_actions);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener tbody', data: $contenido_table, header: $header, ws: $ws);
+        }
+
+        return $contenido_table;
+    }
+
+    public function exportar(bool $header, bool $ws = false): array|stdClass
+    {
+        $fecha_inicio = date('Y-m-d');
+        $fecha_fin = date('Y-m-d');
+
+        if (isset($_POST['fecha_inicio'])){
+            $fecha_inicio = $_POST['fecha_inicio'];
+        }
+
+        if (isset($_POST['fecha_final'])){
+            $fecha_fin = $_POST['fecha_final'];
+        }
+
+        $filtro_especial[0][$fecha_fin]['operador'] = '>=';
+        $filtro_especial[0][$fecha_fin]['valor'] = 'em_empleado.fecha_inicio_rel_laboral';
+        $filtro_especial[0][$fecha_fin]['comparacion'] = 'AND';
+        $filtro_especial[0][$fecha_fin]['valor_es_campo'] = true;
+
+        $filtro_especial[1][$fecha_inicio]['operador'] = '<=';
+        $filtro_especial[1][$fecha_inicio]['valor'] = 'em_empleado.fecha_inicio_rel_laboral';
+        $filtro_especial[1][$fecha_inicio]['comparacion'] = 'AND';
+        $filtro_especial[1][$fecha_inicio]['valor_es_campo'] = true;
+
+        $data = (new em_empleado($this->link))->filtro_and(filtro_especial: $filtro_especial);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al obtener registros',data:  $data);
+            print_r($error);
+            die('Error');
+        }
+
+        $exportador = (new exportador());
+        $registros_xls = array();
+
+        foreach ($data->registros as $registro){
+
+            $row = array();
+            $row["empleado"] = $registro['em_empleado_nombre'];
+            $row["empleado"] .= " ".$registro['em_empleado_ap'];
+            $row["empleado"] .= " ".$registro['em_empleado_am'];
+            $row["nss"] = $registro['em_empleado_nss'];
+            $row["rfc"] = $registro['em_empleado_rfc'];
+            $row["salario_diario"] = $registro['em_empleado_salario_diario'];
+            $row["salario_diario_integrado"] = $registro['em_empleado_salario_diario_integrado'];
+            $row["puesto"] = $registro['org_puesto_descripcion'];
+            $row["departamento"] = $registro['org_departamento_descripcion'];
+            $row["centro_costo"] = $registro['em_centro_costo_descripcion'];
+            $registros_xls[] = $row;
+        }
+
+        $keys = array();
+
+        foreach (array_keys($registros_xls[0]) as $key) {
+            $keys[$key] = strtoupper(str_replace('_', ' ', $key));
+        }
+
+        $registros = array();
+
+        foreach ($registros_xls as $row) {
+            $registros[] = array_combine(preg_replace(array_map(function($s){return "/^$s$/";},
+                array_keys($keys)),$keys, array_keys($row)), $row);
+        }
+
+        $resultado = $exportador->listado_base_xls(header: $header, name: $this->seccion, keys:  $keys,
+            path_base: $this->path_base,registros:  $registros,totales:  array());
+        if(errores::$error){
+            $error =  $this->errores->error('Error al generar xls',$resultado);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
+
+    private function init_configuraciones(): controler
+    {
+        $this->seccion_titulo = 'Empleados';
+        $this->titulo_lista = 'Registro de Empleados';
+
+        $this->lista_get_data = true;
+
+        return $this;
+    }
+
+    private function init_controladores(stdClass $paths_conf): controler
+    {
+        $this->controlador_em_cuenta_bancaria = new controlador_em_cuenta_bancaria(link: $this->link,
+            paths_conf: $paths_conf);
+        $this->controlador_em_anticipo = new controlador_em_anticipo(link: $this->link,
+            paths_conf: $paths_conf);
+
+        return $this;
+    }
+
+    private function init_datatable(): stdClass
+    {
+        $columns["em_empleado_id"]["titulo"] = "Id";
+        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
+        $columns["em_empleado_rfc"]["titulo"] = "Rfc";
+        $columns["em_empleado_nss"]["titulo"] = "NSS";
+        $columns["org_puesto_descripcion"]["titulo"] = "Puesto";
+        $columns["em_empleado_n_cuentas_bancarias"]["titulo"] = "Cuentas Bancarias";
+
+        $filtro = array("em_empleado.id","em_empleado.nombre","em_empleado.ap","em_empleado.am","em_empleado.rfc",
+            "em_empleado_nombre_completo","em_empleado_nombre_completo_inv", "em_empleado.nss","org_puesto.descripcion");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        return $datatables;
+    }
+
+    private function init_links(): array|string
+    {
+        $this->link_em_cuenta_bancaria_alta_bd = $this->obj_link->link_alta_bd(link: $this->link,
+            seccion: 'em_cuenta_bancaria');
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_cuenta_bancaria_alta_bd);
+            print_r($error);
+            exit;
+        }
+
+        $this->link_em_anticipo_alta_bd = $this->obj_link->link_alta_bd(link: $this->link,
+            seccion: 'em_anticipo');
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_anticipo_alta_bd);
+            print_r($error);
+            exit;
+        }
+
+        $this->link_em_empleado_reportes = $this->obj_link->link_con_id(accion: "reportes",link: $this->link,
+            registro_id: $this->registro_id,seccion: "em_empleado");
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_empleado_reportes);
+            print_r($error);
+            exit;
+        }
+
+        $this->link_em_empleado_exportar = $this->obj_link->link_con_id(accion: "exportar",link: $this->link,
+            registro_id: $this->registro_id,seccion: "em_empleado");
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_empleado_exportar);
+            print_r($error);
+            exit;
+        }
+
+        return $this->link_em_empleado_exportar;
+    }
+
+    /**
+     * Integra los selects
+     * @param array $keys_selects Key de selcta integrar
+     * @param string $key key a validar
+     * @param string $label Etiqueta a mostrar
+     * @param int $id_selected  selected
+     * @param int $cols cols css
+     * @param bool $con_registros Intrega valores
+     * @param array $filtro Filtro de datos
+     * @return array
+     */
+    private function init_selects(array $keys_selects, string $key, string $label, int $id_selected = -1, int $cols = 6,
+                                  bool  $con_registros = true, array $filtro = array()): array
+    {
+        $keys_selects = $this->key_select(cols: $cols, con_registros: $con_registros, filtro: $filtro, key: $key,
+            keys_selects: $keys_selects, id_selected: $id_selected, label: $label);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
+    }
+
+    public function init_selects_inputs(): array
+    {
+        $keys_selects = $this->init_selects(keys_selects: array(), key: "dp_pais_id", label: "País");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "dp_estado_id", label: "Estado",
+            con_registros: false);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "dp_municipio_id", label: "Municipio",
+            con_registros: false);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "dp_cp_id", label: "CP",
+            con_registros: false);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "dp_colonia_postal_id", label: "Colonia",
+            con_registros: false);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "dp_calle_pertenece_id", label: "Calle",
+            con_registros: false);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_regimen_fiscal_id",
+            label: "Régimen Fiscal");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_tipo_regimen_nom_id",
+            label: "Tipo de Régimen Nom");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_tipo_jornada_nom_id",
+            label: "Tipo de Jornada Nom");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "org_puesto_id", label: "Puesto");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_centro_costo_id",
+            label: "Centro Costo", cols: 12);
+        return $this->init_selects(keys_selects: $keys_selects, key: "im_registro_patronal_id", label: "Registro Patronal");
+    }
+
+    protected function inputs_children(stdClass $registro): array|stdClass
+    {
+        if ($this->accion === "cuenta_bancaria"){
+            $r_template = $this->controlador_em_cuenta_bancaria->alta(header: false);
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al obtener template', data: $r_template);
+            }
+
+            $keys_selects = $this->controlador_em_cuenta_bancaria->init_selects_inputs();
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al inicializar selects', data: $keys_selects);
+            }
+
+            $keys_selects['em_empleado_id']->id_selected = $this->registro_id;
+            $keys_selects['em_empleado_id']->filtro = array("em_empleado.id" => $this->registro_id);
+            $keys_selects['em_empleado_id']->disabled = true;
+
+            $inputs = $this->controlador_em_cuenta_bancaria->inputs(keys_selects: $keys_selects);
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al obtener inputs', data: $inputs);
+            }
+
+            $this->inputs = $inputs;
+        } else if ($this->accion === "anticipo"){
+
+            $r_template = $this->controlador_em_anticipo->alta(header: false);
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al obtener template', data: $r_template);
+            }
+
+            $keys_selects = $this->controlador_em_anticipo->init_selects_inputs();
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al inicializar selects', data: $keys_selects);
+            }
+
+            $keys_selects['em_empleado_id']->id_selected = $this->registro_id;
+            $keys_selects['em_empleado_id']->filtro = array("em_empleado.id" => $this->registro_id);
+            $keys_selects['em_empleado_id']->disabled = true;
+
+            $inputs = $this->controlador_em_anticipo->inputs(keys_selects: $keys_selects);
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al obtener inputs', data: $inputs);
+            }
+
+            $this->inputs = $inputs;
+        }
+
+        return $this->inputs;
+    }
+
+    protected function key_selects_txt(array $keys_selects): array
+    {
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'nombre',
+            keys_selects: $keys_selects, place_holder: 'Nombre');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'ap',
+            keys_selects: $keys_selects, place_holder: 'Apellido Paterno');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'am',
+            keys_selects: $keys_selects, place_holder: 'Apellido Materno');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'telefono',
+            keys_selects: $keys_selects, place_holder: 'Teléfono');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'rfc',
+            keys_selects: $keys_selects, place_holder: 'RFC');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'curp',
+            keys_selects: $keys_selects, place_holder: 'CURP');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'nss',
+            keys_selects: $keys_selects, place_holder: 'NSS');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha_inicio_rel_laboral',
+            keys_selects: $keys_selects, place_holder: 'Fecha Relación Laboral');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'salario_diario',
+            keys_selects: $keys_selects, place_holder: 'Salario Diario');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'salario_diario_integrado',
+            keys_selects: $keys_selects, place_holder: 'Salario Diario Integrado');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha_inicio',
+            keys_selects: $keys_selects, place_holder: 'Fecha Inicio');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha_final',
+            keys_selects: $keys_selects, place_holder: 'Fecha Final');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        return $keys_selects;
+    }
+
+    public function modifica(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_modifica = $this->init_modifica();
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar salida de template', data: $r_modifica, header: $header, ws: $ws);
+        }
+
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
+                ws: $ws);
+        }
+
+        $calle = (new dp_calle_pertenece($this->link))
+            ->get_calle_pertenece(dp_calle_pertenece_id: $this->registro['dp_calle_pertenece_id']);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener datos de direccion', data: $calle, header: $header,
+                ws: $ws);
+        }
+
+        $keys_selects['dp_pais_id']->id_selected = $calle['dp_pais_id'];
+
+        $keys_selects['dp_estado_id']->con_registros = true;
+        $keys_selects['dp_estado_id']->filtro = array("dp_pais.id" => $calle['dp_pais_id']);
+        $keys_selects['dp_estado_id']->id_selected = $calle['dp_estado_id'];
+
+        $keys_selects['dp_municipio_id']->con_registros = true;
+        $keys_selects['dp_municipio_id']->filtro = array("dp_estado.id" => $calle['dp_estado_id']);
+        $keys_selects['dp_municipio_id']->id_selected = $calle['dp_municipio_id'];
+
+        $keys_selects['dp_cp_id']->con_registros = true;
+        $keys_selects['dp_cp_id']->filtro = array("dp_municipio.id" => $calle['dp_municipio_id']);
+        $keys_selects['dp_cp_id']->id_selected = $calle['dp_cp_id'];
+
+        $keys_selects['dp_colonia_postal_id']->con_registros = true;
+        $keys_selects['dp_colonia_postal_id']->filtro = array("dp_cp.id" => $calle['dp_cp_id']);
+        $keys_selects['dp_colonia_postal_id']->id_selected = $calle['dp_colonia_postal_id'];
+
+        $keys_selects['dp_calle_pertenece_id']->con_registros = true;
+        $keys_selects['dp_calle_pertenece_id']->filtro = array("dp_colonia_postal.id" => $calle['dp_colonia_postal_id']);
+        $keys_selects['dp_calle_pertenece_id']->id_selected = $calle['dp_calle_pertenece_id'];
+
+        $keys_selects['cat_sat_regimen_fiscal_id']->id_selected = $this->registro['cat_sat_regimen_fiscal_id'];
+        $keys_selects['cat_sat_tipo_regimen_nom_id']->id_selected = $this->registro['cat_sat_tipo_regimen_nom_id'];
+        $keys_selects['cat_sat_tipo_jornada_nom_id']->id_selected = $this->registro['cat_sat_tipo_jornada_nom_id'];
+        $keys_selects['org_puesto_id']->id_selected = $this->registro['org_puesto_id'];
+        $keys_selects['em_centro_costo_id']->id_selected = $this->registro['em_centro_costo_id'];
+        $keys_selects['im_registro_patronal_id']->id_selected = $this->registro['im_registro_patronal_id'];
+
+        $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
+        }
+
+        return $r_modifica;
+    }
+
+    public function reportes(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $inputs = $this->inputs(keys_selects: array());
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
+        }
+
+        return $this->inputs;
+    }
+
+
+
+
+    // ----- POR REVISAR -----
+
+    public array $keys_selects = array();
+    public stdClass $anticipos;
+    public stdClass $abonos;
+    public stdClass $conf_nominas;
+
+    public string $link_nom_conf_empleado_alta_bd = '';
+    public string $link_em_abono_anticipo_modifica_bd = '';
+    public string $link_nom_conf_empleado_modifica_bd = '';
+
+
+    public int $em_cuenta_bancaria_id = -1;
+    public int $em_anticipo_id = -1;
+    public int $em_abono_anticipo_id = -1;
+    public int $nom_conf_empleado_id = -1;
+
+//public controlador_nom_conf_empleado $controlador_nom_conf_empleado;
+    public array $columnas_lista_data_table_full = array();
+    public array $columnas_lista_data_table_label = array();
+
+
+
+
+
 
     public function abono(bool $header, bool $ws = false): array|stdClass
     {
@@ -558,168 +786,6 @@ class controlador_em_empleado extends system {
             exit;
         }
         $r_elimina->siguiente_view = "abono";
-
-        return $r_elimina;
-    }
-
-    public function anticipo(bool $header, bool $ws = false): array|stdClass
-    {
-        $alta = $this->controlador_em_anticipo->alta(header: false);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
-        }
-
-        $this->controlador_em_anticipo->asignar_propiedad(identificador: 'em_empleado_id',
-            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
-                "filtro" => array('em_empleado.id' => $this->registro_id)]);
-
-        $this->inputs = $this->controlador_em_anticipo->genera_inputs(
-            keys_selects:  $this->controlador_em_anticipo->keys_selects);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->anticipos = $this->ver_anticipos(header: $header,ws: $ws);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener los anticipos',data:  $this->anticipos, header: $header,ws:$ws);
-        }
-
-        return $this->inputs;
-    }
-
-    public function anticipo_alta_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-        $_POST['em_empleado_id'] = $this->registro_id;
-
-        $alta = (new em_anticipo($this->link))->alta_registro(registro: $_POST);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al dar de alta anticipo', data: $alta,
-                header: $header, ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: "anticipo", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($alta, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $alta->siguiente_view = "anticipo";
-
-        return $alta;
-    }
-
-    public function anticipo_modifica(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->controlador_em_anticipo->registro_id = $this->em_anticipo_id;
-
-        $modifica = $this->controlador_em_anticipo->modifica(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
-        }
-
-        $this->inputs = $this->controlador_em_anticipo->genera_inputs(
-            keys_selects:  $this->controlador_em_anticipo->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        return $this->inputs;
-    }
-
-    public function anticipo_modifica_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $registros = $_POST;
-
-        $r_modifica = (new em_anticipo($this->link))->modifica_bd(registro: $registros,
-            id: $this->em_anticipo_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al modificar anticipo', data: $r_modifica, header: $header, ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
-                siguiente_view: "anticipo", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_modifica->siguiente_view = "anticipo";
-
-        return $r_modifica;
-    }
-
-    public function anticipo_elimina_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $r_elimina = (new em_anticipo($this->link))->elimina_bd(id: $this->em_anticipo_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
-                ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: "anticipo", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_elimina->siguiente_view = "anticipo";
 
         return $r_elimina;
     }
@@ -1071,179 +1137,6 @@ class controlador_em_empleado extends system {
         return $result;
     }
 
-    public function cuenta_bancaria(bool $header, bool $ws = false): array|stdClass
-    {
-        $alta = $this->controlador_em_cuenta_bancaria->alta(header: false);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
-        }
-
-        $this->controlador_em_cuenta_bancaria->asignar_propiedad(identificador: 'em_empleado_id',
-            propiedades: ["id_selected" => $this->registro_id, "disabled" => true,
-                "filtro" => array('em_empleado.id' => $this->registro_id)]);
-
-        $this->inputs = $this->controlador_em_cuenta_bancaria->genera_inputs(
-            keys_selects:  $this->controlador_em_cuenta_bancaria->keys_selects);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        $cuentas_bancarias = (new em_cuenta_bancaria($this->link))->get_cuentas_bancarias_empleado(
-            em_empleado_id: $this->registro_id);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener anticipos',data:  $cuentas_bancarias,
-                header: $header,ws:$ws);
-        }
-
-        foreach ($cuentas_bancarias->registros as $indice => $cuenta_bancaria) {
-            $cuenta_bancaria = $this->data_cuenta_bancaria_btn(cuenta_bancaria: $cuenta_bancaria);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $cuenta_bancaria, header: $header, ws: $ws);
-            }
-            $cuentas_bancarias->registros[$indice] = $cuenta_bancaria;
-        }
-        $this->cuentas_bancarias = $cuentas_bancarias;
-
-        return $this->inputs;
-    }
-
-    public function cuenta_bancaria_alta_bd(bool $header, bool $ws = false)
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-        $_POST['em_empleado_id'] = $this->registro_id;
-
-        $alta = (new em_cuenta_bancaria($this->link))->alta_registro(registro: $_POST);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al dar de alta cuenta bancaria', data: $alta,
-                header: $header, ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: "cuenta_bancaria", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($alta, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $alta->siguiente_view = "cuenta_bancaria";
-
-        return $alta;
-
-    }
-
-    public function cuenta_bancaria_modifica(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->controlador_em_cuenta_bancaria->registro_id = $this->em_cuenta_bancaria_id;
-
-        $modifica = $this->controlador_em_cuenta_bancaria->modifica(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
-        }
-
-        $this->inputs = $this->controlador_em_cuenta_bancaria->genera_inputs(
-            keys_selects:  $this->controlador_em_cuenta_bancaria->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        return $this->inputs;
-    }
-
-    public function cuenta_bancaria_modifica_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $registros = $_POST;
-
-        $r_modifica = (new em_cuenta_bancaria($this->link))->modifica_bd(registro: $registros,
-            id: $this->em_cuenta_bancaria_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al modificar deduccion', data: $r_modifica, header: $header, ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
-                siguiente_view: "cuenta_bancaria", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_modifica->siguiente_view = "cuenta_bancaria";
-
-        return $r_modifica;
-    }
-
-    public function cuenta_bancaria_elimina_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $r_elimina = (new em_cuenta_bancaria($this->link))->elimina_bd(id: $this->em_cuenta_bancaria_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al eliminar otro pago', data: $r_elimina, header: $header,
-                ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: "cuenta_bancaria", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_elimina->siguiente_view = "cuenta_bancaria";
-
-        return $r_elimina;
-    }
 
     private function data_anticipo_btn(array $anticipo): array
     {
@@ -1273,26 +1166,7 @@ class controlador_em_empleado extends system {
         return $anticipo;
     }
 
-    private function data_cuenta_bancaria_btn(array $cuenta_bancaria): array
-    {
-        $params['em_cuenta_bancaria_id'] = $cuenta_bancaria['em_cuenta_bancaria_id'];
 
-        $btn_elimina = $this->html_base->button_href(accion: 'cuenta_bancaria_elimina_bd', etiqueta: 'Elimina',
-            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
-        }
-        $cuenta_bancaria['link_elimina'] = $btn_elimina;
-
-        $btn_modifica = $this->html_base->button_href(accion: 'cuenta_bancaria_modifica', etiqueta: 'Modifica',
-            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
-        }
-        $cuenta_bancaria['link_modifica'] = $btn_modifica;
-
-        return $cuenta_bancaria;
-    }
 
     private function data_abono_btn(array $abono): array
     {
@@ -1350,8 +1224,6 @@ class controlador_em_empleado extends system {
 
     }
 
-
-
     public function imss(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
@@ -1364,56 +1236,8 @@ class controlador_em_empleado extends system {
 
     }
 
-    private function keys_rows_lista(): array
-    {
-        $keys_rows_lista = array();
-        $keys = array('em_empleado_id','em_empleado_codigo','em_empleado_nombre','em_empleado_ap','em_empleado_am','em_empleado_rfc');
-
-        foreach ($keys as $campo) {
-            $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);
-            if (errores::$error){
-                return $this->errores->error(mensaje: "error al inicializar key",data: $keys_rows_lista);
-            }
-        }
-
-        return $keys_rows_lista;
-    }
-
-    private function key_row_lista_init(string $campo, array $keys_rows_lista): array
-    {
-        $data = new stdClass();
-        $data->campo = $campo;
-
-        $campo = str_replace(array("em_empleado", "em_", "_"), '', $campo);
-        $campo = ucfirst(strtolower($campo));
-
-        $data->name_lista = $campo;
-        $keys_rows_lista[] = $data;
-
-        return $keys_rows_lista;
-    }
-
-    public function lista(bool $header, bool $ws = false): array
-    {
-        $r_lista = parent::lista($header, $ws);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $r_lista, header: $header,ws:$ws);
-        }
-
-        $registros = $this->maqueta_registros_lista(registros: $this->registros);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar registros',data:  $registros, header: $header,ws:$ws);
-        }
-
-        $this->registros = $registros;
-
-        return $r_lista;
-    }
-
-    public function lista_ajax(bool $header, bool $ws = false){
 
 
-    }
 
     private function maqueta_registros_lista(array $registros): array
     {
@@ -1442,16 +1266,7 @@ class controlador_em_empleado extends system {
         return $registros;
     }
 
-    public function modifica(bool $header, bool $ws = false): array|stdClass
-    {
-        $base = $this->base();
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al maquetar datos',data:  $base,
-                header: $header,ws:$ws);
-        }
 
-        return $base->template;
-    }
 
     public function modifica_fiscales(bool $header, bool $ws = false): array|stdClass
     {
@@ -1470,123 +1285,9 @@ class controlador_em_empleado extends system {
         return $r_modifica_bd;
     }
 
-    public function reportes(bool $header, bool $ws = false): array|stdClass
-    {
-        $columns["em_empleado_nombre"]["titulo"] = "Nombre";
-        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap","em_empleado_am");
-        $columns["em_empleado_nss"]["titulo"] = "NSS";
-        $columns["em_empleado_rfc"]["titulo"] = "RFC";
-        $columns["em_empleado_salario_diario"]["titulo"] = "Salario Diario";
-        $columns["em_empleado_salario_diario_integrado"]["titulo"] = "Salario Diario Integrado";
-        $columns["org_puesto_descripcion"]["titulo"] = "Puesto";
-        $columns["org_departamento_descripcion"]["titulo"] = "Departamento";
-        $columns["em_centro_costo_descripcion"]["titulo"] = "Centro Costos";
-        $filtro = array();
 
-        /*$datatable = $this->datatable_init(columns: $columns,identificador: "#em_empleado",);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al inicializar datatable',data:  $datatable,
-                header: $header,ws:$ws);
-        }*/
 
-        $this->asignar_propiedad(identificador: 'fecha_inicio', propiedades: ['place_holder'=> 'Fecha Inicio',
-            'cols' => 4, 'required' => false]);
-        $this->asignar_propiedad(identificador: 'fecha_final', propiedades: ['place_holder'=> 'Fecha Final',
-            'cols' => 4, 'required' => false]);
 
-        $r_alta =  parent::alta(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
-        }
-
-        $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        return $this->inputs;
-    }
-
-    public function exportar(bool $header, bool $ws = false): array|stdClass
-    {
-        $fecha_inicio = date('Y-m-d');
-        $fecha_fin = date('Y-m-d');
-
-        if (isset($_POST['fecha_inicio'])){
-            $fecha_inicio = $_POST['fecha_inicio'];
-        }
-
-        if (isset($_POST['fecha_final'])){
-            $fecha_fin = $_POST['fecha_final'];
-        }
-
-        $filtro_especial[0][$fecha_fin]['operador'] = '>=';
-        $filtro_especial[0][$fecha_fin]['valor'] = 'em_empleado.fecha_inicio_rel_laboral';
-        $filtro_especial[0][$fecha_fin]['comparacion'] = 'AND';
-        $filtro_especial[0][$fecha_fin]['valor_es_campo'] = true;
-
-        $filtro_especial[1][$fecha_inicio]['operador'] = '<=';
-        $filtro_especial[1][$fecha_inicio]['valor'] = 'em_empleado.fecha_inicio_rel_laboral';
-        $filtro_especial[1][$fecha_inicio]['comparacion'] = 'AND';
-        $filtro_especial[1][$fecha_inicio]['valor_es_campo'] = true;
-
-        $data = (new em_empleado($this->link))->filtro_and(filtro_especial: $filtro_especial);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al obtener registros',data:  $data);
-            print_r($error);
-            die('Error');
-        }
-
-        $exportador = (new exportador());
-        $registros_xls = array();
-
-        foreach ($data->registros as $registro){
-
-            $row = array();
-            $row["empleado"] = $registro['em_empleado_nombre'];
-            $row["empleado"] .= " ".$registro['em_empleado_ap'];
-            $row["empleado"] .= " ".$registro['em_empleado_am'];
-            $row["nss"] = $registro['em_empleado_nss'];
-            $row["rfc"] = $registro['em_empleado_rfc'];
-            $row["salario_diario"] = $registro['em_empleado_salario_diario'];
-            $row["salario_diario_integrado"] = $registro['em_empleado_salario_diario_integrado'];
-            $row["puesto"] = $registro['org_puesto_descripcion'];
-            $row["departamento"] = $registro['org_departamento_descripcion'];
-            $row["centro_costo"] = $registro['em_centro_costo_descripcion'];
-            $registros_xls[] = $row;
-        }
-
-        $keys = array();
-
-        foreach (array_keys($registros_xls[0]) as $key) {
-            $keys[$key] = strtoupper(str_replace('_', ' ', $key));
-        }
-
-        $registros = array();
-
-        foreach ($registros_xls as $row) {
-            $registros[] = array_combine(preg_replace(array_map(function($s){return "/^$s$/";},
-                array_keys($keys)),$keys, array_keys($row)), $row);
-        }
-
-        $resultado = $exportador->listado_base_xls(header: $header, name: $this->seccion, keys:  $keys,
-            path_base: $this->path_base,registros:  $registros,totales:  array());
-        if(errores::$error){
-            $error =  $this->errores->error('Error al generar xls',$resultado);
-            if(!$header){
-                return $error;
-            }
-            print_r($error);
-            die('Error');
-        }
-
-        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
-        $link.="&session_id=$this->session_id";
-        header('Location:' . $link);
-        exit;
-    }
     private function upd_base(array $keys_generales): array|stdClass
     {
         $registro = $this->asigna_keys_post(keys_generales: $keys_generales);

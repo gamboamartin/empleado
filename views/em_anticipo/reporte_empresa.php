@@ -23,11 +23,11 @@
                             </div>
                         </div>
                     </form>
+                    <table id="em_anticipo" class="datatables table table-striped "></table>
                 </div>
 
             </div>
 
         </div>
-    </div>
 
 </main>

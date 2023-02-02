@@ -644,16 +644,7 @@ class controlador_em_anticipo extends _ctl_base {
 
     public function reporte_empresa(bool $header, bool $ws = false){
 
-        $columns["em_anticipo_id"]["titulo"] = "Id";
-        $columns["em_anticipo_codigo"]["titulo"] = "Codigo";
-        $columns["em_anticipo_descripcion"]["titulo"] = "Descripcion";
-        $columns["em_anticipo_monto"]["titulo"] = "Monto";
-        $columns["em_anticipo_fecha_prestacion"]["titulo"] = "Fecha Prestacion";
-        $columns["em_anticipo_fecha_inicio_descuento"]["titulo"] = "Fecha Inicio Desc";
-
-        $filtro = array();
-
-        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal"]);
+        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

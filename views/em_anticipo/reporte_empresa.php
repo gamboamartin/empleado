@@ -17,10 +17,12 @@
                         <?php echo $controlador->inputs->fecha_inicio; ?>
                         <?php echo $controlador->inputs->fecha_final; ?>
 
-                        <div class="control-group btn-alta">
+                        <div class="botones">
                             <div class="controls">
-                                <button type="submit" class="btn btn-success" value="reporte_empresa" name="btn_action_next">Alta</button><br>
-                            </div>
+                                <button type="submit" class="btn btn-success export" name="btn_action_next"
+                                        style="border-radius: 5px" value="exportar" form="form_export">
+                                    Exportar
+                                </button>                            </div>
                         </div>
                     </form>
                     <table id="em_anticipo" class="datatables table table-striped "></table>

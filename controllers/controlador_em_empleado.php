@@ -37,6 +37,7 @@ class controlador_em_empleado extends _ctl_base {
     public string $link_em_cuenta_bancaria_alta_bd = '';
     public string $link_em_anticipo_alta_bd = '';
     public string $link_em_abono_anticipo_alta_bd = '';
+    public string $link_em_empleado_sube_archivo = '';
     public string $link_em_empleado_reportes = '';
     public string $link_em_empleado_exportar = '';
 
@@ -318,6 +319,15 @@ class controlador_em_empleado extends _ctl_base {
             exit;
         }
 
+        $this->link_em_empleado_sube_archivo = $this->obj_link->link_con_id(accion: "sube_archivo",link: $this->link,
+            registro_id: $this->registro_id,seccion: "em_empleado");
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_empleado_sube_archivo);
+            print_r($error);
+            exit;
+        }
+
         $this->link_em_empleado_reportes = $this->obj_link->link_con_id(accion: "reportes",link: $this->link,
             registro_id: $this->registro_id,seccion: "em_empleado");
         if (errores::$error) {
@@ -514,6 +524,63 @@ class controlador_em_empleado extends _ctl_base {
         return $keys_selects;
     }
 
+    public function lee_archivo(bool $header, bool $ws = false)
+    {
+        $doc_documento_modelo = new doc_documento($this->link);
+        $doc_documento_modelo->registro['descripcion'] = rand();
+        $doc_documento_modelo->registro['descripcion_select'] = rand();
+        $doc_documento_modelo->registro['doc_tipo_documento_id'] = 1;
+        $doc_documento = $doc_documento_modelo->alta_bd(file: $_FILES['archivo']);
+        if (errores::$error) {
+            $error =  $this->errores->error(mensaje: 'Error al dar de alta el documento', data: $doc_documento);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        $empleados_excel = $this->obten_empleados_excel(
+            ruta_absoluta: $doc_documento->registro['doc_documento_ruta_absoluta']);
+        if (errores::$error) {
+            $error =  $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        foreach ($empleados_excel as $empleado){
+
+            $registro = array();
+            $keys = array('codigo','nombre','ap','am','telefono','curp','rfc','nss','fecha_inicio_rel_laboral',
+                'salario_diario','salario_diario');
+            foreach ($keys as $key){
+                if(isset($empleado->$key)){
+                    $registro[$key] = $empleado->$key;
+                }
+            }
+
+            $em_empleado = new em_empleado($this->link);
+            $em_empleado->registro = $registro;
+            $r_alta = $em_empleado->alta_bd();
+            if (errores::$error) {
+                $error = $this->errores->error(mensaje: 'Error al dar de alta registro', data: $r_alta);
+                if (!$header) {
+                    return $error;
+                }
+                print_r($error);
+                die('Error');
+            }
+        }
+
+        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
+
     public function modifica(bool $header, bool $ws = false): array|stdClass
     {
         $r_modifica = $this->init_modifica();
@@ -572,6 +639,53 @@ class controlador_em_empleado extends _ctl_base {
         return $r_modifica;
     }
 
+    public function obten_empleados_excel(string $ruta_absoluta){
+        $documento = IOFactory::load($ruta_absoluta);
+        $empleados = array();
+        $hojaActual = $documento->getSheet(0);
+
+        $registros = array();
+        foreach ($hojaActual->getRowIterator() as $fila) {
+            foreach ($fila->getCellIterator() as $celda) {
+                $fila = $celda->getRow();
+                $columna = $celda->getColumn();
+
+                if($fila >= 2){
+                    if($columna === "A"){
+                        $reg = new stdClass();
+                        $reg->fila = $fila;
+                        $registros[] = $reg;
+                    }
+                }
+            }
+        }
+
+        foreach ($registros as $registro) {
+            $reg = new stdClass();
+            $reg->codigo = $hojaActual->getCell('A' . $registro->fila)->getValue();
+            $reg->nombre = $hojaActual->getCell('B' . $registro->fila)->getValue();
+            $reg->ap = $hojaActual->getCell('C' . $registro->fila)->getValue();
+            $reg->am = $hojaActual->getCell('D' . $registro->fila)->getValue();
+            $reg->telefono = $hojaActual->getCell('E' . $registro->fila)->getValue();
+            $reg->curp = $hojaActual->getCell('F' . $registro->fila)->getValue();
+            $reg->rfc = $hojaActual->getCell('G' . $registro->fila)->getValue();
+            $reg->nss = $hojaActual->getCell('H' . $registro->fila)->getValue();
+
+            $fecha = $hojaActual->getCell('I' . $registro->fila)->getCalculatedValue();
+            $reg->fecha_inicio_rel_laboral  = Date::excelToDateTimeObject($fecha)->format('Y-m-d');
+
+            $reg->sd = $hojaActual->getCell('J' . $registro->fila)->getValue();
+            $reg->fi = $hojaActual->getCell('K' . $registro->fila)->getValue();
+            $reg->sdi = $hojaActual->getCell('L' . $registro->fila)->getValue();
+
+            $reg->numero_cuenta = $hojaActual->getCell('M' . $registro->fila)->getValue();
+            $reg->clabe = $hojaActual->getCell('N' . $registro->fila)->getValue();
+            $empleados[] = $reg;
+        }
+
+        return $empleados;
+    }
+
     public function reportes(bool $header, bool $ws = false): array|stdClass
     {
         $r_alta = $this->init_alta();
@@ -588,6 +702,15 @@ class controlador_em_empleado extends _ctl_base {
         return $this->inputs;
     }
 
+    public function sube_archivo(bool $header, bool $ws = false){
+        $r_alta =  parent::alta(header: false,ws:  false);
+        if(errores::$error){
+            return $this->errores->error(mensaje: 'Error al generar template',data:  $r_alta);
+        }
+
+        return $r_alta;
+    }
+
 
 
 
@@ -600,17 +723,12 @@ class controlador_em_empleado extends _ctl_base {
 
     public string $link_nom_conf_empleado_alta_bd = '';
     public string $link_em_abono_anticipo_modifica_bd = '';
-    public string $link_nom_conf_empleado_modifica_bd = '';
 
 
-    public int $em_cuenta_bancaria_id = -1;
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
-    public int $nom_conf_empleado_id = -1;
 
-//public controlador_nom_conf_empleado $controlador_nom_conf_empleado;
-    public array $columnas_lista_data_table_full = array();
-    public array $columnas_lista_data_table_label = array();
+
 
 
 
@@ -790,182 +908,6 @@ class controlador_em_empleado extends _ctl_base {
         return $r_elimina;
     }
 
-    public function asigna_configuracion_nomina(bool $header, bool $ws = false): array|stdClass
-    {
-        $alta = $this->controlador_nom_conf_empleado->alta(header: false);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al generar template', data: $alta, header: $header, ws: $ws);
-        }
-
-        $this->controlador_nom_conf_empleado->asignar_propiedad(identificador: 'em_cuenta_bancaria_id',
-            propiedades: ["id_selected" => $this->em_cuenta_bancaria_id, "disabled" => true,
-                "filtro" => array('em_cuenta_bancaria.id' => $this->em_cuenta_bancaria_id)]);
-
-        $this->inputs = $this->controlador_nom_conf_empleado->genera_inputs(
-            keys_selects:  $this->controlador_nom_conf_empleado->keys_selects);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        $conf_nominas = (new nom_conf_empleado($this->link))->get_configuraciones_empleado(em_cuenta_bancaria_id: $this->em_cuenta_bancaria_id);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al obtener configuraciones de empleados',data:  $conf_nominas,header: $header,ws:$ws);
-        }
-
-        foreach ($conf_nominas->registros as $indice => $conf_nomina) {
-            $conf_nomina = $this->data_asigna_conf_nomina_btn(conf_nomina: $conf_nomina);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al asignar botones', data: $conf_nomina, header: $header, ws: $ws);
-            }
-            $conf_nominas->registros[$indice] = $conf_nomina;
-        }
-
-        $this->conf_nominas = $conf_nominas;
-
-        /**$this->confs_empleados = $this->ver_anticipos(header: $header,ws: $ws);
-        if(errores::$error){
-        return $this->retorno_error(mensaje: 'Error al obtener los anticipos',data:  $this->anticipos, header: $header,ws:$ws);
-        }**/
-
-        return $this->inputs;
-    }
-
-    public function asigna_configuracion_nomina_alta_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-        $_POST['em_cuenta_bancaria_id'] = $this->em_cuenta_bancaria_id;
-
-        $alta = (new nom_conf_empleado($this->link))->alta_registro(registro: $_POST);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al dar de alta conf empleado', data: $alta,
-                header: $header, ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $alta,
-                siguiente_view: "conf_empleado", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($alta, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $alta->siguiente_view = "conf_empleado";
-
-        return $alta;
-    }
-
-    public function asigna_configuracion_nomina_modifica(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->controlador_nom_conf_empleado->registro_id = $this->nom_conf_empleado_id;
-
-        $modifica = $this->controlador_nom_conf_empleado->modifica(header: false);
-        if(errores::$error){
-            return $this->retorno_error(mensaje: 'Error al generar template',data:  $modifica, header: $header,ws:$ws);
-        }
-
-        $this->inputs = $this->controlador_nom_conf_empleado->genera_inputs(
-            keys_selects:  $this->controlador_nom_conf_empleado->keys_selects);
-        if(errores::$error){
-            $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $this->inputs);
-            print_r($error);
-            die('Error');
-        }
-
-        return $this->inputs;
-    }
-
-    public function asigna_configuracion_nomina_modifica_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $registros = $_POST;
-
-        $r_modifica = (new nom_conf_empleado($this->link))->modifica_bd(registro: $registros,
-            id: $this->nom_conf_empleado_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al modificar conf empleado', data: $r_modifica, header: $header, ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_modifica,
-                siguiente_view: "conf_empleado", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_modifica, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_modifica->siguiente_view = "conf_empleado";
-
-        return $r_modifica;
-    }
-
-    public function asigna_configuracion_nomina_elimina_bd(bool $header, bool $ws = false): array|stdClass
-    {
-        $this->link->beginTransaction();
-
-        $siguiente_view = (new actions())->init_alta_bd();
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        if (isset($_POST['btn_action_next'])) {
-            unset($_POST['btn_action_next']);
-        }
-
-        $r_elimina = (new nom_conf_empleado($this->link))->elimina_bd(id: $this->nom_conf_empleado_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al eliminar conf empleado', data: $r_elimina, header: $header,
-                ws: $ws);
-        }
-
-        $this->link->commit();
-
-        if ($header) {
-            $this->retorno_base(registro_id:$this->registro_id, result: $r_elimina,
-                siguiente_view: "conf_empleado", ws:  $ws);
-        }
-        if ($ws) {
-            header('Content-Type: application/json');
-            echo json_encode($r_elimina, JSON_THROW_ON_ERROR);
-            exit;
-        }
-        $r_elimina->siguiente_view = "conf_empleado";
-
-        return $r_elimina;
-    }
 
     private function asigna_keys_post(array $keys_generales): array
     {
@@ -987,25 +929,6 @@ class controlador_em_empleado extends _ctl_base {
         return $registro;
     }
 
-    private function asigna_link_row(stdClass $row, string $accion, string $propiedad, string $estilo): array|stdClass
-    {
-        $keys = array('em_empleado_id');
-        $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
-        }
-
-        $link = $this->obj_link->link_con_id(accion: $accion, link: $this->link,registro_id:  $row->em_empleado_id,
-            seccion:  $this->tabla);
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al genera link',data:  $link);
-        }
-
-        $row->$propiedad = $link;
-        $row->$estilo = 'info';
-
-        return $row;
-    }
 
     public function asignar_propiedad(string $identificador, mixed $propiedades)
     {
@@ -1190,28 +1113,6 @@ class controlador_em_empleado extends _ctl_base {
         return $abono;
     }
 
-    protected function data_asigna_conf_nomina_btn(array $conf_nomina): array
-    {
-        $params['nom_conf_empleado_id'] = $conf_nomina['nom_conf_empleado_id'];
-        $params['nom_conf_nomina_id'] = $conf_nomina['nom_conf_nomina_id'];
-
-        $btn_elimina = $this->html_base->button_href(accion: 'conf_nomina_elimina_bd', etiqueta: 'Elimina',
-            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'danger',params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_elimina);
-        }
-        $conf_nomina['link_elimina'] = $btn_elimina;
-
-        $btn_modifica = $this->html_base->button_href(accion: 'conf_nomina_modifica', etiqueta: 'Modifica',
-            registro_id: $this->registro_id, seccion: 'em_empleado', style: 'warning',params: $params);
-        if (errores::$error) {
-            return $this->errores->error(mensaje: 'Error al generar btn', data: $btn_modifica);
-        }
-        $conf_nomina['link_modifica'] = $btn_modifica;
-
-        return $conf_nomina;
-    }
-
     public function fiscales(bool $header, bool $ws = false): array|stdClass
     {
         $base = $this->base();
@@ -1237,37 +1138,6 @@ class controlador_em_empleado extends _ctl_base {
     }
 
 
-
-
-    private function maqueta_registros_lista(array $registros): array
-    {
-        foreach ($registros as $indice=> $row){
-            $row = $this->asigna_link_row(row: $row, accion: "anticipo",propiedad: "link_anticipo",
-                estilo: "link_anticipo_style");
-            if(errores::$error){
-                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
-            }
-            $registros[$indice] = $row;
-
-            $row = $this->asigna_link_row(row: $row, accion: "ver_anticipos",propiedad: "link_ver_anticipos",
-                estilo: "link_ver_anticipos_style");
-            if(errores::$error){
-                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
-            }
-            $registros[$indice] = $row;
-
-            $row = $this->asigna_link_row(row: $row, accion: "cuenta_bancaria",propiedad: "link_cuenta_bancaria",
-                estilo: "link_cuenta_bancaria_style");
-            if(errores::$error){
-                return $this->errores->error(mensaje: 'Error al maquetar row',data:  $row);
-            }
-            $registros[$indice] = $row;
-        }
-        return $registros;
-    }
-
-
-
     public function modifica_fiscales(bool $header, bool $ws = false): array|stdClass
     {
         $keys_fiscales[] = 'cat_sat_regimen_fiscal_id';
@@ -1284,8 +1154,6 @@ class controlador_em_empleado extends _ctl_base {
 
         return $r_modifica_bd;
     }
-
-
 
 
     private function upd_base(array $keys_generales): array|stdClass
@@ -1337,118 +1205,6 @@ class controlador_em_empleado extends _ctl_base {
         return $this->anticipos;
     }
 
-    public function lee_archivo(bool $header, bool $ws = false)
-    {
-        $doc_documento_modelo = new doc_documento($this->link);
-        $doc_documento_modelo->registro['descripcion'] = rand();
-        $doc_documento_modelo->registro['descripcion_select'] = rand();
-        $doc_documento_modelo->registro['doc_tipo_documento_id'] = 1;
-        $doc_documento = $doc_documento_modelo->alta_bd(file: $_FILES['archivo']);
-        if (errores::$error) {
-            $error =  $this->errores->error(mensaje: 'Error al dar de alta el documento', data: $doc_documento);
-            if(!$header){
-                return $error;
-            }
-            print_r($error);
-            die('Error');
-        }
-
-        $empleados_excel = $this->obten_empleados_excel(
-            ruta_absoluta: $doc_documento->registro['doc_documento_ruta_absoluta']);
-        if (errores::$error) {
-            $error =  $this->errores->error(mensaje: 'Error obtener empleados',data:  $empleados_excel);
-            if(!$header){
-                return $error;
-            }
-            print_r($error);
-            die('Error');
-        }
-
-        foreach ($empleados_excel as $empleado){
-
-            $registro = array();
-            $keys = array('codigo','nombre','ap','am','telefono','curp','rfc','nss','fecha_inicio_rel_laboral',
-                'salario_diario','salario_diario');
-            foreach ($keys as $key){
-                if(isset($empleado->$key)){
-                    $registro[$key] = $empleado->$key;
-                }
-            }
-
-            $em_empleado = new em_empleado($this->link);
-            $em_empleado->registro = $registro;
-            $r_alta = $em_empleado->alta_bd();
-            if (errores::$error) {
-                $error = $this->errores->error(mensaje: 'Error al dar de alta registro', data: $r_alta);
-                if (!$header) {
-                    return $error;
-                }
-                print_r($error);
-                die('Error');
-            }
-        }
-
-        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
-        $link.="&session_id=$this->session_id";
-        header('Location:' . $link);
-        exit;
-    }
-
-    public function obten_empleados_excel(string $ruta_absoluta){
-        $documento = IOFactory::load($ruta_absoluta);
-        $empleados = array();
-        $hojaActual = $documento->getSheet(0);
-
-        $registros = array();
-        foreach ($hojaActual->getRowIterator() as $fila) {
-            foreach ($fila->getCellIterator() as $celda) {
-                $fila = $celda->getRow();
-                $columna = $celda->getColumn();
-
-                if($fila >= 2){
-                    if($columna === "A"){
-                        $reg = new stdClass();
-                        $reg->fila = $fila;
-                        $registros[] = $reg;
-                    }
-                }
-            }
-        }
-
-        foreach ($registros as $registro) {
-            $reg = new stdClass();
-            $reg->codigo = $hojaActual->getCell('A' . $registro->fila)->getValue();
-            $reg->nombre = $hojaActual->getCell('B' . $registro->fila)->getValue();
-            $reg->ap = $hojaActual->getCell('C' . $registro->fila)->getValue();
-            $reg->am = $hojaActual->getCell('D' . $registro->fila)->getValue();
-            $reg->telefono = $hojaActual->getCell('E' . $registro->fila)->getValue();
-            $reg->curp = $hojaActual->getCell('F' . $registro->fila)->getValue();
-            $reg->rfc = $hojaActual->getCell('G' . $registro->fila)->getValue();
-            $reg->nss = $hojaActual->getCell('H' . $registro->fila)->getValue();
-
-            $fecha = $hojaActual->getCell('I' . $registro->fila)->getCalculatedValue();
-            $reg->fecha_inicio_rel_laboral  = Date::excelToDateTimeObject($fecha)->format('Y-m-d');
-
-            $reg->sd = $hojaActual->getCell('J' . $registro->fila)->getValue();
-            $reg->fi = $hojaActual->getCell('K' . $registro->fila)->getValue();
-            $reg->sdi = $hojaActual->getCell('L' . $registro->fila)->getValue();
-
-            $reg->numero_cuenta = $hojaActual->getCell('M' . $registro->fila)->getValue();
-            $reg->clabe = $hojaActual->getCell('N' . $registro->fila)->getValue();
-            $empleados[] = $reg;
-        }
-
-        return $empleados;
-    }
-
-    public function sube_archivo(bool $header, bool $ws = false){
-        $r_alta =  parent::alta(header: false,ws:  false); // TODO: Change the autogenerated stub
-        if(errores::$error){
-            return $this->errores->error(mensaje: 'Error al generar template',data:  $r_alta);
-        }
-
-        return $r_alta;
-    }
 
 
 }

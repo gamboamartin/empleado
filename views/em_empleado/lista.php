@@ -11,6 +11,10 @@
                     <div class="table-head" style="display: flex; justify-content: space-between; ">
                         <?php include (new views())->ruta_templates . "head/subtitulo.php"; ?>
                         <div class="botones">
+                            <a href="<?php echo $controlador->link_em_empleado_sube_archivo; ?>" class="btn btn-success" style="border-radius: 5px">
+                                <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: #ffffff; margin-right: 5px"></span>
+                                Sube Empleados
+                            </a>
                             <a href="<?php echo $controlador->link_em_empleado_reportes; ?>" class="btn btn-success" style="border-radius: 5px">
                                 <span class="glyphicon glyphicon-list-alt" aria-hidden="true" style="color: #ffffff; margin-right: 5px"></span>
                                 Reportes

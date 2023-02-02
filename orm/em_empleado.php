@@ -33,12 +33,7 @@ class em_empleado extends _modelo_parent{
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
             'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla );
 
-        $campos_obligatorios = array('nombre','ap','descripcion','codigo','descripcion_select','alias','codigo_bis',
-            'org_puesto_id','cat_sat_tipo_jornada_nom_id','curp');
-
-
-
-
+        $campos_obligatorios = array('nombre','ap','descripcion','codigo','curp');
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';
@@ -71,6 +66,26 @@ class em_empleado extends _modelo_parent{
         if(!isset($this->registro['descripcion'])){
             $this->registro['codigo'] = $this->registro['nombre']. ' ';
             $this->registro['descripcion'] .= $this->registro['ap'];
+        }
+
+        $this->registro = $this->fecha_inicio_rel_laboral_default($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar fecha rel laboral',data: $this->registro);
+        }
+
+        $this->registro = $this->dp_calle_pertenece_id($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar direcciones',data: $this->registro);
+        }
+
+        $this->registro = $this->org_puesto_id($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar puesto',data: $this->registro);
+        }
+
+        $this->registro = $this->cat_sat_tipo_jornada_nom_id($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar tipo jornada nomina',data: $this->registro);
         }
 
         $this->registro = $this->campos_base(data:$this->registro,modelo: $this);

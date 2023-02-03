@@ -8,4 +8,4 @@
 <?php echo $controlador->inputs->monto; ?>
 <?php echo $controlador->inputs->n_pagos; ?>
 <?php echo $controlador->inputs->fecha_prestacion; ?>
-<?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
+<?php include (new views())->ruta_templates.'botons/submit/modifica_bd.php';?>

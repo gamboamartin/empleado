@@ -27,7 +27,7 @@ class em_anticipo extends modelo{
         $columnas_extra['em_anticipo_tiene_saldo'] = "IFNULL((SELECT IF($columnas_extra[em_anticipo_saldo] > 0, 'activo', 'inactivo')),0.0)";
         $columnas_extra['n_pago'] = 'IFNULL((SELECT COUNT(em_abono_anticipo.id) 
         FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id) + 1,0)';
-        $columnas_extra['pago_siguiente'] = 'IFNULL((SELECT ROUND(monto/n_pagos,2) FROM em_anticipo WHERE id = em_anticipo_id),0.0)';
+        $columnas_extra['pago_siguiente'] = 'IFNULL((SELECT ROUND(monto/n_pagos,2) FROM em_anticipo WHERE id = em_anticipo.id),0.0)';
 
         $campos_view['em_empleado_id']['type'] = "selects";
         $campos_view['em_empleado_id']['model'] = new em_empleado($link);

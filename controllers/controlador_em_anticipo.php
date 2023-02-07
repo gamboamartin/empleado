@@ -697,15 +697,13 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
 
-        /**
-         * $this->row_upd->fecha_inicio = date('Y-m-d');
-         * $this->row_upd->fecha_final = date('Y-m-d');
-         */
-
         $r_alta =  parent::alta(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
+
+        $this->row_upd->fecha_inicio = date('Y-m-d');
+        $this->row_upd->fecha_final = date('Y-m-d');
 
         $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
         if(errores::$error){
@@ -741,15 +739,13 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
 
-        /**
-         * $this->row_upd->fecha_inicio = date('Y-m-d');
-         * $this->row_upd->fecha_final = date('Y-m-d');
-         */
-
         $r_alta =  parent::alta(header: false);
         if(errores::$error){
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
+
+        $this->row_upd->fecha_inicio = date('Y-m-d');
+        $this->row_upd->fecha_final = date('Y-m-d');
 
         $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
         if(errores::$error){

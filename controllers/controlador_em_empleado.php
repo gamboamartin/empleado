@@ -39,6 +39,7 @@ class controlador_em_empleado extends _ctl_base {
     public string $link_em_abono_anticipo_alta_bd = '';
     public string $link_em_empleado_sube_archivo = '';
     public string $link_em_empleado_reportes = '';
+    public string $link_em_empleado_reporte_remunerado = '';
     public string $link_em_empleado_exportar = '';
 
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
@@ -149,6 +150,7 @@ class controlador_em_empleado extends _ctl_base {
         $init_data['cat_sat_tipo_jornada_nom'] = "gamboamartin\\cat_sat";
         $init_data['org_puesto'] = "gamboamartin\\organigrama";
         $init_data['em_centro_costo'] = "gamboamartin\\empleado";
+        $init_data['em_empleado'] = "gamboamartin\\empleado";
         $init_data['im_registro_patronal'] = "gamboamartin\\im_registro_patronal";
 
         $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
@@ -333,6 +335,15 @@ class controlador_em_empleado extends _ctl_base {
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al obtener link',
                 data: $this->link_em_empleado_reportes);
+            print_r($error);
+            exit;
+        }
+
+        $this->link_em_empleado_reporte_remunerado = $this->obj_link->link_con_id(accion: "reporte_remunerado",link: $this->link,
+            registro_id: $this->registro_id,seccion: "em_empleado");
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_empleado_reporte_remunerado);
             print_r($error);
             exit;
         }
@@ -684,6 +695,22 @@ class controlador_em_empleado extends _ctl_base {
         }
 
         return $empleados;
+    }
+
+    public function reporte_remunerado(bool $header, bool $ws = false): array|stdClass
+    {
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $inputs = $this->inputs(keys_selects: array());
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
+        }
+
+        return $this->inputs;
     }
 
     public function reportes(bool $header, bool $ws = false): array|stdClass

@@ -4,8 +4,7 @@ use base\orm\modelo;
 
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\errores\errores;
-
-use html\com_sucursal_html;
+use gamboamartin\organigrama\models\org_sucursal;
 use PDO;
 use stdClass;
 
@@ -37,6 +36,8 @@ class em_anticipo extends modelo{
         $campos_view['em_tipo_descuento_id']['model'] = new em_tipo_descuento($link);
         $campos_view['com_sucursal_id']['type'] = "selects";
         $campos_view['com_sucursal_id']['model'] = new com_sucursal($link);
+        $campos_view['org_sucursal_id']['type'] = "selects";
+        $campos_view['org_sucursal_id']['model'] = new org_sucursal($link);
         $campos_view['id']['type'] = "inputs";
         $campos_view['codigo']['type'] = "inputs";
         $campos_view['monto']['type'] = "inputs";

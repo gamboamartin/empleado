@@ -51,11 +51,15 @@ class em_abono_anticipo extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
         }
 
-        $anticipo['em_anticipo_saldo_pendiente'] = (new em_anticipo($this->link))->get_saldo_anticipo(
+
+        $em_anticipo_saldo_pendiente = (new em_anticipo($this->link))->get_saldo_anticipo(
             $this->registro['em_anticipo_id']);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener el saldo pendiente',data: $anticipo);
+            return $this->error->error(mensaje: 'Error al obtener el saldo pendiente',data: $em_anticipo_saldo_pendiente);
         }
+
+        $anticipo['em_anticipo_saldo_pendiente'] = $em_anticipo_saldo_pendiente;
+
 
         $this->registro['monto'] = round($this->registro['monto'],2);
 
@@ -75,6 +79,9 @@ class em_abono_anticipo extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al obtener anticipo',data: $em_anticipo);
         }
 
+        /**
+         * Validar si n pagos es obligatorio
+         */
         if ($n_pago > $em_anticipo['em_anticipo_n_pagos']){
             return $this->error->error(mensaje: 'Error el numero de pago actual es mayor al total de pagos',
                 data: $n_pago);

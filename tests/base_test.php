@@ -15,16 +15,16 @@ use PDO;
 class base_test{
 
 
-    public function alta_em_abono_anticipo(PDO $link, int $em_anticipo_id = 1, int $em_tipo_abono_anticipo_id = 1): array|\stdClass
+    public function alta_em_abono_anticipo(PDO $link, int $em_anticipo_id = 1, int $em_anticipo_n_pagos = 1,
+                                           int $em_tipo_abono_anticipo_id = 1): array|\stdClass
     {
-
         $existe = (new em_anticipo($link))->existe_by_id(registro_id: $em_anticipo_id);
         if(errores::$error){
             return (new errores())->error('Error al verificar si existe', $existe);
-
         }
+
         if(!$existe){
-            $alta = $this->alta_em_anticipo($link);
+            $alta = $this->alta_em_anticipo(link: $link, n_pagos: $em_anticipo_n_pagos);
             if(errores::$error){
                 return (new errores())->error('Error al dar de alta ', $alta);
 
@@ -65,7 +65,7 @@ class base_test{
     }
 
     public function alta_em_anticipo(PDO $link, int $em_empleado_id = 1, int $em_tipo_anticipo_id = 1,
-                                     int $em_tipo_descuento_id = 1): array|\stdClass
+                                     int $em_tipo_descuento_id = 1, int $n_pagos = 1): array|\stdClass
     {
 
 
@@ -88,7 +88,7 @@ class base_test{
 
         }
         if(!$existe){
-            $alta = $this->alta_em_empleado($link);
+            $alta = $this->alta_em_empleado(link: $link);
             if(errores::$error){
                 return (new errores())->error('Error al dar de alta ', $alta);
 
@@ -121,6 +121,7 @@ class base_test{
         $registro['fecha_prestacion'] = '2020-01-01';
         $registro['fecha_inicio_descuento'] = '2020-01-01';
         $registro['em_tipo_descuento_id'] = $em_tipo_descuento_id;
+        $registro['n_pagos'] = $n_pagos;
 
 
         $alta = (new em_anticipo($link))->alta_registro($registro);
@@ -186,6 +187,7 @@ class base_test{
         $registro['salario_diario'] = $salario_diario;
         $registro['salario_diario_integrado'] = $salario_diario_integrado;
         $registro['fecha_inicio_rel_laboral'] = $fecha_inicio_rel_laboral;
+        $registro['curp'] = 'abc';
 
 
 

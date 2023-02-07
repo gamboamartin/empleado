@@ -41,9 +41,10 @@ class em_empleado_htmlTest extends test {
         $row_upd = new stdClass();
         $value_vacio = false;
         $resultado = $html->input_ap($cols, $row_upd, $value_vacio);
+        //print_r($resultado);exit;
         $this->assertIsString($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals("<div class='control-group col-sm-1'><label class='control-label' for='ap'>Apellido paterno</label><div class='controls'><input type='text' name='ap' value='' class='form-control'  required id='ap' placeholder='Apellido paterno' /></div></div>", $resultado);
+        $this->assertEquals("<div class='control-group col-sm-1'><label class='control-label' for='ap'>Apellido paterno</label><div class='controls'><input type='text' name='ap' value='' class='form-control' required id='ap' placeholder='Apellido paterno' title='Apellido paterno' /></div></div>", $resultado);
 
         errores::$error = false;
     }
@@ -68,10 +69,10 @@ class em_empleado_htmlTest extends test {
         $row_upd = new stdClass();
         $value_vacio = false;
         $resultado = $html->input_nombre($cols, $row_upd, $value_vacio);
-
+        //print_r($resultado);exit;
         $this->assertIsString($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals("<div class='control-group col-sm-1'><label class='control-label' for='nombre'>Nombre</label><div class='controls'><input type='text' name='nombre' value='' class='form-control'  required id='nombre' placeholder='Nombre' /></div></div>", $resultado);
+        $this->assertEquals("<div class='control-group col-sm-1'><label class='control-label' for='nombre'>Nombre</label><div class='controls'><input type='text' name='nombre' value='' class='form-control' required id='nombre' placeholder='Nombre' title='Nombre' /></div></div>", $resultado);
 
         errores::$error = false;
     }

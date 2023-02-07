@@ -35,8 +35,23 @@ class em_abono_anticipoTest extends test {
         $modelo = new em_abono_anticipo($this->link);
         //$modelo = new liberator($modelo);
 
+        $del = (new base_test())->del_em_anticipo(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_em_abono_anticipo(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al dar de alta', $alta);
+            print_r($error);
+            exit;
+        }
+
         $em_anticipo_id = 1;
         $resultado = $modelo->get_abono_anticipo(em_abono_anticipo_id: $em_anticipo_id);
+
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals($em_anticipo_id, $resultado['em_abono_anticipo_id']);

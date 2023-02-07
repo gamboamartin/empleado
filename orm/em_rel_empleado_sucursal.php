@@ -47,12 +47,12 @@ class em_rel_empleado_sucursal extends _modelo_parent
     {
         $salida = array();
 
-        if (isset($data['codigo'])) {
-            $salida['codigo'] = $data['codigo'];
+        if (isset($data['com_cliente_codigo'])) {
+            $salida['codigo'] = $data['com_cliente_codigo'];
         }
 
-        if (isset($data['descripcion'])) {
-            $salida['descripcion'] = $data['descripcion'];
+        if (isset($data['com_cliente_descripcion'])) {
+            $salida['descripcion'] = $data['com_cliente_descripcion'];
         }
 
         $salida['em_empleado_id'] = $data['em_empleado_id'];

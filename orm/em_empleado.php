@@ -11,6 +11,7 @@ use gamboamartin\cat_sat\models\cat_sat_tipo_de_comprobante;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\cat_sat\models\cat_sat_uso_cfdi;
 use gamboamartin\comercial\models\com_cliente;
+use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\comercial\models\com_tipo_cliente;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
@@ -103,9 +104,10 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al dar de alta empleado',data:  $r_alta_bd);
         }
 
-        $alta_com_cliente = $this->inserta_com_cliente(data: $this->registro);
+        $respuesta = $this->transacciona_em_rel_empleado_sucursal(data: $this->registro,
+            em_empleado_id: $r_alta_bd->registro_id);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta com_cliente',data:  $alta_com_cliente);
+            return $this->error->error(mensaje: 'Error al transaccionar relacion empleado sucursal',data:  $respuesta);
         }
 
         return $r_alta_bd;
@@ -212,6 +214,31 @@ class em_empleado extends _modelo_parent{
 
         return $respuesta;
     }
+
+    public function transacciona_em_rel_empleado_sucursal(array $data, int $em_empleado_id): array|stdClass
+    {
+        $alta_com_cliente = $this->inserta_com_cliente(data: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al dar de alta com_cliente',data:  $alta_com_cliente);
+        }
+
+        $filtro['com_cliente_id'] = $alta_com_cliente->registro_id;
+        $com_sucursal = (new com_sucursal($this->link))->filtro_and(filtro: $filtro, limit: 1);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al datos del cliente', data: $data);
+        }
+
+        $data = $com_sucursal->registros[0];
+        $data['em_empleado_id'] = $em_empleado_id;
+
+        $respuesta = (new em_rel_empleado_sucursal($this->link))->inserta_em_rel_empleado_sucursal(data: $data);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al ingresar cliente', data: $respuesta);
+        }
+
+        return $respuesta;
+    }
+
 
     public function maqueta_com_cliente(array $data): array
     {

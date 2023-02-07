@@ -130,18 +130,6 @@ class em_abono_anticipo extends _modelo_parent{
         return $registros;
     }
 
-    public function get_codigo_aleatorio(int $longitud = 6): string
-    {
-        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $random_string = '';
-
-        for ($i = 0; $i < $longitud; $i++) {
-            $random_character = $chars[mt_rand(0, strlen($chars) - 1)];
-            $random_string .= $random_character;
-        }
-
-        return $random_string;
-    }
 
     /**
      * Obtiene el monto total abonado de un anticipo

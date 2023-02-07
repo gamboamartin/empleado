@@ -2,18 +2,9 @@
 namespace gamboamartin\empleado\models;
 
 use base\orm\_modelo_parent;
-use base\orm\modelo;
 use DateTime;
-use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
-use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
-use gamboamartin\direccion_postal\models\dp_colonia_postal;
-use gamboamartin\direccion_postal\models\dp_cp;
-use gamboamartin\direccion_postal\models\dp_direccion_pendiente;
-use gamboamartin\direccion_postal\models\dp_estado;
-use gamboamartin\direccion_postal\models\dp_municipio;
-use gamboamartin\direccion_postal\models\dp_pais;
 use gamboamartin\errores\errores;
 use gamboamartin\im_registro_patronal\models\im_conf_pres_empresa;
 use gamboamartin\im_registro_patronal\models\im_detalle_conf_prestaciones;

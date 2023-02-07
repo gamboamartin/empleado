@@ -27,6 +27,15 @@ class controlador_em_clase_riesgo extends _ctl_base
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
         $datatables = new stdClass();
+        $datatables->columns = array();
+        $datatables->columns['em_clase_riesgo_id']['titulo'] = 'Id';
+        $datatables->columns['em_clase_riesgo_descripcion']['titulo'] = 'Clase';
+        $datatables->columns['em_clase_riesgo_factor']['titulo'] = 'Factor';
+
+        $datatables->filtro = array();
+        $datatables->filtro[] = 'em_clase_riesgo.id';
+        $datatables->filtro[] = 'em_clase_riesgo.descripcion';
+        $datatables->filtro[] = 'em_clase_riesgo.factor';
 
 
         parent::__construct(html: $html_, link: $link, modelo: $modelo, obj_link: $obj_link, datatables: $datatables,

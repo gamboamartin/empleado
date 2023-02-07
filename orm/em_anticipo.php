@@ -28,6 +28,9 @@ class em_anticipo extends modelo{
         FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id) + 1,0)';
         $columnas_extra['pago_siguiente'] = 'IFNULL((SELECT ROUND(monto/n_pagos,2) FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id),0.0)';
 
+        //$columnas_extra['saldo_pendiente'] = "IFNULL((SELECT SUM(cob_pago.monto) FROM cob_pago WHERE cob_pago.cob_deuda_id = cob_deuda.id),0)";
+        $columnas_extra['total_abonado'] = "IFNULL((SELECT SUM(em_abono_anticipo.monto) FROM em_abono_anticipo WHERE em_anticipo_id = em_abono_anticipo.id),0)";
+
         $campos_view['em_empleado_id']['type'] = "selects";
         $campos_view['em_empleado_id']['model'] = new em_empleado($link);
         $campos_view['em_tipo_anticipo_id']['type'] = "selects";
@@ -62,6 +65,7 @@ class em_anticipo extends modelo{
         }
 
         if (!isset($this->registro['descripcion_select'])) {
+            $this->registro['descripcion_select'] = $this->registro['descripcion'];
             $this->registro['descripcion_select'] = $this->registro['descripcion'];
         }
 
@@ -137,6 +141,8 @@ class em_anticipo extends modelo{
 
         return round(round($r_em_anticipo['em_anticipo_monto'],2) - round($total_abonado,2),2);
     }
+
+
 
 
 }

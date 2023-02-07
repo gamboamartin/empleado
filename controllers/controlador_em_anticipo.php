@@ -40,7 +40,25 @@ class controlador_em_anticipo extends _ctl_base {
         $modelo = new em_anticipo(link: $link);
         $html_ = new em_anticipo_html(html: $html);
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
-        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, paths_conf: $paths_conf);
+
+        $columns["em_anticipo_id"]["titulo"] = "Id";
+        $columns["em_anticipo_codigo"]["titulo"] = "Descripcion";
+        $columns["em_anticipo_descripcion"]["titulo"] = "Codigo Empleado";
+        $columns["em_empleado_nombre"]["titulo"] = "Empleado";
+        $columns["em_anticipo_monto"]["titulo"] = "Monto";
+        $columns["em_anticipo_fecha_prestacion"]["titulo"] = "Fecha Prestacion";
+        //$columns["saldo_pendiente"]["titulo"] = "Saldo Pendiente";
+        $columns["total_abonado"]["titulo"] = "Total Abonado";
+
+
+        $filtro = array("em_anticipo.id","em_anticipo.codigo","em_anticipo.descripcion");
+
+        $datatables = new stdClass();
+        $datatables->columns = $columns;
+        $datatables->filtro = $filtro;
+
+        parent::__construct(html:$html_, link: $link,modelo:  $modelo, obj_link: $obj_link, datatables: $datatables,
+            paths_conf: $paths_conf);
 
         $this->titulo_lista = 'Anticipo';
 
@@ -333,7 +351,7 @@ class controlador_em_anticipo extends _ctl_base {
         $keys_rows_lista = array();
         $keys = array('em_anticipo_id','em_anticipo_descripcion','em_empleado_codigo','em_empleado_nombre','em_empleado_ap',
             'em_empleado_am','em_anticipo_monto','em_tipo_descuento_descripcion','em_anticipo_fecha_prestacion',
-            'em_anticipo_saldo_pendiente','em_anticipo_saldo_pendiente');
+            'em_anticipo_saldo_pendiente','em_anticipo_total_abonado');
 
         foreach ($keys as $campo) {
             $keys_rows_lista = $this->key_row_lista_init(campo: $campo,keys_rows_lista: $keys_rows_lista);

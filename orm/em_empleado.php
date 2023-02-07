@@ -3,7 +3,15 @@ namespace gamboamartin\empleado\models;
 
 use base\orm\_modelo_parent;
 use DateTime;
+use gamboamartin\cat_sat\models\cat_sat_forma_pago;
+use gamboamartin\cat_sat\models\cat_sat_metodo_pago;
+use gamboamartin\cat_sat\models\cat_sat_moneda;
+use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
+use gamboamartin\cat_sat\models\cat_sat_tipo_de_comprobante;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
+use gamboamartin\cat_sat\models\cat_sat_uso_cfdi;
+use gamboamartin\comercial\models\com_cliente;
+use gamboamartin\comercial\models\com_tipo_cliente;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
 use gamboamartin\im_registro_patronal\models\im_conf_pres_empresa;
@@ -94,6 +102,12 @@ class em_empleado extends _modelo_parent{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al dar de alta empleado',data:  $r_alta_bd);
         }
+
+        $alta_com_cliente = $this->inserta_com_cliente(data: $this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al dar de alta com_cliente',data:  $alta_com_cliente);
+        }
+
         return $r_alta_bd;
     }
 
@@ -182,6 +196,151 @@ class em_empleado extends _modelo_parent{
         }
 
         return $r_registro_patronal;
+    }
+
+    public function inserta_com_cliente(array $data): array|stdClass
+    {
+        $data = $this->maqueta_com_cliente(data: $data);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al maquetar datos para cliente', data: $data);
+        }
+
+        $respuesta = (new com_cliente($this->link))->alta_registro(registro: $data);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al ingresar cliente', data: $respuesta);
+        }
+
+        return $respuesta;
+    }
+
+    public function maqueta_com_cliente(array $data): array
+    {
+        $salida = array();
+
+        if (isset($data['codigo'])) {
+            $salida['codigo'] = $data['codigo'];
+        }
+
+        if (isset($data['descripcion'])) {
+            $salida['descripcion'] = $data['descripcion'];
+        }
+
+        $rfc = $this->rfc(registro: $data);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar rfc',data: $rfc);
+        }
+
+        if (isset($data['rfc'])) {
+            $rfc = $data['rfc'];
+        }
+
+        $telefono = "9999999999";
+
+        if (isset($data['telefono'])) {
+            $telefono = $data['telefono'];
+        }
+
+        $numero_exterior = "xxx";
+
+        if (isset($data['numero_exterior'])) {
+            $numero_exterior = $data['numero_exterior'];
+        }
+
+        $numero_interior = "xxx";
+
+        if (isset($data['numero_interior'])) {
+            $numero_interior = $data['numero_interior'];
+        }
+
+        $dp_calle_pertenece_id = $this->dp_calle_pertenece_id(registro: $data);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar direcciones',data: $dp_calle_pertenece_id);
+        }
+
+        if (isset($data['dp_calle_pertenece_id'])) {
+            $dp_calle_pertenece_id = $data['dp_calle_pertenece_id'];
+        }
+
+        $cat_sat_regimen_fiscal_id = (new cat_sat_regimen_fiscal($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener regimen fiscal por defecto',data: $cat_sat_regimen_fiscal_id);
+        }
+
+        if (isset($data['cat_sat_regimen_fiscal_id'])) {
+            $cat_sat_regimen_fiscal_id = $data['cat_sat_regimen_fiscal_id'];
+        }
+
+        $cat_sat_moneda_id = (new cat_sat_moneda($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener moneda por defecto',data: $cat_sat_moneda_id);
+        }
+
+        if (isset($data['cat_sat_moneda_id'])) {
+            $cat_sat_moneda_id = $data['cat_sat_moneda_id'];
+        }
+
+        $cat_sat_forma_pago_id = (new cat_sat_forma_pago($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener forma de pago por defecto',data: $cat_sat_forma_pago_id);
+        }
+
+        if (isset($data['cat_sat_forma_pago_id'])) {
+            $cat_sat_forma_pago_id = $data['cat_sat_forma_pago_id'];
+        }
+
+        $cat_sat_metodo_pago_id = (new cat_sat_metodo_pago($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener metodo de pago por defecto',data: $cat_sat_metodo_pago_id);
+        }
+
+        if (isset($data['cat_sat_metodo_pago_id'])) {
+            $cat_sat_metodo_pago_id = $data['cat_sat_metodo_pago_id'];
+        }
+
+        $cat_sat_uso_cfdi_id = (new cat_sat_uso_cfdi($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener uso cfdi por defecto',data: $cat_sat_uso_cfdi_id);
+        }
+
+        if (isset($data['cat_sat_uso_cfdi_id'])) {
+            $cat_sat_uso_cfdi_id = $data['cat_sat_uso_cfdi_id'];
+        }
+
+        $cat_sat_tipo_de_comprobante_id = (new cat_sat_tipo_de_comprobante($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener tipo comprobante por defecto',
+                data: $cat_sat_tipo_de_comprobante_id);
+        }
+
+        if (isset($data['cat_sat_tipo_de_comprobante_id'])) {
+            $cat_sat_tipo_de_comprobante_id = $data['cat_sat_tipo_de_comprobante_id'];
+        }
+
+        $com_tipo_cliente_id = (new com_tipo_cliente($this->link))->id_predeterminado();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener tipo cliente por defecto',
+                data: $com_tipo_cliente_id);
+        }
+
+        if (isset($data['com_tipo_cliente_id'])) {
+            $com_tipo_cliente_id = $data['com_tipo_cliente_id'];
+        }
+
+        $salida['razon_social'] = $rfc;
+        $salida['rfc'] = $rfc;
+        $salida['telefono'] = $telefono;
+        $salida['numero_exterior'] = $numero_exterior;
+        $salida['numero_interior'] = $numero_interior;
+        $salida['dp_calle_pertenece_id'] = $dp_calle_pertenece_id;
+        $salida['cat_sat_regimen_fiscal_id'] = $cat_sat_regimen_fiscal_id;
+        $salida['cat_sat_moneda_id'] = $cat_sat_moneda_id;
+        $salida['cat_sat_forma_pago_id'] = $cat_sat_forma_pago_id;
+        $salida['cat_sat_metodo_pago_id'] = $cat_sat_metodo_pago_id;
+        $salida['cat_sat_uso_cfdi_id'] = $cat_sat_uso_cfdi_id;
+        $salida['cat_sat_tipo_de_comprobante_id'] = $cat_sat_tipo_de_comprobante_id;
+        $salida['com_tipo_cliente_id'] = $com_tipo_cliente_id;
+
+        return $salida;
     }
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false,

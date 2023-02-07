@@ -55,7 +55,7 @@ class em_empleado extends _modelo_parent{
         }
 
         if(!isset($this->registro['descripcion'])){
-            $this->registro['codigo'] = $this->registro['nombre']. ' ';
+            $this->registro['descripcion'] = $this->registro['nombre']. ' ';
             $this->registro['descripcion'] .= $this->registro['ap'];
         }
 

@@ -47,7 +47,7 @@ class controlador_em_anticipo extends _ctl_base {
         $columns["em_empleado_nombre"]["titulo"] = "Empleado";
         $columns["em_anticipo_monto"]["titulo"] = "Monto";
         $columns["em_anticipo_fecha_prestacion"]["titulo"] = "Fecha Prestacion";
-        //$columns["saldo_pendiente"]["titulo"] = "Saldo Pendiente";
+        $columns["saldo_pendiente"]["titulo"] = "Saldo Pendiente";
         $columns["total_abonado"]["titulo"] = "Total Abonado";
 
 

@@ -1,9 +1,8 @@
 <?php
 namespace gamboamartin\empleado\models;
 use base\orm\_modelo_parent;
-use base\orm\modelo;
 
-use gamboamartin\cat_sat\models\cat_sat_forma_pago;
+
 use gamboamartin\errores\errores;
 
 use PDO;

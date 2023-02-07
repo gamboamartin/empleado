@@ -6,12 +6,12 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
-                    <form method="post" action="<?php echo $controlador->link_em_anticipo_reporte_empresa; ?>" class="form-additional">
+                    <form method="post" action="<?php echo $controlador->link_em_anticipo_reporte_cliente; ?>" class="form-additional">
                         <?php include (new views())->ruta_templates."head/title.php"; ?>
                         <?php include (new views())->ruta_templates."head/subtitulo.php"; ?>
                         <?php include (new views())->ruta_templates."mensajes.php"; ?>
 
-                        <?php echo $controlador->inputs->org_sucursal_id; ?>
+                        <?php echo $controlador->inputs->com_sucursal_id; ?>
                         <?php echo $controlador->inputs->em_tipo_anticipo_id; ?>
                         <?php echo $controlador->inputs->codigo; ?>
                         <?php echo $controlador->inputs->fecha_inicio; ?>

@@ -47,7 +47,7 @@ class controlador_em_anticipo extends _ctl_base {
         $columns["em_empleado_nombre"]["titulo"] = "Empleado";
         $columns["em_anticipo_monto"]["titulo"] = "Monto";
         $columns["em_anticipo_fecha_prestacion"]["titulo"] = "Fecha Prestacion";
-        $columns["saldo_pendiente"]["titulo"] = "Saldo Pendiente";
+        //$columns["saldo_pendiente"]["titulo"] = "Saldo Pendiente";
         $columns["total_abonado"]["titulo"] = "Total Abonado";
 
 
@@ -702,8 +702,6 @@ class controlador_em_anticipo extends _ctl_base {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $this->row_upd->fecha_inicio = date('Y-m-d');
-        $this->row_upd->fecha_final = date('Y-m-d');
 
         $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
         if(errores::$error){

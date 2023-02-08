@@ -481,6 +481,11 @@ class em_empleado extends _modelo_parent{
         return $registro;
     }
 
+    /**
+     * Genera un rfc default
+     * @param array $registro Registro en proceso
+     * @return array
+     */
     private function rfc(array $registro): array
     {
         if (!isset($registro['rfc'])) {

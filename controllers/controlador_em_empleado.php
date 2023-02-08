@@ -704,7 +704,19 @@ class controlador_em_empleado extends _ctl_base {
             return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
         }
 
-        $inputs = $this->inputs(keys_selects: array());
+        $this->asignar_propiedad(identificador: 'em_empleado_id',
+            propiedades: ["id_selected" => $this->registro_id, "disabled" => true, "cols" => 12,
+                "filtro" => array('em_empleado.id' => $this->registro_id), "label" => "Empleado"]);
+
+        $this->inputs = $this->genera_inputs(
+            keys_selects:  $this->keys_selects);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
+            print_r($error);
+            die('Error');
+        }
+
+        $inputs = $this->inputs(keys_selects: $this->keys_selects);
         if (errores::$error) {
             return $this->retorno_error(
                 mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);

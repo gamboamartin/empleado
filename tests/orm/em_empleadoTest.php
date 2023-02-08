@@ -80,9 +80,18 @@ class em_empleadoTest extends test {
         $_SESSION['grupo_id'] = 1;
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
+        
+        
 
         $modelo = new em_empleado($this->link);
         //$modelo = new liberator($modelo);
+
+        $del = (new \gamboamartin\empleado\test\base_test())->del_com_cliente($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
 
 
         $filtro_especial[0]['em_empleado_nombre_completo']['operador'] = 'LIKE';
@@ -169,6 +178,14 @@ class em_empleadoTest extends test {
             print_r($error);
             exit;
         }
+
+        $del = (new \gamboamartin\empleado\test\base_test())->del_com_cliente($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
 
         $resultado = $modelo->registro(1);
         $this->assertIsArray($resultado);

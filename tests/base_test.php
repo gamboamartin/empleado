@@ -11,6 +11,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\organigrama\models\org_puesto;
 use PDO;
+use stdClass;
 
 class base_test{
 
@@ -155,10 +156,10 @@ class base_test{
     }
 
 
-    public function alta_em_empleado(PDO $link, string $am='1', string $ap = '1',
+    public function alta_em_empleado(PDO $link, string $am='1', string $ap = '1', int $cat_sat_uso_cfdi_id = 1,
                                      string $fecha_inicio_rel_laboral = '2020-01-01', int $id = 1,
                                      string $nombre = '1', int $org_puesto_id = 1, float $salario_diario = 180,
-                                     float $salario_diario_integrado = 180): array|\stdClass
+                                     float $salario_diario_integrado = 180): array|stdClass
     {
 
 
@@ -187,6 +188,7 @@ class base_test{
         $registro['salario_diario'] = $salario_diario;
         $registro['salario_diario_integrado'] = $salario_diario_integrado;
         $registro['fecha_inicio_rel_laboral'] = $fecha_inicio_rel_laboral;
+        $registro['cat_sat_uso_cfdi_id'] = $cat_sat_uso_cfdi_id;
         $registro['curp'] = 'abc';
 
 
@@ -289,6 +291,21 @@ class base_test{
         return $del;
     }
 
+    public function del_com_cliente(PDO $link): array
+    {
+
+        $del = $this->del_em_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = (new \gamboamartin\comercial\test\base_test())->del_com_cliente($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
     public function del_em_abono_anticipo(PDO $link): array
     {
 
@@ -361,6 +378,10 @@ class base_test{
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }
+        $del = $this->del_em_rel_empleado_sucursal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
 
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_empleado');
         if(errores::$error){
@@ -368,6 +389,18 @@ class base_test{
         }
         return $del;
     }
+
+    public function del_em_rel_empleado_sucursal(PDO $link): array
+    {
+
+
+        $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_rel_empleado_sucursal');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
     public function del_em_tipo_abono_anticipo(PDO $link): array
     {
 
@@ -403,6 +436,21 @@ class base_test{
         }
 
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_tipo_descuento');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_org_clasificacion_dep(PDO $link): array
+    {
+
+        $del = $this->del_em_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($link);
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

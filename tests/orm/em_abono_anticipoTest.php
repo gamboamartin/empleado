@@ -127,26 +127,7 @@ class em_abono_anticipoTest extends test {
             print_r($error);
             exit;
         }
-        $del = (new base_test())->del_em_tipo_abono_anticipo($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
-        $del = (new base_test())->del_em_empleado($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
-
-        $del = (new \gamboamartin\organigrama\tests\base_test())->del_org_clasificacion_dep($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
-            print_r($error);
-            exit;
-        }
 
         $em_anticipo_id = 1;
         $resultado = $modelo->get_total_abonado($em_anticipo_id);

@@ -1,4 +1,4 @@
-<?php /** @var \gamboamartin\empleado\models\em_anticipo $controlador controlador en ejecucion */ ?>
+<?php /** @var \gamboamartin\empleado\models\em_empleado $controlador controlador en ejecucion */ ?>
 <?php use config\views; ?>
 
 <main class="main section-color-primary">
@@ -9,7 +9,7 @@
                 <?php include (new views())->ruta_templates . "mensajes.php"; ?>
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
                     <?php include (new views())->ruta_templates . "head/subtitulo.php"; ?>
-                    <form method="post" action="<?php echo $controlador->link_em_anticipo_reporte_cliente; ?> "
+                    <form method="post" action="<?php echo $controlador->link_em_empleado_exportar; ?> "
                           class="form-additional" id="form_export">
 
                         <div class="filtros">
@@ -19,26 +19,19 @@
                             </div>
 
                             <div class="filtro-categorias">
-                                <div>
-                                    <label>Por Cliente</label>
-                                    <?php echo $controlador->inputs->com_sucursal_id; ?>
-                                </div>
-                                <div>
-                                    <label>Por Anticipo</label><br>
-                                    <?php echo $controlador->inputs->em_tipo_anticipo_id; ?>
-                                </div>
                             </div>
                             <div class="filtro-reportes">
                                 <div class="filtro-fechas">
                                     <label>Rango Fechas</label>
                                     <div class="fechas form-main widget-form-cart">
-
+                                        <?php echo $controlador->inputs->em_empleado_id; ?>
                                         <?php echo $controlador->inputs->fecha_inicio; ?>
                                         <?php echo $controlador->inputs->fecha_final; ?>
                                     </div>
                                 </div>
 
                             </div>
+
                         </div>
 
                         <div class="botones">
@@ -48,11 +41,17 @@
                             </button>
                         </div>
                     </form>
-                    <table id="em_anticipo" class="datatables table table-striped "></table>
+                    <table id="em_empleado" class="datatables table table-striped "></table>
                 </div>
 
             </div>
         </div>
     </div>
 </main>
+
+
+
+
+
+
 

@@ -342,6 +342,13 @@ class em_empleado extends _modelo_parent{
     public function modifica_bd(array $registro, int $id, bool $reactiva = false,
                                 array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
+
+        $em_empleado_previo = $this->registro(registro_id: $id, columnas_en_bruto: true,retorno_obj: true);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener em_empleado_previo',data: $em_empleado_previo);
+        }
+
+
         if(!isset($this->registro['codigo'])){
             if (isset($this->registro['rfc'])){
                 $this->registro['codigo'] = $this->registro['rfc'];
@@ -349,6 +356,14 @@ class em_empleado extends _modelo_parent{
         }
 
         if(!isset($this->registro['descripcion'])){
+
+            if(!isset($this->registro['nombre'])){
+                $this->registro['nombre'] = $em_empleado_previo->nombre;
+            }
+            if(!isset($this->registro['ap'])){
+                $this->registro['ap'] = $em_empleado_previo->ap;
+            }
+
             $this->registro['codigo'] = $this->registro['nombre']. ' ';
             $this->registro['descripcion'] .= $this->registro['ap'];
         }

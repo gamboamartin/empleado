@@ -364,7 +364,7 @@ class em_empleado extends _modelo_parent{
                 $registro['ap'] = $em_empleado_previo->ap;
             }
 
-            $registro['codigo'] = $registro['nombre']. ' ';
+            $registro['descripcion'] = $registro['nombre']. ' ';
             $registro['descripcion'] .= $registro['ap'];
         }
 

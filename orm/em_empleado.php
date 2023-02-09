@@ -349,23 +349,23 @@ class em_empleado extends _modelo_parent{
         }
 
 
-        if(!isset($this->registro['codigo'])){
-            if (isset($this->registro['rfc'])){
-                $this->registro['codigo'] = $this->registro['rfc'];
+        if(!isset($registro['codigo'])){
+            if (isset($registro['rfc'])){
+                $registro['codigo'] = $registro['rfc'];
             }
         }
 
-        if(!isset($this->registro['descripcion'])){
+        if(!isset($registro['descripcion'])){
 
-            if(!isset($this->registro['nombre'])){
-                $this->registro['nombre'] = $em_empleado_previo->nombre;
+            if(!isset($registro['nombre'])){
+                $registro['nombre'] = $em_empleado_previo->nombre;
             }
-            if(!isset($this->registro['ap'])){
-                $this->registro['ap'] = $em_empleado_previo->ap;
+            if(!isset($registro['ap'])){
+                $registro['ap'] = $em_empleado_previo->ap;
             }
 
-            $this->registro['codigo'] = $this->registro['nombre']. ' ';
-            $this->registro['descripcion'] .= $this->registro['ap'];
+            $registro['codigo'] = $registro['nombre']. ' ';
+            $registro['descripcion'] .= $registro['ap'];
         }
 
         $registro = $this->campos_base(data:$registro,modelo: $this,id: $id);

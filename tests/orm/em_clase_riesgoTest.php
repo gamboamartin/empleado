@@ -58,5 +58,37 @@ class em_clase_riesgoTest extends test {
 
     }
 
+    public function test_modifica_bd(): void
+    {
+        errores::$error = false;
+
+
+        $modelo = new em_clase_riesgo($this->link);
+        //$modelo = new liberator($modelo);
+
+        $del = (new base_test())->del_em_clase_riesgo(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_em_clase_riesgo(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $registro = array();
+        $id = 1;
+
+        $resultado = $modelo->modifica_bd($registro, $id);
+        $this->assertIsObject($resultado);
+        $this->assertNotTrue(errores::$error);
+        $this->assertEquals("UPDATE em_clase_riesgo SET descripcion_select = '1 0.01 0.01',usuario_update_id=2  WHERE id = 1", $resultado->sql);
+        errores::$error = false;
+    }
+
 }
 

@@ -9,6 +9,7 @@
 namespace gamboamartin\empleado\controllers;
 
 use base\controller\controler;
+use gamboamartin\comercial\controllers\controlador_com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\documento\models\doc_documento;
 use gamboamartin\empleado\models\em_abono_anticipo;
@@ -32,6 +33,7 @@ use Throwable;
 class controlador_em_empleado extends _ctl_base {
 
     public controlador_em_cuenta_bancaria $controlador_em_cuenta_bancaria;
+
     public controlador_em_anticipo $controlador_em_anticipo;
     public controlador_em_abono_anticipo $controlador_em_abono_anticipo;
     public string $link_em_cuenta_bancaria_alta_bd = '';
@@ -151,6 +153,7 @@ class controlador_em_empleado extends _ctl_base {
         $init_data['org_puesto'] = "gamboamartin\\organigrama";
         $init_data['em_centro_costo'] = "gamboamartin\\empleado";
         $init_data['em_empleado'] = "gamboamartin\\empleado";
+        $init_data['com_sucursal'] = "gamboamartin\\comercial";
         $init_data['im_registro_patronal'] = "gamboamartin\\im_registro_patronal";
 
         $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
@@ -278,6 +281,7 @@ class controlador_em_empleado extends _ctl_base {
         $this->controlador_em_anticipo = new controlador_em_anticipo(link: $this->link,
             paths_conf: $paths_conf);
 
+
         return $this;
     }
 
@@ -403,6 +407,7 @@ class controlador_em_empleado extends _ctl_base {
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_tipo_jornada_nom_id",
             label: "Tipo de Jornada Nom");
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "org_puesto_id", label: "Puesto");
+
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_centro_costo_id",
             label: "Centro Costo", cols: 12);
         return $this->init_selects(keys_selects: $keys_selects, key: "im_registro_patronal_id", label: "Registro Patronal");
@@ -454,7 +459,6 @@ class controlador_em_empleado extends _ctl_base {
 
             $this->inputs = $inputs;
         }
-
         return $this->inputs;
     }
 
@@ -525,12 +529,20 @@ class controlador_em_empleado extends _ctl_base {
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'com_sucursal_id',
+            keys_selects: $keys_selects, place_holder: 'Comercial Sucursal');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+
 
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'fecha_final',
             keys_selects: $keys_selects, place_holder: 'Fecha Final');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
+
 
         return $keys_selects;
     }
@@ -615,9 +627,12 @@ class controlador_em_empleado extends _ctl_base {
 
         $keys_selects['dp_pais_id']->id_selected = $calle['dp_pais_id'];
 
+
+
         $keys_selects['dp_estado_id']->con_registros = true;
         $keys_selects['dp_estado_id']->filtro = array("dp_pais.id" => $calle['dp_pais_id']);
         $keys_selects['dp_estado_id']->id_selected = $calle['dp_estado_id'];
+
 
         $keys_selects['dp_municipio_id']->con_registros = true;
         $keys_selects['dp_municipio_id']->filtro = array("dp_estado.id" => $calle['dp_estado_id']);
@@ -1047,6 +1062,7 @@ class controlador_em_empleado extends _ctl_base {
             print_r($error);
             die('Error');
         }
+
 
         $this->asignar_propiedad(identificador:'cat_sat_tipo_jornada_nom_id',
             propiedades: ["id_selected"=>$this->row_upd->cat_sat_tipo_jornada_nom_id]);

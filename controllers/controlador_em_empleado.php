@@ -135,7 +135,7 @@ class controlador_em_empleado extends _ctl_base {
     {
         $keys = new stdClass();
         $keys->inputs = array('codigo', 'descripcion', 'nombre', 'ap', 'am',  'rfc', 'curp', 'nss', 'salario_diario',
-            'salario_diario_integrado');
+            'salario_diario_integrado','com_sucursal','org_sucursal');
         $keys->telefonos = array('telefono');
         $keys->fechas = array('fecha_inicio_rel_laboral', 'fecha_inicio', 'fecha_final');
         $keys->selects = array();
@@ -530,11 +530,17 @@ class controlador_em_empleado extends _ctl_base {
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
-        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'com_sucursal_id',
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'com_sucursal',
             keys_selects: $keys_selects, place_holder: 'Comercial Sucursal');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'org_sucursal',
+            keys_selects: $keys_selects, place_holder: 'Comercial Sucursal');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
 
 
 

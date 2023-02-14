@@ -26,7 +26,7 @@ class em_empleado extends _modelo_parent{
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
             'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla);
 
-        $campos_obligatorios = array('nombre','ap','descripcion','codigo','curp');
+        $campos_obligatorios = array('nombre','ap','descripcion','codigo','curp','rfc');
 
         $tipo_campos = array();
         $tipo_campos['rfc'] = 'rfc';
@@ -90,6 +90,10 @@ class em_empleado extends _modelo_parent{
             "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $this->registro);
+        }
+
+        if(!isset($this->registro['rfc'])){
+            $this->registro['rfc'] = 'AAA010101AAA';
         }
 
 

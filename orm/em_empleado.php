@@ -394,7 +394,7 @@ class em_empleado extends _modelo_parent{
                 $registro['em_registro_patronal_id'] = $registro['im_registro_patronal_id'];
             }
             else{
-                $registro['em_registro_patronal_id'] = $em_empleado_previo['im_registro_patronal_id'];
+                $registro['em_registro_patronal_id'] = $em_empleado_previo->im_registro_patronal_id;
             }
         }
 

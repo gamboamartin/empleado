@@ -30,6 +30,14 @@ class em_registro_patronal extends modelo{
         $this->NAMESPACE = __NAMESPACE__;
     }
 
+    private function alias(array $registro): array
+    {
+        if(!isset($registro['alias'])) {
+            $registro['alias'] = $registro['codigo_bis'];
+        }
+        return $registro;
+    }
+
     public function alta_bd(): array|stdClass
     {
 
@@ -37,29 +45,13 @@ class em_registro_patronal extends modelo{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al validar registro',data:  $valida);
         }
-        
-        $fc_csd = (new fc_csd(link: $this->link))->registro(registro_id: $this->registro['fc_csd_id']);
+
+        $registro = $this->inicializa_row(registro: $this->registro);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $fc_csd);
+            return $this->error->error(mensaje: 'Error al maquetar row',data:  $registro);
         }
 
-        if(!isset($this->registro['codigo'])){
-            $this->registro['codigo'] = $this->registro['descripcion'];
-        }
-
-        if(!isset($this->registro['codigo_bis'])) {
-            $this->registro['codigo_bis'] = $this->registro['codigo'] . ' ' . $fc_csd['org_empresa_rfc'];
-        }
-
-        if(!isset($this->registro['alias'])) {
-            $this->registro['alias'] = $this->registro['codigo_bis'];
-        }
-
-        if(!isset($this->registro['descripcion_select'])) {
-            $this->registro['descripcion_select'] = $fc_csd['org_empresa_razon_social'] . ' ' . $this->registro['descripcion'];
-        }
-
-
+        $this->registro = $registro;
 
         $r_alta_bd = parent::alta_bd();
         if(errores::$error){
@@ -67,6 +59,66 @@ class em_registro_patronal extends modelo{
         }
 
         return $r_alta_bd;
+    }
+
+    private function codigo(array $registro): array
+    {
+        if(!isset($registro['codigo'])){
+            $registro['codigo'] = $registro['descripcion'];
+        }
+        return $registro;
+    }
+
+    private function codigo_bis(array $fc_csd, array $registro): array
+    {
+        if(!isset($registro['codigo_bis'])) {
+            $registro['codigo_bis'] = $registro['codigo'] . ' ' . $fc_csd['org_empresa_rfc'];
+        }
+        return $registro;
+    }
+
+    private function descripcion_select(array $fc_csd, array $registro): array|string
+    {
+        if(!isset($registro['descripcion_select'])) {
+            $registro['descripcion_select'] = $fc_csd['org_empresa_razon_social'] . ' ' . $registro['descripcion'];
+        }
+        return $registro;
+    }
+
+    private function inicializa_row(array $registro){
+        $fc_csd = (new fc_csd(link: $this->link))->registro(registro_id: $registro['fc_csd_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $fc_csd);
+        }
+
+        $registro = $this->init_row(fc_csd: $fc_csd, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar row',data:  $registro);
+        }
+        return $registro;
+    }
+
+    private function init_row(array $fc_csd, array $registro){
+        $registro = $this->codigo(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar codigo',data:  $registro);
+        }
+
+        $registro = $this->codigo_bis(fc_csd: $fc_csd, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar codigo_bis',data:  $registro);
+        }
+
+        $registro = $this->alias(registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar alias',data:  $registro);
+        }
+
+        $registro = $this->descripcion_select(fc_csd: $fc_csd, registro: $registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al maquetar descripcion_select',data:  $registro);
+        }
+        return $registro;
     }
 
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass

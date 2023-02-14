@@ -24,8 +24,7 @@ class em_empleado extends _modelo_parent{
 
         $columnas = array($tabla=>false, 'em_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
-            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla,
-            'em_registro_patronal'=>$tabla);
+            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla);
 
         $campos_obligatorios = array('nombre','ap','descripcion','codigo','curp','rfc');
 

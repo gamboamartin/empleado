@@ -8,9 +8,9 @@ use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
+
 use gamboamartin\im_registro_patronal\models\im_conf_pres_empresa;
 use gamboamartin\im_registro_patronal\models\im_detalle_conf_prestaciones;
-use gamboamartin\im_registro_patronal\models\im_registro_patronal;
 use gamboamartin\organigrama\models\org_puesto;
 use PDO;
 use stdClass;
@@ -22,7 +22,7 @@ class em_empleado extends _modelo_parent{
         $this->error = new errores();
         $tabla = 'em_empleado';
 
-        $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
+        $columnas = array($tabla=>false, 'em_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
             'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla,
             'em_registro_patronal'=>$tabla);
@@ -97,17 +97,6 @@ class em_empleado extends _modelo_parent{
             $this->registro['rfc'] = 'AAA010101AAA';
         }
 
-        if(!isset($this->registro['em_registro_patronal_id'])){
-            if(isset($this->registro['im_registro_patronal_id'])) {
-                $this->registro['em_registro_patronal_id'] = $this->registro['im_registro_patronal_id'];
-            }
-        }
-
-        if(isset($this->registro['em_registro_patronal_id']) && $this->registro['em_registro_patronal_id'] === ''){
-            if(isset($this->registro['im_registro_patronal_id'])) {
-                $this->registro['em_registro_patronal_id'] = $this->registro['im_registro_patronal_id'];
-            }
-        }
 
 
         $r_alta_bd = parent::alta_bd();
@@ -203,8 +192,8 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al obtener empleado',data: $r_empleado);
         }
 
-        $r_registro_patronal =  (new im_registro_patronal($this->link))->registro(registro_id:
-            $r_empleado['im_registro_patronal_id']);
+        $r_registro_patronal =  (new em_registro_patronal($this->link))->registro(registro_id:
+            $r_empleado['em_registro_patronal_id']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener registro patronal',data: $r_registro_patronal);
         }
@@ -389,14 +378,6 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $registro);
         }
 
-        if(!isset($registro['em_registro_patronal_id'])){
-            if(isset($registro['im_registro_patronal_id'])){
-                $registro['em_registro_patronal_id'] = $registro['im_registro_patronal_id'];
-            }
-            else{
-                $registro['em_registro_patronal_id'] = $em_empleado_previo->im_registro_patronal_id;
-            }
-        }
 
 
         $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);

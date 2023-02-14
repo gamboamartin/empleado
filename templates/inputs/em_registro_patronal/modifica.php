@@ -1,4 +1,4 @@
-<?php /** @var \gamboamartin\im_registro_patronal\controllers\controlador_im_registro_patronal $controlador  controlador en ejecucion */ ?>
+<?php /** @var gamboamartin\empleado\controllers\controlador_em_registro_patronal $controlador  controlador en ejecucion */ ?>
 <?php use config\views; ?>
 <?php echo $controlador->inputs->fc_csd_id; ?>
 <?php echo $controlador->inputs->em_clase_riesgo_id; ?>

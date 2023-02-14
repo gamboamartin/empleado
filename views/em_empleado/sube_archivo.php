@@ -1,4 +1,4 @@
-<?php /** @var \gamboamartin\im_registro_patronal\controllers\controlador_im_registro_patronal $controlador  controlador en ejecucion */ ?>
+<?php /** @var gamboamartin\empleado\controllers\controlador_em_registro_patronal $controlador  controlador en ejecucion */ ?>
 <?php use config\views; ?>
 <main class="main section-color-primary">
     <div class="container">

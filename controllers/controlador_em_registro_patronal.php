@@ -150,7 +150,7 @@ class controlador_em_registro_patronal extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera modelo',data:  $fc_csd);
         }
-        $r_fc_csd = $fc_csd->registro(registro_id: $row->im_registro_patronal_fc_csd_id);
+        $r_fc_csd = $fc_csd->registro(registro_id: $row->em_registro_patronal_fc_csd_id);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al obtener el registro',data:  $r_fc_csd);
         }
@@ -162,7 +162,7 @@ class controlador_em_registro_patronal extends system {
 
     private function dp_estado_descripcion_row(stdClass $row): array|stdClass
     {
-        $keys = array('im_registro_patronal_id');
+        $keys = array('em_registro_patronal_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
@@ -172,7 +172,7 @@ class controlador_em_registro_patronal extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera modelo',data:  $fc_csd);
         }
-        $r_fc_csd = $fc_csd->registro(registro_id: $row->im_registro_patronal_fc_csd_id);
+        $r_fc_csd = $fc_csd->registro(registro_id: $row->em_registro_patronal_fc_csd_id);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al obtener el registro',data:  $r_fc_csd);
         }
@@ -194,7 +194,7 @@ class controlador_em_registro_patronal extends system {
 
     private function em_clase_riesgo_factor_row(stdClass $row): array|stdClass
     {
-        $keys = array('im_registro_patronal_id');
+        $keys = array('em_registro_patronal_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
@@ -204,7 +204,7 @@ class controlador_em_registro_patronal extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera modelo',data:  $em_clase_riesgo);
         }
-        $r_em_clase_riesgo = $em_clase_riesgo->registro(registro_id: $row->im_registro_patronal_em_clase_riesgo_id);
+        $r_em_clase_riesgo = $em_clase_riesgo->registro(registro_id: $row->em_registro_patronal_em_clase_riesgo_id);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al obtener el registro',data:  $r_em_clase_riesgo);
         }
@@ -266,7 +266,7 @@ class controlador_em_registro_patronal extends system {
 
     private function org_empresa_descripcion_row(stdClass $row): array|stdClass
     {
-        $keys = array('im_registro_patronal_id');
+        $keys = array('em_registro_patronal_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
@@ -276,7 +276,7 @@ class controlador_em_registro_patronal extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera modelo',data:  $fc_csd);
         }
-        $r_fc_csd = $fc_csd->registro(registro_id: $row->im_registro_patronal_fc_csd_id);
+        $r_fc_csd = $fc_csd->registro(registro_id: $row->em_registro_patronal_fc_csd_id);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al obtener el registro',data:  $r_fc_csd);
         }
@@ -288,7 +288,7 @@ class controlador_em_registro_patronal extends system {
 
     private function org_empresa_rfc_row(stdClass $row): array|stdClass
     {
-        $keys = array('im_registro_patronal_id');
+        $keys = array('em_registro_patronal_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $row);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al validar row',data:  $valida);
@@ -298,7 +298,7 @@ class controlador_em_registro_patronal extends system {
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al genera modelo',data:  $fc_csd);
         }
-        $r_fc_csd = $fc_csd->registro(registro_id: $row->im_registro_patronal_fc_csd_id);
+        $r_fc_csd = $fc_csd->registro(registro_id: $row->em_registro_patronal_fc_csd_id);
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al obtener el registro',data:  $r_fc_csd);
         }

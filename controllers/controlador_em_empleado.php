@@ -154,7 +154,7 @@ class controlador_em_empleado extends _ctl_base {
         $init_data['em_centro_costo'] = "gamboamartin\\empleado";
         $init_data['em_empleado'] = "gamboamartin\\empleado";
         $init_data['com_sucursal'] = "gamboamartin\\comercial";
-        $init_data['im_registro_patronal'] = "gamboamartin\\im_registro_patronal";
+
 
         $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
         if (errores::$error) {
@@ -410,7 +410,7 @@ class controlador_em_empleado extends _ctl_base {
 
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_centro_costo_id",
             label: "Centro Costo", cols: 12);
-        return $this->init_selects(keys_selects: $keys_selects, key: "im_registro_patronal_id", label: "Registro Patronal");
+        return $this->init_selects(keys_selects: $keys_selects, key: "em_registro_patronal_id", label: "Registro Patronal");
     }
 
     protected function inputs_children(stdClass $registro): array|stdClass
@@ -655,7 +655,7 @@ class controlador_em_empleado extends _ctl_base {
         $keys_selects['cat_sat_tipo_jornada_nom_id']->id_selected = $this->registro['cat_sat_tipo_jornada_nom_id'];
         $keys_selects['org_puesto_id']->id_selected = $this->registro['org_puesto_id'];
         $keys_selects['em_centro_costo_id']->id_selected = $this->registro['em_centro_costo_id'];
-        $keys_selects['im_registro_patronal_id']->id_selected = $this->registro['im_registro_patronal_id'];
+        $keys_selects['em_registro_patronal_id']->id_selected = $this->registro['em_registro_patronal_id'];
 
         $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
         if (errores::$error) {
@@ -1039,8 +1039,8 @@ class controlador_em_empleado extends _ctl_base {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'im_registro_patronal_id',
-            propiedades: ["id_selected"=>$this->row_upd->im_registro_patronal_id]);
+        $this->asignar_propiedad(identificador:'em_registro_patronal_id',
+            propiedades: ["id_selected"=>$this->row_upd->em_registro_patronal_id]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

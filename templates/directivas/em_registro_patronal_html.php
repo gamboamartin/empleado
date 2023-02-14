@@ -5,11 +5,9 @@ use gamboamartin\empleado\controllers\controlador_em_registro_patronal;
 use gamboamartin\empleado\html\em_clase_riesgo_html;
 use gamboamartin\empleado\models\em_registro_patronal;
 use gamboamartin\errores\errores;
-use gamboamartin\im_registro_patronal\controllers\controlador_im_registro_patronal;
 use gamboamartin\system\html_controler;
 use gamboamartin\system\system;
 use gamboamartin\template\directivas;
-use gamboamartin\im_registro_patronal\models\im_registro_patronal;
 use PDO;
 use stdClass;
 

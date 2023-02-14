@@ -4,6 +4,7 @@ namespace html;
 use base\orm\modelo;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
+use gamboamartin\organigrama\html\org_puesto_html;
 use gamboamartin\template\directivas;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
@@ -16,7 +17,7 @@ class em_empleado_html extends em_html {
         $controler->inputs->select = new stdClass();
         $controler->inputs->select->dp_calle_pertenece_id = $inputs->selects->dp_calle_pertenece_id;
         $controler->inputs->select->cat_sat_regimen_fiscal_id = $inputs->selects->cat_sat_regimen_fiscal_id;
-        $controler->inputs->select->im_registro_patronal_id = $inputs->selects->im_registro_patronal_id;
+        $controler->inputs->select->em_registro_patronal_id = $inputs->selects->em_registro_patronal_id;
         $controler->inputs->select->org_puesto_id = $inputs->selects->org_puesto_id;
         $controler->inputs->select->cat_sat_tipo_regimen_nom_id = $inputs->selects->cat_sat_tipo_regimen_nom_id;
         $controler->inputs->select->cat_sat_tipo_jornada_nom_id = $inputs->selects->cat_sat_tipo_jornada_nom_id;
@@ -503,12 +504,12 @@ class em_empleado_html extends em_html {
         }
         $selects->cat_sat_tipo_regimen_nom_id = $select;
 
-        $select = (new im_registro_patronal_html(html:$this->html_base))->select_im_registro_patronal_id(
-            cols: 6, con_registros:true, id_selected:$row_upd->im_registro_patronal_id,link: $link);
+        $select = (new em_registro_patronal_html(html:$this->html_base))->select_em_registro_patronal_id(
+            cols: 6, con_registros:true, id_selected:$row_upd->em_registro_patronal_id,link: $link);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar select',data:  $select);
         }
-        $selects->im_registro_patronal_id = $select;
+        $selects->em_registro_patronal_id = $select;
 
 
 

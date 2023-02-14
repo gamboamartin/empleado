@@ -124,6 +124,14 @@ class controlador_em_registro_patronal extends system {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'cat_sat_isn_id',
+            propiedades: ["id_selected"=>$this->row_upd->cat_sat_isn_id]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
 
         $inputs = $this->genera_inputs(keys_selects:  $this->keys_selects);
         if(errores::$error){

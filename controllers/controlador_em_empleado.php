@@ -153,6 +153,7 @@ class controlador_em_empleado extends _ctl_base {
         $init_data['org_puesto'] = "gamboamartin\\organigrama";
         $init_data['em_centro_costo'] = "gamboamartin\\empleado";
         $init_data['em_empleado'] = "gamboamartin\\empleado";
+        $init_data['em_registro_patronal'] = "gamboamartin\\empleado";
         $init_data['com_sucursal'] = "gamboamartin\\comercial";
 
 

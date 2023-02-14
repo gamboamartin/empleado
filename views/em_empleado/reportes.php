@@ -27,6 +27,7 @@
                                         <?php echo $controlador->inputs->fecha_inicio; ?>
                                         <?php echo $controlador->inputs->fecha_final; ?>
                                         <?php echo $controlador->inputs->com_sucursal_id; ?>
+                                        <?php echo $controlador->inputs->org_sucursal_id; ?>
                                     </div>
                                 </div>
 

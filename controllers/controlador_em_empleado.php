@@ -802,7 +802,7 @@ class controlador_em_empleado extends _ctl_base {
                 "filtro" => array('em_anticipo.id' => $this->em_anticipo_id)]);
 
         $this->inputs = $this->controlador_em_abono_anticipo->genera_inputs(
-             keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
+            keys_selects:  $this->controlador_em_abono_anticipo->keys_selects);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al generar inputs', data: $this->inputs);
             print_r($error);

@@ -1,8 +1,8 @@
 <?php
 namespace tests\templates\directivas;
 
-use gamboamartin\empleado\models\base\em_registro_patronal;
 use gamboamartin\empleado\models\em_clase_riesgo;
+use gamboamartin\empleado\models\em_registro_patronal;
 use gamboamartin\empleado\test\base_test;
 use gamboamartin\errores\errores;
 use gamboamartin\test\test;

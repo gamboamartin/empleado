@@ -389,6 +389,16 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $registro);
         }
 
+        if(!isset($registro['em_registro_patronal_id'])){
+            if(isset($registro['im_registro_patronal_id'])){
+                $registro['em_registro_patronal_id'] = $registro['im_registro_patronal_id'];
+            }
+            else{
+                $registro['em_registro_patronal_id'] = $em_empleado_previo['im_registro_patronal_id'];
+            }
+        }
+
+
         $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al modificar empleado',data: $r_modifica_bd);

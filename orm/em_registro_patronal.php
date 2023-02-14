@@ -51,13 +51,6 @@ class em_registro_patronal extends modelo{
             return $this->error->error(mensaje: 'Error al obtener el registro',data:  $fc_csd);
         }
 
-
-        $em_clase_riesgo = (new em_clase_riesgo(link: $this->link))->registro(registro_id: $this->registro['em_clase_riesgo_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $em_clase_riesgo);
-        }
-
-
         if(!isset($this->registro['codigo'])){
             $this->registro['codigo'] = $this->registro['descripcion'];
         }
@@ -92,11 +85,7 @@ class em_registro_patronal extends modelo{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener el registro',data:  $fc_csd);
         }
-
-        $em_clase_riesgo = (new em_clase_riesgo(link: $this->link))->registro(registro_id: $registro['em_clase_riesgo_id']);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $em_clase_riesgo);
-        }
+        
 
         if(!isset($registro['codigo'])) {
             $registro['codigo'] = $registro['descripcion'];

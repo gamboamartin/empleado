@@ -156,7 +156,13 @@ class em_registro_patronal extends modelo{
         return $r_modifica_bd;
     }
 
-    private function valida_alta_bd(array $registro){
+    /**
+     * Valida que existan los elementos base de un alta
+     * @param array $registro Registro en proceso
+     * @return array|true
+     */
+    private function valida_alta_bd(array $registro): bool|array
+    {
         $keys = array('fc_csd_id','em_clase_riesgo_id','cat_sat_isn_id');
         $valida = $this->validacion->valida_ids(keys: $keys,registro:  $registro);
         if(errores::$error){

@@ -1,6 +1,7 @@
 <?php
 namespace gamboamartin\empleado\test;
 use base\orm\modelo_base;
+use gamboamartin\cat_sat\tests\base;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_clase_riesgo;
@@ -16,6 +17,17 @@ use stdClass;
 
 class base_test{
 
+    public function alta_cat_sat_isn(PDO $link): array|stdClass
+    {
+
+
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_isn(link: $link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
 
     public function alta_em_abono_anticipo(PDO $link, int $em_anticipo_id = 1, int $em_anticipo_n_pagos = 1,
                                            int $em_tipo_abono_anticipo_id = 1): array|\stdClass
@@ -308,6 +320,21 @@ class base_test{
         return $del;
     }
 
+    public function del_cat_sat_isn(PDO $link): array
+    {
+
+        $del = $this->del_em_registro_patronal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+
+        $del = (new \gamboamartin\cat_sat\tests\base_test())->del_cat_sat_isn(link: $link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
     public function del_com_cliente(PDO $link): array
     {
 
@@ -349,6 +376,11 @@ class base_test{
     }
     public function del_em_clase_riesgo(PDO $link): array
     {
+
+        $del = $this->del_em_registro_patronal($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
 
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_clase_riesgo');
         if(errores::$error){
@@ -401,6 +433,16 @@ class base_test{
         }
 
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_empleado');
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
+        return $del;
+    }
+
+    public function del_em_registro_patronal(PDO $link): array
+    {
+
+        $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_registro_patronal');
         if(errores::$error){
             return (new errores())->error('Error al eliminar', $del);
         }

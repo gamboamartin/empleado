@@ -3,16 +3,9 @@ namespace gamboamartin\empleado\models;
 
 use base\orm\_modelo_parent;
 use DateTime;
-use gamboamartin\cat_sat\models\cat_sat_forma_pago;
-use gamboamartin\cat_sat\models\cat_sat_metodo_pago;
-use gamboamartin\cat_sat\models\cat_sat_moneda;
-use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
-use gamboamartin\cat_sat\models\cat_sat_tipo_de_comprobante;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
-use gamboamartin\cat_sat\models\cat_sat_uso_cfdi;
 use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
-use gamboamartin\comercial\models\com_tipo_cliente;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
 use gamboamartin\im_registro_patronal\models\im_conf_pres_empresa;
@@ -31,7 +24,7 @@ class em_empleado extends _modelo_parent{
 
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
-            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla,'com_surcursal' =>$tabla );
+            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla);
 
         $campos_obligatorios = array('nombre','ap','descripcion','codigo','curp');
 

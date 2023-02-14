@@ -24,7 +24,8 @@ class em_empleado extends _modelo_parent{
 
         $columnas = array($tabla=>false, 'im_registro_patronal'=>$tabla, 'cat_sat_regimen_fiscal'=>$tabla,
             'dp_calle_pertenece'=>$tabla,'cat_sat_tipo_regimen_nom'=>$tabla,'org_puesto'=>$tabla,
-            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla);
+            'org_departamento'=>'org_puesto','cat_sat_tipo_jornada_nom'=>$tabla, 'em_centro_costo' =>$tabla,
+            'em_registro_patronal'=>$tabla);
 
         $campos_obligatorios = array('nombre','ap','descripcion','codigo','curp','rfc');
 
@@ -94,6 +95,18 @@ class em_empleado extends _modelo_parent{
 
         if(!isset($this->registro['rfc'])){
             $this->registro['rfc'] = 'AAA010101AAA';
+        }
+
+        if(!isset($this->registro['em_registro_patronal_id'])){
+            if(isset($this->registro['im_registro_patronal_id'])) {
+                $this->registro['em_registro_patronal_id'] = $this->registro['im_registro_patronal_id'];
+            }
+        }
+
+        if(isset($this->registro['em_registro_patronal_id']) && $this->registro['em_registro_patronal_id'] === ''){
+            if(isset($this->registro['im_registro_patronal_id'])) {
+                $this->registro['em_registro_patronal_id'] = $this->registro['im_registro_patronal_id'];
+            }
         }
 
 

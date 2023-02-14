@@ -11,10 +11,10 @@ class em_registro_patronal extends modelo{
     public function __construct(PDO $link){
         $tabla = "em_registro_patronal";
         $columnas = array($tabla=>false, 'fc_csd' => $tabla, 'cat_sat_isn'=>$tabla,'org_sucursal' => 'fc_csd',
-            'org_empresa' => 'org_sucursal','im_clase_riesgo' => $tabla,'dp_calle_pertenece'=>'org_sucursal',
+            'org_empresa' => 'org_sucursal','dp_calle_pertenece'=>'org_sucursal',
             'dp_colonia_postal'=>'dp_calle_pertenece','dp_cp'=>'dp_colonia_postal','em_clase_riesgo'=>$tabla,
             'cat_sat_regimen_fiscal'=>'org_empresa');
-        $campos_obligatorios = array('im_clase_riesgo_id','fc_csd_id','descripcion_select');
+        $campos_obligatorios = array('em_clase_riesgo_id','fc_csd_id','descripcion_select');
 
         $campos_view = array();
         $campos_view['fc_csd_id']['type'] = 'selects';

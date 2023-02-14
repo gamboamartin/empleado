@@ -5,7 +5,7 @@ use gamboamartin\cat_sat\models\cat_sat_isn;
 use gamboamartin\empleado\models\em_clase_riesgo;
 use gamboamartin\errores\errores;
 use gamboamartin\facturacion\models\fc_csd;
-use gamboamartin\im_registro_patronal\models\im_clase_riesgo;
+
 use PDO;
 use stdClass;
 
@@ -95,9 +95,9 @@ class em_registro_patronal extends modelo{
             return $this->error->error(mensaje: 'Error al obtener el registro',data:  $fc_csd);
         }
 
-        $im_clase_riesgo = (new im_clase_riesgo(link: $this->link))->registro(registro_id: $registro['im_clase_riesgo_id']);
+        $em_clase_riesgo = (new em_clase_riesgo(link: $this->link))->registro(registro_id: $registro['em_clase_riesgo_id']);
         if(errores::$error){
-            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $im_clase_riesgo);
+            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $em_clase_riesgo);
         }
 
         if(!isset($registro['codigo'])) {

@@ -13,7 +13,8 @@ class em_anticipo extends modelo{
     public function __construct(PDO $link){
         $tabla = 'em_anticipo';
         $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla, 'em_tipo_descuento'=>$tabla,
-            'em_metodo_calculo'=>'em_tipo_descuento');
+            'em_metodo_calculo'=>'em_tipo_descuento', 'im_registro_patronal'=>'em_empleado',
+            'fc_csd'=>'im_registro_patronal','org_sucursal' => 'fc_csd');
         $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
             'em_tipo_anticipo_id','em_empleado_id','monto','fecha_inicio_descuento','fecha_prestacion',
             'em_tipo_descuento_id');

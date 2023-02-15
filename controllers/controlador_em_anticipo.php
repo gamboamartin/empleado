@@ -11,10 +11,12 @@ namespace gamboamartin\empleado\controllers;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\errores\errores;
+use gamboamartin\plugins\exportador;
 use gamboamartin\system\_ctl_base;
 use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
+use gamboamartin\validacion\validacion;
 use html\em_anticipo_html;
 use PDO;
 use stdClass;
@@ -25,7 +27,9 @@ class controlador_em_anticipo extends _ctl_base {
     public string $link_em_abono_anticipo_alta_bd = '';
     public string $link_em_abono_anticipo_modifica_bd = '';
     public string $link_em_anticipo_reporte_cliente = '';
+    public string $link_em_anticipo_reporte_cliente_exportar = '';
     public string $link_em_anticipo_reporte_empresa = '';
+    public string $link_em_anticipo_reporte_empresa_exportar = '';
 
     public int $em_anticipo_id = -1;
     public int $em_abono_anticipo_id = -1;
@@ -151,6 +155,15 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
         $this->link_em_anticipo_reporte_empresa = $link_em_anticipo_reporte_empresa;
+
+        $this->link_em_anticipo_reporte_empresa_exportar = $this->obj_link->link_con_id(accion: "exportar_empresa",link: $this->link,
+            registro_id: $this->registro_id,seccion: $this->seccion);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_em_anticipo_reporte_empresa_exportar);
+            print_r($error);
+            exit;
+        }
 
         if (isset($_GET['em_anticipo_id'])){
             $this->em_anticipo_id = $_GET['em_anticipo_id'];
@@ -650,6 +663,108 @@ class controlador_em_anticipo extends _ctl_base {
         return $abono;
     }
 
+    public function exportar_empresa(bool $header, bool $ws = false): array|stdClass
+    {
+        $keys = array('org_sucursal_id','em_tipo_anticipo_id','fecha_inicio');
+        $exite = false;
+        foreach ($keys as $key){
+            if($_POST[$key] !== ''){
+                $exite = true;
+            }
+        }
+
+        if(!$exite){
+            $error = $this->errores->error(mensaje: 'Error no existe filtro valido',data:  $exite);
+            print_r($error);
+            die('Error');
+        }
+
+        $filtro = array();
+        if(isset($_POST['org_sucursal_id']) && $_POST['org_sucursal_id']!==''){
+            $filtro['org_sucursal.id'] = $_POST['org_sucursal_id'];
+        }
+
+        if(isset($_POST['em_tipo_anticipo_id']) && $_POST['em_tipo_anticipo_id']!==''){
+            $filtro['em_tipo_anticipo.id'] = $_POST['em_tipo_anticipo_id'];
+        }
+
+        $filtro_especial = array();
+        if (isset($_POST['fecha_inicio']) && $_POST['fecha_inicio']!=='' && isset($_POST['fecha_final']) &&
+            $_POST['fecha_final']!==''){
+            $fecha_inicio = $_POST['fecha_inicio'];
+            $fecha_fin = $_POST['fecha_final'];
+
+            $filtro_especial[0][$fecha_fin]['operador'] = '>=';
+            $filtro_especial[0][$fecha_fin]['valor'] = 'em_anticipo.fecha_prestacion';
+            $filtro_especial[0][$fecha_fin]['comparacion'] = 'AND';
+            $filtro_especial[0][$fecha_fin]['valor_es_campo'] = true;
+
+            $filtro_especial[1][$fecha_inicio]['operador'] = '<=';
+            $filtro_especial[1][$fecha_inicio]['valor'] = 'em_anticipo.fecha_prestacion';
+            $filtro_especial[1][$fecha_inicio]['comparacion'] = 'AND';
+            $filtro_especial[1][$fecha_inicio]['valor_es_campo'] = true;
+        }
+
+
+        $data = (new em_anticipo($this->link))->filtro_and(filtro: $filtro,filtro_especial: $filtro_especial);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al obtener registros',data:  $data);
+            print_r($error);
+            die('Error');
+        }
+
+        $exportador = (new exportador());
+        $registros_xls = array();
+
+        foreach ($data->registros as $registro){
+
+            $row = array();
+            $row["nss"] = $registro['em_empleado_nss'];
+            $row["id"] = $registro['em_empleado_codigo'];
+            $row["empleado"] = $registro['em_empleado_nombre'];
+            $row["empleado"] .= " ".$registro['em_empleado_ap'];
+            $row["empleado"] .= " ".$registro['em_empleado_am'];
+            $row["registro_patronal"] = $registro['im_registro_patronal_descripcion'];
+            $row["concepto"] = $registro['em_tipo_anticipo_descripcion'];
+            $row["importe"] = $registro['em_anticipo_monto'];
+            $row["monto_a_descontar"] = $registro['em_tipo_descuento_monto'];
+            $row["pagos"] = $registro['em_anticipo_monto']-$registro['em_anticipo_saldo'];
+            $row["saldo"] = $registro['em_anticipo_saldo'];
+            $row["fecha_prestacion"] = $registro['em_anticipo_fecha_prestacion'];
+
+            $registros_xls[] = $row;
+        }
+
+        $keys = array();
+
+        foreach (array_keys($registros_xls[0]) as $key) {
+            $keys[$key] = strtoupper(str_replace('_', ' ', $key));
+        }
+
+        $registros = array();
+
+        foreach ($registros_xls as $row) {
+            $registros[] = array_combine(preg_replace(array_map(function($s){return "/^$s$/";},
+                array_keys($keys)),$keys, array_keys($row)), $row);
+        }
+
+        $resultado = $exportador->listado_base_xls(header: $header, name: $this->seccion, keys:  $keys,
+            path_base: $this->path_base,registros:  $registros,totales:  array());
+        if(errores::$error){
+            $error =  $this->errores->error('Error al generar xls',$resultado);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        $link = "./index.php?seccion=em_anticipo&accion=lista&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
+
     public function get_anticipos(bool $header, bool $ws = true): array|stdClass
     {
         $keys['em_empleado'] = array('id', 'descripcion', 'codigo', 'codigo_bis');
@@ -715,14 +830,14 @@ class controlador_em_anticipo extends _ctl_base {
 
     public function reporte_empresa(bool $header, bool $ws = false){
 
-        $this->asignar_propiedad(identificador:'org_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12]);
+        $this->asignar_propiedad(identificador:'org_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12,'required'=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'fecha_inicio', propiedades: ["place_holder" => "Fecha Inicio"]);
+        $this->asignar_propiedad(identificador:'fecha_inicio', propiedades: ["place_holder" => "Fecha Inicio",'required'=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -730,7 +845,14 @@ class controlador_em_anticipo extends _ctl_base {
         }
 
         $this->asignar_propiedad(identificador:'fecha_final', propiedades: ["place_holder" => "Fecha Final",
-            date(format:'Y-m-d')]);
+            date(format:'Y-m-d'),'required'=>false]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo", "cols" => 12,'required'=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -742,7 +864,6 @@ class controlador_em_anticipo extends _ctl_base {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $this->row_upd->fecha_inicio = date('Y-m-d');
         $this->row_upd->fecha_final = date('Y-m-d');
 
         $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);

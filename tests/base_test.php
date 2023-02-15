@@ -6,6 +6,7 @@ use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_clase_riesgo;
 use gamboamartin\empleado\models\em_cuenta_bancaria;
+use gamboamartin\empleado\models\em_registro_patronal;
 use gamboamartin\empleado\models\em_tipo_abono_anticipo;
 use gamboamartin\empleado\models\em_tipo_anticipo;
 use gamboamartin\empleado\models\em_tipo_descuento;
@@ -224,6 +225,26 @@ class base_test{
 
 
         $alta = (new em_empleado($link))->alta_registro($registro);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
+
+    public function alta_em_registro_patronal(PDO $link, int $cat_sat_isn_id = 1, int $em_clase_riesgo_id = 1,
+                                              int $fc_csd_id = 1, int $id = 1): array|\stdClass
+    {
+
+        $registro = array();
+        $registro['id'] = $id;
+        $registro['codigo'] = 1;
+        $registro['descripcion'] = 1;
+        $registro['fc_csd_id'] = $fc_csd_id;
+        $registro['em_clase_riesgo_id'] = $em_clase_riesgo_id;
+        $registro['cat_sat_isn_id'] = $cat_sat_isn_id;
+
+        $alta = (new em_registro_patronal($link))->alta_registro($registro);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta ', $alta);
 

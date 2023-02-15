@@ -124,6 +124,17 @@ class em_registro_patronal extends modelo{
     public function modifica_bd(array $registro, int $id, bool $reactiva = false): array|stdClass
     {
 
+        $registro_previo = $this->registro(registro_id: $id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener el registro',data:  $registro_previo);
+        }
+
+        if(!isset($registro['fc_csd_id'])){
+            $registro['fc_csd_id'] = $registro_previo['fc_csd_id'];
+        }
+        if(!isset($registro['descripcion'])){
+            $registro['descripcion'] = $registro_previo['em_registro_patronal_descripcion'];
+        }
 
         $fc_csd = (new fc_csd(link: $this->link))->registro(registro_id: $registro['fc_csd_id']);
         if(errores::$error){

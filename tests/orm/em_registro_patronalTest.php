@@ -76,17 +76,17 @@ class em_registro_patronalTest extends test {
         errores::$error = false;
 
 
-        $modelo = new em_clase_riesgo($this->link);
+        $modelo = new em_registro_patronal($this->link);
         //$modelo = new liberator($modelo);
 
-        $del = (new base_test())->del_em_clase_riesgo(link: $this->link);
+        $del = (new base_test())->del_em_registro_patronal(link: $this->link);
         if(errores::$error){
-            $error = (new errores())->error('Error al eliminar', $del);
+            $error = (new errores())->error('Error al eliminar',$del);
             print_r($error);
             exit;
         }
 
-        $alta = (new base_test())->alta_em_clase_riesgo(link: $this->link);
+        $alta = (new base_test())->alta_em_registro_patronal(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
             print_r($error);
@@ -94,12 +94,14 @@ class em_registro_patronalTest extends test {
         }
 
         $registro = array();
+        $registro['descripcion'] = 'a';
         $id = 1;
 
         $resultado = $modelo->modifica_bd($registro, $id);
+
         $this->assertIsObject($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals("UPDATE em_clase_riesgo SET descripcion_select = '1 0.01 0.01',usuario_update_id=2  WHERE id = 1", $resultado->sql);
+        $this->assertEquals("Exito al ejecutar sql del modelo em_registro_patronal transaccion UPDATE", $resultado->mensaje);
         errores::$error = false;
     }
 

@@ -2,19 +2,15 @@
 namespace gamboamartin\empleado\models;
 
 use base\orm\_modelo_parent;
-use DateTime;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\errores\errores;
 
-use gamboamartin\im_registro_patronal\models\im_conf_pres_empresa;
-use gamboamartin\im_registro_patronal\models\im_detalle_conf_prestaciones;
 use gamboamartin\organigrama\models\org_puesto;
 use PDO;
 use stdClass;
-use Throwable;
 
 class em_empleado extends _modelo_parent{
     public errores $error;

@@ -1,6 +1,7 @@
 <?php
 namespace gamboamartin\empleado\test;
 use base\orm\modelo_base;
+use gamboamartin\cat_sat\models\cat_sat_isn;
 use gamboamartin\cat_sat\tests\base;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
@@ -12,17 +13,18 @@ use gamboamartin\empleado\models\em_tipo_anticipo;
 use gamboamartin\empleado\models\em_tipo_descuento;
 use gamboamartin\errores\errores;
 use gamboamartin\empleado\models\em_empleado;
+use gamboamartin\facturacion\models\fc_csd;
 use gamboamartin\organigrama\models\org_puesto;
 use PDO;
 use stdClass;
 
 class base_test{
 
-    public function alta_cat_sat_isn(PDO $link): array|stdClass
+    public function alta_cat_sat_isn(PDO $link, int $id = 1): array|stdClass
     {
 
 
-        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_isn(link: $link);
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_isn(link: $link, id: $id);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta ', $alta);
 
@@ -235,6 +237,33 @@ class base_test{
     public function alta_em_registro_patronal(PDO $link, int $cat_sat_isn_id = 1, int $em_clase_riesgo_id = 1,
                                               int $fc_csd_id = 1, int $id = 1): array|\stdClass
     {
+
+        $existe = (new cat_sat_isn($link))->existe_by_id(registro_id: $cat_sat_isn_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe ', $existe);
+
+        }
+        if(!$existe) {
+            $alta = (new base_test())->alta_cat_sat_isn(link: $link, id: $cat_sat_isn_id);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta ', $alta);
+
+            }
+        }
+
+        $existe = (new em_clase_riesgo($link))->existe_by_id(registro_id: $em_clase_riesgo_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe ', $existe);
+
+        }
+        if(!$existe) {
+            $alta = (new base_test())->alta_em_clase_riesgo(link: $link, id: $em_clase_riesgo_id);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta ', $alta);
+
+            }
+        }
+        
 
         $registro = array();
         $registro['id'] = $id;

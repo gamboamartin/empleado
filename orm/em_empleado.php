@@ -40,7 +40,7 @@ class em_empleado extends _modelo_parent{
 
     public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-        if(!isset($this->registro['codigo'])){
+        if(!isset($this->registro['codigo'])){ 
 
             $this->registro['codigo'] =  $this->get_codigo_aleatorio();
             if(errores::$error){

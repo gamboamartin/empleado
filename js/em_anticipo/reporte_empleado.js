@@ -9,12 +9,12 @@ var datatable = $(".datatables").DataTable({
         'data': function (data) {
             var fecha_inicio = $('#fecha_inicio').val();
             var fecha_final = $('#fecha_final').val();
-            var org_sucursal_id = $('#org_sucursal_id').val();
+            var em_empleado_id = $('#em_empleado_id').val();
             var em_tipo_anticipo_id = $('#em_tipo_anticipo_id').val();
 
-            data.data = {"org_sucursal.id": org_sucursal_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
-            if(org_sucursal_id !== ''){
-                data.data = {"org_sucursal.id": org_sucursal_id}
+            data.data = {"em_empleado.id": em_empleado_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
+            if(em_empleado_id !== ''){
+                data.data = {"em_empleado.id": em_empleado_id}
             }
             if(em_tipo_anticipo_id !== ''){
                 data.data = {"em_tipo_anticipo.id": em_tipo_anticipo_id}
@@ -69,7 +69,7 @@ var datatable = $(".datatables").DataTable({
     ],
 });
 
-$('.filter-checkbox,#fecha_inicio,#fecha_final,#org_sucursal_id,#em_tipo_anticipo_id').on('change', function (e) {
+$('.filter-checkbox,#fecha_inicio,#fecha_final,#em_empleado_id,#em_tipo_anticipo_id').on('change', function (e) {
     datatable.draw();
 });
 

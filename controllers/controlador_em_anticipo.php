@@ -10,6 +10,7 @@ namespace gamboamartin\empleado\controllers;
 
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
+use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\plugins\exportador;
 use gamboamartin\system\_ctl_base;
@@ -687,7 +688,117 @@ class controlador_em_anticipo extends _ctl_base {
 
         return $abono;
     }
+    public function exportar_empleado(bool $header, bool $ws = false): array|stdClass
+    {
+        $keys = array('org_puesto_id','salario_dario','salario_dario_integrado','cat_sat_tipo_jornada_nom_id',
+            'cat_sat_tipo_regimen_nom_id','em_centro_costo_id','em_registro_patronal_id');
+        $exite = false;
+        foreach ($keys as $key){
+            if($_POST[$key] !== ''){
+                $exite = true;
+            }
+        }
 
+        if(!$exite){
+            $error = $this->errores->error(mensaje: 'Error no existe filtro valido',data:  $exite);
+            print_r($error);
+            die('Error');
+        }
+
+        $filtro = array();
+        if(isset($_POST['org_puesto_id']) && $_POST['org_puesto_id']!==''){
+            $filtro['org_puesto.id'] = $_POST['org_puesto_id'];
+        }
+
+        $filtro = array();
+        if(isset($_POST['salario_dario']) && $_POST['salario_dario']!==''){
+            $filtro['em_empleado.salario_dario'] = $_POST['salario_dario'];
+        }
+
+        $filtro = array();
+        if(isset($_POST['salario_dario_integrado']) && $_POST['salario_dario_integrado']!==''){
+            $filtro['em_empleado.salario_dario_integrado'] = $_POST['salario_dario_integrado'];
+        }
+
+        $filtro = array();
+        if(isset($_POST['cat_sat_tipo_jornada_nom_id']) && $_POST['cat_sat_tipo_jornada_nom_id']!==''){
+            $filtro['em_empleado.cat_sat_tipo_jornada_nom_id'] = $_POST['cat_sat_tipo_jornada_nom_id'];
+        }
+
+        $filtro = array();
+        if(isset($_POST['cat_sat_tipo_regimen_nom_id']) && $_POST['cat_sat_tipo_regimen_nom_id']!==''){
+            $filtro['em_empleado.cat_sat_tipo_regimen_nom_id'] = $_POST['cat_sat_tipo_regimen_nom_id'];
+        }
+
+        $filtro = array();
+        if(isset($_POST['em_centro_costo_id']) && $_POST['em_centro_costo_id']!==''){
+            $filtro['em_empleado.em_centro_costo_id'] = $_POST['em_centro_costo_id'];
+        }
+
+        $filtro = array();
+        if(isset($_POST['em_registro_patronal_id']) && $_POST['em_registro_patronal_id']!==''){
+            $filtro['em_empleado.em_registro_patronal_id'] = $_POST['em_registro_patronal_id'];
+        }
+
+
+        $data = (new em_empleado($this->link))->filtro_and(filtro: $filtro);
+        if(errores::$error){
+            $error = $this->errores->error(mensaje: 'Error al obtener registros',data:  $data);
+            print_r($error);
+            die('Error');
+        }
+
+        $exportador = (new exportador());
+        $registros_xls = array();
+
+        foreach ($data->registros as $registro){
+
+            $row = array();
+            $row["nss"] = $registro['em_empleado_nss'];
+            $row["id"] = $registro['em_empleado_codigo'];
+            $row["empleado"] = $registro['em_empleado_nombre'];
+            $row["empleado"] .= " ".$registro['em_empleado_ap'];
+            $row["empleado"] .= " ".$registro['em_empleado_am'];
+            $row["registro_patronal"] = $registro['im_registro_patronal_descripcion'];
+            $row["concepto"] = $registro['em_tipo_anticipo_descripcion'];
+            $row["importe"] = $registro['em_anticipo_monto'];
+            $row["monto_a_descontar"] = $registro['em_tipo_descuento_monto'];
+            $row["pagos"] = $registro['em_anticipo_monto']-$registro['em_anticipo_saldo'];
+            $row["saldo"] = $registro['em_anticipo_saldo'];
+            $row["fecha_prestacion"] = $registro['em_anticipo_fecha_prestacion'];
+
+            $registros_xls[] = $row;
+        }
+
+        $keys = array();
+
+        foreach (array_keys($registros_xls[0]) as $key) {
+            $keys[$key] = strtoupper(str_replace('_', ' ', $key));
+        }
+
+        $registros = array();
+
+        foreach ($registros_xls as $row) {
+            $registros[] = array_combine(preg_replace(array_map(function($s){return "/^$s$/";},
+                array_keys($keys)),$keys, array_keys($row)), $row);
+        }
+
+        $resultado = $exportador->listado_base_xls(header: $header, name: $this->seccion, keys:  $keys,
+            path_base: $this->path_base,registros:  $registros,totales:  array());
+        if(errores::$error){
+            $error =  $this->errores->error('Error al generar xls',$resultado);
+            if(!$header){
+                return $error;
+            }
+            print_r($error);
+            die('Error');
+        }
+
+        $link = "./index.php?seccion=em_empleado&accion=lista&registro_id=".$this->registro_id;
+        $link.="&session_id=$this->session_id";
+        header('Location:' . $link);
+        exit;
+    }
     public function exportar_empresa(bool $header, bool $ws = false): array|stdClass
     {
         $keys = array('org_sucursal_id','em_tipo_anticipo_id','fecha_inicio');

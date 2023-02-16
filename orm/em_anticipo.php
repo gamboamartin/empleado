@@ -49,6 +49,7 @@ class em_anticipo extends modelo{
         $campos_view['fecha_inicio']['type'] = "dates";
         $campos_view['fecha_final']['type'] = "dates";
         $campos_view['fecha_inicio_descuento']['type'] = "dates";
+        $campos_view['comentarios']['type'] = "inputs";
 
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
             columnas: $columnas,campos_view: $campos_view, columnas_extra: $columnas_extra);

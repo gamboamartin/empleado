@@ -122,6 +122,14 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'comentarios', propiedades: ["place_holder" => "Comentarios",
+            "cols" => 12, "required" => false]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $link_em_abono_anticipo_alta_bd= $obj_link->link_con_id(accion: 'abono_alta_bd', link: $this->link,
             registro_id: $this->registro_id, seccion: $this->seccion);
         if (errores::$error) {
@@ -236,7 +244,7 @@ class controlador_em_anticipo extends _ctl_base {
     protected function campos_view(): array
     {
         $keys = new stdClass();
-        $keys->inputs = array('codigo','descripcion','monto', 'n_pagos');
+        $keys->inputs = array('codigo','descripcion','monto', 'n_pagos', 'comentarios');
         $keys->fechas = array('fecha_prestacion', 'fecha_inicio_descuento');
         $keys->selects = array();
 
@@ -316,6 +324,12 @@ class controlador_em_anticipo extends _ctl_base {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'comentarios',
+            keys_selects: $keys_selects, place_holder: 'Comentarios', required: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
         return $keys_selects;
     }
 
@@ -326,7 +340,7 @@ class controlador_em_anticipo extends _ctl_base {
             return $this->errores->error(mensaje: 'Error al generar template',data:  $r_modifica);
         }
 
-        $this->asignar_propiedad(identificador:'id', propiedades: ["disable" => true]);
+        $this->asignar_propiedad(identificador:'id', propiedades: ["disabled" => true]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

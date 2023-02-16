@@ -20,7 +20,7 @@ use stdClass;
 
 class controlador_em_abono_anticipo extends _ctl_base {
 
-    public array $keys_selects = array();
+    public array|stdClass $keys_selects = array();
 
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass())

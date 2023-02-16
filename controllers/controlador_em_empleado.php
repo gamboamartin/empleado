@@ -777,7 +777,7 @@ class controlador_em_empleado extends _ctl_base {
 
     // ----- POR REVISAR -----
 
-    public array $keys_selects = array();
+    public array|stdClass $keys_selects = array();
     public stdClass $anticipos;
     public stdClass $abonos;
     public stdClass $conf_nominas;

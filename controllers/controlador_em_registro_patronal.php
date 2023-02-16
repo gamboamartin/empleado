@@ -22,7 +22,7 @@ use stdClass;
 
 class controlador_em_registro_patronal extends system {
 
-    public array $keys_selects = array();
+    public array|stdClass $keys_selects = array();
 
     public function __construct(PDO $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass()){

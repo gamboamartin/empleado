@@ -23,7 +23,7 @@ use stdClass;
 
 class controlador_em_anticipo extends _ctl_base {
 
-    public array $keys_selects = array();
+    public array|stdClass $keys_selects = array();
     public string $link_em_abono_anticipo_alta_bd = '';
     public string $link_em_abono_anticipo_modifica_bd = '';
     public string $link_em_anticipo_reporte_cliente = '';

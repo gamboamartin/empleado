@@ -38,7 +38,7 @@ class em_empleado extends _modelo_parent{
         $this->NAMESPACE = __NAMESPACE__;
     }
 
-    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass 
     {
         if(!isset($this->registro['codigo'])){ 
 

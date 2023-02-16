@@ -12,7 +12,9 @@ var datatable = $(".datatables").DataTable({
             var org_sucursal_id = $('#org_sucursal_id').val();
             var em_tipo_anticipo_id = $('#em_tipo_anticipo_id').val();
 
-            data.data = {"org_sucursal.id": org_sucursal_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
+            if(org_sucursal_id !== '' && em_tipo_anticipo_id !== ''){
+                data.data = {"org_sucursal.id": org_sucursal_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
+            }
             if(org_sucursal_id !== ''){
                 data.data = {"org_sucursal.id": org_sucursal_id}
             }

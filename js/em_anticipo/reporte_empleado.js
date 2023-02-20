@@ -12,28 +12,51 @@ var datatable = $(".datatables").DataTable({
             var em_empleado_id = $('#em_empleado_id').val();
             var em_tipo_anticipo_id = $('#em_tipo_anticipo_id').val();
 
-            data.data = {"em_empleado.id": em_empleado_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
-            if(em_empleado_id !== ''){
-                data.data = {"em_empleado.id": em_empleado_id}
-            }
-            if(em_tipo_anticipo_id !== ''){
-                data.data = {"em_tipo_anticipo.id": em_tipo_anticipo_id}
+            data.filtros = {
+                filtro_and: [
+                    {
+                        "key": "com_sucursal_id",
+                        "valor": 5
+                    },
+                ],
+                filtro_especial: [
+                    {
+                        "key": "em_anticipo.fecha_prestacion",
+                        "valor": fecha_inicio,
+                        "operador": "<=",
+                        "comparacion": "AND"
+                    },
+                    {
+                        "key": "em_anticipo.fecha_prestacion",
+                        "valor": fecha_final,
+                        "operador": ">=",
+                        "comparacion": "AND"
+                    }
+                ]
             }
 
-            data.filtros = [
-                {
-                    "key": "em_anticipo.fecha_prestacion",
-                    "valor": fecha_inicio,
-                    "operador": "<=",
-                    "comparacion": "AND"
-                },
-                {
-                    "key": "em_anticipo.fecha_prestacion",
-                    "valor": fecha_final,
-                    "operador": ">=",
-                    "comparacion": "AND"
-                },
-            ]
+            /*  data.data = {"em_empleado.id": em_empleado_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
+              if(em_empleado_id !== ''){
+                  data.data = {"em_empleado.id": em_empleado_id}
+              }
+              if(em_tipo_anticipo_id !== ''){
+                  data.data = {"em_tipo_anticipo.id": em_tipo_anticipo_id}
+              }
+
+              data.filtros = [
+                  {
+                      "key": "em_anticipo.fecha_prestacion",
+                      "valor": fecha_inicio,
+                      "operador": "<=",
+                      "comparacion": "AND"
+                  },
+                  {
+                      "key": "em_anticipo.fecha_prestacion",
+                      "valor": fecha_final,
+                      "operador": ">=",
+                      "comparacion": "AND"
+                  },
+              ]*/
 
         },
         "error": function (jqXHR, textStatus, errorThrown) {

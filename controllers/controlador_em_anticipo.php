@@ -204,16 +204,7 @@ class controlador_em_anticipo extends _ctl_base {
         $this->lista_get_data = true;
     }
 
-    public function asignar_propiedad(string $identificador, mixed $propiedades)
-    {
-        if (!array_key_exists($identificador,$this->keys_selects)){
-            $this->keys_selects[$identificador] = new stdClass();
-        }
 
-        foreach ($propiedades as $key => $value){
-            $this->keys_selects[$identificador]->$key = $value;
-        }
-    }
 
     public function alta(bool $header, bool $ws = false): array|string
     {

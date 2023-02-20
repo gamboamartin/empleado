@@ -88,6 +88,13 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
 
+        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
         $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado"]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
@@ -242,6 +249,7 @@ class controlador_em_anticipo extends _ctl_base {
 
         $init_data = array();
         $init_data['em_tipo_anticipo'] = "gamboamartin\\empleado";
+        $init_data['com_sucursal'] = "gamboamartin\\comercial";
         $init_data['em_empleado'] = "gamboamartin\\empleado";
         $init_data['em_tipo_descuento'] = "gamboamartin\\empleado";
 
@@ -279,6 +287,8 @@ class controlador_em_anticipo extends _ctl_base {
     public function init_selects_inputs(): array
     {
         $keys_selects = $this->init_selects(keys_selects: array(), key: "em_tipo_anticipo_id", label: "Tipo Anticipo");
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "com_sucursal_id", label: "Sucursal",
+            cols: 12);
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_empleado_id", label: "Empleado",
             cols: 12);
         return $this->init_selects(keys_selects: $keys_selects, key: "em_tipo_descuento_id", label: "Tipo Descuento");

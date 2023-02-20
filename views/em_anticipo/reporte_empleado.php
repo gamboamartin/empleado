@@ -21,7 +21,7 @@
                             <div class="filtro-categorias">
                                 <div>
                                     <label>Por Empleado</label>
-                                    <?php echo $controlador->inputs->em_empleado_id; ?>
+                                    <?php echo $controlador->inputs->com_sucursal_id; ?>
                                 </div>
                                 <div>
                                     <label>Por Tipo de Anticipo</label><br>

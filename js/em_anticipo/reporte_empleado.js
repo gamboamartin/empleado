@@ -12,13 +12,26 @@ var datatable = $(".datatables").DataTable({
             var em_empleado_id = $('#em_empleado_id').val();
             var em_tipo_anticipo_id = $('#em_tipo_anticipo_id').val();
 
+
+
             data.filtros = {
-                filtro_and: [
+                /*
+
+                extra_join: [
                     {
-                        "key": "com_sucursal_id",
-                        "valor": 5
+                        "entidad": "em_empleado",
+                        "key": "id",
+                        "enlace": "em_rel_empleado_sucursal",
+                        "key_enlace": "em_empleado_id",
+                        "renombre": "com_sucursal_empleado"
                     },
                 ],
+                filtro: [
+                    {
+                        "key": "em_rel_empleado_sucursal.com_sucursal_id",
+                        "valor": 1,
+                    }
+                ],*/
                 filtro_especial: [
                     {
                         "key": "em_anticipo.fecha_prestacion",
@@ -34,29 +47,29 @@ var datatable = $(".datatables").DataTable({
                     }
                 ]
             }
+            /*
+                        data.data = {"em_empleado.id": em_empleado_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
+                          if(em_empleado_id !== ''){
+                              data.data = {"em_empleado.id": em_empleado_id}
+                          }
+                          if(em_tipo_anticipo_id !== ''){
+                              data.data = {"em_tipo_anticipo.id": em_tipo_anticipo_id}
+                          }
 
-            /*  data.data = {"em_empleado.id": em_empleado_id,"em_tipo_anticipo.id": em_tipo_anticipo_id}
-              if(em_empleado_id !== ''){
-                  data.data = {"em_empleado.id": em_empleado_id}
-              }
-              if(em_tipo_anticipo_id !== ''){
-                  data.data = {"em_tipo_anticipo.id": em_tipo_anticipo_id}
-              }
-
-              data.filtros = [
-                  {
-                      "key": "em_anticipo.fecha_prestacion",
-                      "valor": fecha_inicio,
-                      "operador": "<=",
-                      "comparacion": "AND"
-                  },
-                  {
-                      "key": "em_anticipo.fecha_prestacion",
-                      "valor": fecha_final,
-                      "operador": ">=",
-                      "comparacion": "AND"
-                  },
-              ]*/
+                          data.filtros = [
+                              {
+                                  "key": "em_anticipo.fecha_prestacion",
+                                  "valor": fecha_inicio,
+                                  "operador": "<=",
+                                  "comparacion": "AND"
+                              },
+                              {
+                                  "key": "em_anticipo.fecha_prestacion",
+                                  "valor": fecha_final,
+                                  "operador": ">=",
+                                  "comparacion": "AND"
+                              },
+                          ]*/
 
         },
         "error": function (jqXHR, textStatus, errorThrown) {
@@ -92,7 +105,7 @@ var datatable = $(".datatables").DataTable({
     ],
 });
 
-$('.filter-checkbox,#fecha_inicio,#fecha_final,#em_empleado_id,#em_tipo_anticipo_id').on('change', function (e) {
+$('.filter-checkbox,#fecha_inicio,#fecha_final,#com_sucursal_id,#em_tipo_anticipo_id').on('change', function (e) {
     datatable.draw();
 });
 

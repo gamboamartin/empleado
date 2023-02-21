@@ -52,8 +52,13 @@ class controlador_em_tipo_descuento extends system {
         $this->lista_get_data = true;
     }
 
-    public function asignar_propiedad(string $identificador, mixed $propiedades)
+    public function asignar_propiedad(string $identificador, array $propiedades): array|stdClass
     {
+        $identificador = trim($identificador);
+        if($identificador === ''){
+            return $this->errores->error(mensaje: 'Error identificador esta vacio',data:  $identificador);
+        }
+
         if (!array_key_exists($identificador,$this->keys_selects)){
             $this->keys_selects[$identificador] = new stdClass();
         }
@@ -61,6 +66,7 @@ class controlador_em_tipo_descuento extends system {
         foreach ($propiedades as $key => $value){
             $this->keys_selects[$identificador]->$key = $value;
         }
+        return $this->keys_selects;
     }
 
     private function inicializa_propiedades(): array

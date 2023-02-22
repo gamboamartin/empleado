@@ -135,7 +135,7 @@ class controlador_em_empleado extends _ctl_base {
     {
         $keys = new stdClass();
         $keys->inputs = array('codigo', 'descripcion', 'nombre', 'ap', 'am',  'rfc', 'curp', 'nss', 'salario_diario',
-            'salario_diario_integrado','com_sucursal','org_sucursal');
+            'salario_diario_integrado','com_sucursal','org_sucursal', 'salario_total');
         $keys->telefonos = array('telefono');
         $keys->fechas = array('fecha_inicio_rel_laboral', 'fecha_inicio', 'fecha_final');
         $keys->selects = array();
@@ -513,13 +513,13 @@ class controlador_em_empleado extends _ctl_base {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
-        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'salario_diario',
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'salario_diario',
             keys_selects: $keys_selects, place_holder: 'Salario Diario');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
-        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'salario_diario_integrado',
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'salario_diario_integrado',
             keys_selects: $keys_selects, place_holder: 'Salario Diario Integrado');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
@@ -537,6 +537,12 @@ class controlador_em_empleado extends _ctl_base {
         }
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'org_sucursal',
             keys_selects: $keys_selects, place_holder: 'Comercial Sucursal');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'salario_total',
+            keys_selects: $keys_selects, place_holder: 'Salario Total');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }

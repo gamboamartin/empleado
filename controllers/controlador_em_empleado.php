@@ -465,6 +465,12 @@ class controlador_em_empleado extends _ctl_base {
 
     protected function key_selects_txt(array $keys_selects): array
     {
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'codigo',
+            keys_selects: $keys_selects, place_holder: 'Código');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'nombre',
             keys_selects: $keys_selects, place_holder: 'Nombre');
         if (errores::$error) {

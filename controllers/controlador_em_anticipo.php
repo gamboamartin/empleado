@@ -88,7 +88,14 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12]);
+        $this->asignar_propiedad(identificador:'org_sucursal_id', propiedades: ["label" => "Empresa", "cols" => 12,'required'=>false]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Cliente", "cols" => 12,'required'=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -1013,12 +1020,7 @@ class controlador_em_anticipo extends _ctl_base {
 
     public function reporte_empresa(bool $header, bool $ws = false){
 
-        $this->asignar_propiedad(identificador:'org_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12,'required'=>false]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
+
 
         $this->asignar_propiedad(identificador:'fecha_inicio', propiedades: ["place_holder" => "Fecha Inicio",'required'=>false]);
         if (errores::$error) {

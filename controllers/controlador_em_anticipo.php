@@ -1001,8 +1001,6 @@ class controlador_em_anticipo extends _ctl_base {
             return $this->retorno_error(mensaje: 'Error al generar template',data:  $r_alta, header: $header,ws:$ws);
         }
 
-        $this->row_upd->fecha_final = date('Y-m-d');
-
         $inputs = $this->genera_inputs(keys_selects: $this->keys_selects);
         if(errores::$error){
             $error = $this->errores->error(mensaje: 'Error al generar inputs',data:  $inputs);

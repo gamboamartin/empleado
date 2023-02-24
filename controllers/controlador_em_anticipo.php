@@ -35,6 +35,7 @@ class controlador_em_anticipo extends _ctl_base {
     public string $link_em_anticipo_reporte_empleado_exportar = '';
 
     public int $em_anticipo_id = -1;
+    public int $em_empleado_id = -1;
     public int $em_abono_anticipo_id = -1;
     public int $com_sucursal_id = -1;
     public int $org_sucursal_id = -1;
@@ -225,6 +226,10 @@ class controlador_em_anticipo extends _ctl_base {
             $this->em_abono_anticipo_id = $_GET['em_abono_anticipo_id'];
         }
 
+        if (isset($_GET['em_empleado_id'])){
+            $this->em_empleado_id = $_GET['em_empleado_id'];
+        }
+
         if (isset($_GET['com_sucursal_id'])){
             $this->com_sucursal_id = $_GET['com_sucursal_id'];
         }
@@ -368,15 +373,6 @@ class controlador_em_anticipo extends _ctl_base {
         }
 
         $this->asignar_propiedad(identificador:'id', propiedades: ["disabled" => true]);
-        if (errores::$error) {
-            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
-            print_r($error);
-            die('Error');
-        }
-
-        $this->asignar_propiedad(identificador:'em_empleado_id',
-            propiedades: ["id_selected"=> $this->row_upd->em_empleado_id, "disabled" => true,
-                "filtro" => array('em_empleado.id' => $this->row_upd->em_empleado_id)]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);
@@ -818,7 +814,7 @@ class controlador_em_anticipo extends _ctl_base {
     }
     public function exportar_empleado(bool $header, bool $ws = false): array|stdClass
     {
-        $keys = array('com_sucursal_id','em_tipo_anticipo_id','fecha_inicio');
+        $keys = array('em_empleado_id','em_tipo_anticipo_id','fecha_inicio');
         $exite = false;
         foreach ($keys as $key){
             if($_POST[$key] !== ''){
@@ -833,15 +829,15 @@ class controlador_em_anticipo extends _ctl_base {
         }
 
         $filtro = array();
-        /**if(isset($_POST['com_sucursal_id']) && $_POST['com_sucursal_id']!==''){
-            $filtro['com_sucursal.id'] = $_POST['com_sucursal_id'];
-        }**/
+        if(isset($_POST['em_empleado_id']) && $_POST['em_empleado_id']!==''){
+            $filtro['em_empleado.id'] = $_POST['em_empleado_id'];
+        }
 
         if(isset($_POST['em_tipo_anticipo_id']) && $_POST['em_tipo_anticipo_id']!==''){
             $filtro['em_tipo_anticipo.id'] = $_POST['em_tipo_anticipo_id'];
         }
 
-        /**$filtro = array();
+        $filtro = array();
         if(isset($_POST['salario_dario_integrado']) && $_POST['salario_dario_integrado']!==''){
             $filtro['em_empleado.salario_dario_integrado'] = $_POST['salario_dario_integrado'];
         }
@@ -864,7 +860,7 @@ class controlador_em_anticipo extends _ctl_base {
         $filtro = array();
         if(isset($_POST['em_registro_patronal_id']) && $_POST['em_registro_patronal_id']!==''){
             $filtro['em_empleado.em_registro_patronal_id'] = $_POST['em_registro_patronal_id'];
-        }**/
+        }
 
         $filtro_especial = array();
         if (isset($_POST['fecha_inicio']) && $_POST['fecha_inicio']!=='' && isset($_POST['fecha_final']) &&
@@ -1070,6 +1066,13 @@ class controlador_em_anticipo extends _ctl_base {
     public function reporte_cliente(bool $header, bool $ws = false){
 
         $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12]);
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
+            print_r($error);
+            die('Error');
+        }
+
+        $this->asignar_propiedad(identificador:'em_tipo_anticipo_id', propiedades: ["label" => "Tipo Anticipo", "cols" => 12,'required'=>false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

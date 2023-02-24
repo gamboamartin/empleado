@@ -9,7 +9,7 @@
                 <?php include (new views())->ruta_templates . "mensajes.php"; ?>
                 <div class="widget  widget-box box-container form-main widget-form-cart" id="form">
                     <?php include (new views())->ruta_templates . "head/subtitulo.php"; ?>
-                    <form method="post" action="<?php echo $controlador->link_em_anticipo_reporte_cliente; ?> "
+                    <form method="post" action="<?php echo $controlador->link_em_anticipo_reporte_cliente_exportar; ?> "
                           class="form-additional" id="form_export">
 
                         <div class="filtros">

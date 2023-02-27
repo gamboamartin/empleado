@@ -1065,7 +1065,7 @@ class controlador_em_anticipo extends _ctl_base {
 
     public function reporte_cliente(bool $header, bool $ws = false){
 
-        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Sucursal", "cols" => 12]);
+        $this->asignar_propiedad(identificador:'com_sucursal_id', propiedades: ["label" => "Cliente", "cols" => 12]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

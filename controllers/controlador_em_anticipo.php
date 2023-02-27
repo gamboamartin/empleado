@@ -50,9 +50,9 @@ class controlador_em_anticipo extends _ctl_base {
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
         $columns["em_anticipo_id"]["titulo"] = "Id";
-        $columns["em_anticipo_codigo"]["titulo"] = "Descripcion";
-        $columns["em_anticipo_descripcion"]["titulo"] = "Codigo Empleado";
+        $columns["em_anticipo_descripcion"]["titulo"] = "Descripcion";
         $columns["em_empleado_nombre"]["titulo"] = "Empleado";
+        $columns["em_empleado_nombre"]["campos"] = array("em_empleado_ap", "em_empleado_am");
         $columns["em_anticipo_monto"]["titulo"] = "Monto";
         $columns["em_anticipo_fecha_prestacion"]["titulo"] = "Fecha Prestacion";
         //$columns["saldo_pendiente"]["titulo"] = "Saldo Pendiente";

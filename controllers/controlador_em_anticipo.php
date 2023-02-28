@@ -274,7 +274,7 @@ class controlador_em_anticipo extends _ctl_base {
     {
         $keys = new stdClass();
         $keys->inputs = array('codigo','descripcion','monto', 'n_pagos', 'comentarios');
-        $keys->fechas = array('fecha_prestacion', 'fecha_inicio_descuento');
+        $keys->fechas = array('fecha_prestacion', 'fecha_inicio_descuento', 'fecha_inicio', 'fecha_final');
         $keys->selects = array();
 
         $init_data = array();

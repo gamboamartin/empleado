@@ -889,6 +889,14 @@ class controlador_em_anticipo extends _ctl_base {
         foreach ($data->registros as $registro){
 
             $row = array();
+            $keys_acumulado = array();
+            $keys_acumulado["empleado"] = 'Empleado';
+            $keys_acumulado["registro_patronal"] = '51482126';
+            $keys_acumulado["monto_capturado"] = '$25,126';
+            $keys_acumulado["suma_descuentos"] = '$5,126';
+            $keys_acumulado["saldo_al_dia"] = '$8,666';
+
+            $row = array();
             $row["nss"] = $registro['em_empleado_nss'];
             $row["id"] = $registro['em_empleado_codigo'];
             $row["empleado"] = $registro['em_empleado_nombre'];
@@ -903,12 +911,18 @@ class controlador_em_anticipo extends _ctl_base {
             $row["fecha_prestacion"] = $registro['em_anticipo_fecha_prestacion'];
 
             $registros_xls[] = $row;
+            $registros_sum[] = $keys_acumulado;
         }
 
         $keys = array();
+        $keys_sum = array();
 
         foreach (array_keys($registros_xls[0]) as $key) {
             $keys[$key] = strtoupper(str_replace('_', ' ', $key));
+        }
+
+        foreach (array_keys($registros_sum[0]) as $key) {
+            $keys_sum[$key] = strtoupper(str_replace('_', ' ', $key));
         }
 
         $registros = array();
@@ -918,8 +932,8 @@ class controlador_em_anticipo extends _ctl_base {
                 array_keys($keys)),$keys, array_keys($row)), $row);
         }
 
-        $resultado = $exportador->listado_base_xls(header: $header, name: $this->seccion, keys:  $keys,
-            path_base: $this->path_base,registros:  $registros,totales:  array());
+        $resultado = $exportador->listado_base_xls(header: $header, name: $this->seccion, keys: $keys,
+            path_base: $this->path_base, registros: $registros, totales: array(), keys_sum: $keys_sum);
         if(errores::$error){
             $error =  $this->errores->error('Error al generar xls',$resultado);
             if(!$header){

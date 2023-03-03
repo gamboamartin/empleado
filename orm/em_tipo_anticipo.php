@@ -48,7 +48,7 @@ class em_tipo_anticipo extends modelo
         return $r_alta_bd;
     }
 
-    private function get_tipo_anticipos(int $em_empleado_id): array
+    public function get_tipo_anticipos(int $em_empleado_id): array
     {
 
         $extra_join["em_anticipo"]["key"] = "em_tipo_anticipo_id";

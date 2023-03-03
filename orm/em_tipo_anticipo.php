@@ -6,6 +6,7 @@ use base\orm\modelo;
 
 use gamboamartin\errores\errores;
 use PDO;
+use stdClass;
 
 class em_tipo_anticipo extends modelo
 {
@@ -48,7 +49,7 @@ class em_tipo_anticipo extends modelo
         return $r_alta_bd;
     }
 
-    public function get_tipo_anticipos(int $em_empleado_id): array
+    public function get_tipo_anticipos(int $em_empleado_id): array|stdClass
     {
 
         $extra_join["em_anticipo"]["key"] = "em_tipo_anticipo_id";

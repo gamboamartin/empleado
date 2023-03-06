@@ -1149,7 +1149,8 @@ class controlador_em_anticipo extends _ctl_base {
             die('Error');
         }
 
-        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado", "cols" => 12,'required'=>true]);
+        $this->asignar_propiedad(identificador:'em_empleado_id', propiedades: ["label" => "Empleado", "cols" => 12,
+            'required'=>true, 'con_registros' => false]);
         if (errores::$error) {
             $error = $this->errores->error(mensaje: 'Error al asignar propiedad', data: $this);
             print_r($error);

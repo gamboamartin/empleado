@@ -30,6 +30,7 @@ class em_anticipo extends modelo{
         //$columnas_extra['pago_siguiente'] = 'IFNULL((SELECT ROUND(monto/n_pagos,2) FROM em_abono_anticipo WHERE em_abono_anticipo.em_anticipo_id = em_anticipo.id),0.0)';
         $columnas_extra['pago_siguiente'] = 0;
         $columnas_extra['total_abonado'] = "IFNULL((SELECT SUM(em_abono_anticipo.monto) FROM em_abono_anticipo WHERE em_anticipo_id = em_abono_anticipo.id),0)";
+        $columnas_extra['em_empleado_nombre_completo'] = 'CONCAT (IFNULL(em_empleado.nombre,"")," ",IFNULL(em_empleado.ap, "")," ",IFNULL(em_empleado.am,""))';
 
         $campos_view['em_empleado_id']['type'] = "selects";
         $campos_view['em_empleado_id']['model'] = new em_empleado($link);

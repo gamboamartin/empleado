@@ -46,6 +46,22 @@ class controlador_em_metodo_calculo extends _ctl_base
         }
     }
 
+    public function alta(bool $header, bool $ws = false): array|string
+    {
+        $r_alta = $this->init_alta();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al inicializar alta', data: $r_alta, header: $header, ws: $ws);
+        }
+
+        $inputs = $this->inputs(keys_selects: array());
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $inputs, header: $header, ws: $ws);
+        }
+
+        return $r_alta;
+    }
+
     protected function campos_view(): array
     {
         $keys = new stdClass();

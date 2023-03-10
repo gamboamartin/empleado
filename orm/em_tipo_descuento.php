@@ -10,7 +10,6 @@ use stdClass;
 
 class em_tipo_descuento extends _modelo_parent
 {
-
     public function __construct(PDO $link)
     {
         $tabla = 'em_tipo_descuento';

@@ -95,7 +95,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
 
     private function init_configuraciones(): controler
     {
-        $this->seccion_titulo = 'Abonos';
+        $this->seccion_titulo = 'Abono';
         $this->titulo_lista = 'Registro de Abonos';
 
         return $this;
@@ -139,7 +139,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_tipo_abono_anticipo_id",
             label: "Tipo de Abono");
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_anticipo_id", label: "Anticipo",
-            cols: 12, con_registros: false);
+            cols: 12);
         return $this->init_selects(keys_selects: $keys_selects, key: "cat_sat_forma_pago_id", label: "Forma Pago");
     }
 
@@ -158,7 +158,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
         }
 
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'monto',
-            keys_selects: $keys_selects, place_holder: 'Abono');
+            keys_selects: $keys_selects, place_holder: 'Monto');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }

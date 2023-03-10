@@ -9,4 +9,4 @@
 <?php echo $controlador->inputs->fecha_prestacion; ?>
 <?php echo $controlador->inputs->fecha_inicio_descuento; ?>
 <?php echo $controlador->inputs->comentarios; ?>
-<?php include (new views())->ruta_templates.'botons/submit/alta_bd_otro.php';?>
+<?php include (new views())->ruta_templates.'botons/submit/alta_bd.php';?>

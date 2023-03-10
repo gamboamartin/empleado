@@ -1,5 +1,8 @@
 <?php
+
 namespace gamboamartin\empleado\models;
+
+use base\orm\_modelo_parent;
 use base\orm\modelo;
 
 use gamboamartin\comercial\models\com_sucursal;
@@ -8,15 +11,17 @@ use gamboamartin\organigrama\models\org_sucursal;
 use PDO;
 use stdClass;
 
-class em_anticipo extends modelo{
+class em_anticipo extends _modelo_parent
+{
 
-    public function __construct(PDO $link){
+    public function __construct(PDO $link)
+    {
         $tabla = 'em_anticipo';
-        $columnas = array($tabla=>false, 'em_empleado'=>$tabla, 'em_tipo_anticipo'=>$tabla, 'em_tipo_descuento'=>$tabla,
-            'em_metodo_calculo'=>'em_tipo_descuento', 'em_registro_patronal'=>'em_empleado',
-            'fc_csd'=>'em_registro_patronal','org_sucursal' => 'fc_csd');
-        $campos_obligatorios = array('descripcion','codigo','descripcion_select','alias','codigo_bis',
-            'em_tipo_anticipo_id','em_empleado_id','monto','fecha_inicio_descuento','fecha_prestacion',
+        $columnas = array($tabla => false, 'em_empleado' => $tabla, 'em_tipo_anticipo' => $tabla, 'em_tipo_descuento' => $tabla,
+            'em_metodo_calculo' => 'em_tipo_descuento', 'em_registro_patronal' => 'em_empleado',
+            'fc_csd' => 'em_registro_patronal', 'org_sucursal' => 'fc_csd');
+        $campos_obligatorios = array('descripcion', 'codigo', 'descripcion_select', 'alias', 'codigo_bis',
+            'em_tipo_anticipo_id', 'em_empleado_id', 'monto', 'fecha_inicio_descuento', 'fecha_prestacion',
             'em_tipo_descuento_id');
 
         $columnas_extra['em_anticipo_abonos'] = 'IFNULL((SELECT SUM(em_abono_anticipo.monto) 
@@ -32,57 +37,25 @@ class em_anticipo extends modelo{
         $columnas_extra['total_abonado'] = "IFNULL((SELECT SUM(em_abono_anticipo.monto) FROM em_abono_anticipo WHERE em_anticipo_id = em_abono_anticipo.id),0)";
         $columnas_extra['em_empleado_nombre_completo'] = 'CONCAT (IFNULL(em_empleado.nombre,"")," ",IFNULL(em_empleado.ap, "")," ",IFNULL(em_empleado.am,""))';
 
-        $campos_view['em_empleado_id']['type'] = "selects";
-        $campos_view['em_empleado_id']['model'] = new em_empleado($link);
-        $campos_view['em_tipo_anticipo_id']['type'] = "selects";
-        $campos_view['em_tipo_anticipo_id']['model'] = new em_tipo_anticipo($link);
-        $campos_view['em_tipo_descuento_id']['type'] = "selects";
-        $campos_view['em_tipo_descuento_id']['model'] = new em_tipo_descuento($link);
-        $campos_view['com_sucursal_id']['type'] = "selects";
-        $campos_view['com_sucursal_id']['model'] = new com_sucursal($link);
-        $campos_view['org_sucursal_id']['type'] = "selects";
-        $campos_view['org_sucursal_id']['model'] = new org_sucursal($link);
-        $campos_view['id']['type'] = "inputs";
-        $campos_view['codigo']['type'] = "inputs";
-        $campos_view['monto']['type'] = "inputs";
-        $campos_view['n_pagos']['type'] = "inputs";
-        $campos_view['fecha_prestacion']['type'] = "dates";
-        $campos_view['fecha_inicio']['type'] = "dates";
-        $campos_view['fecha_final']['type'] = "dates";
-        $campos_view['fecha_inicio_descuento']['type'] = "dates";
-        $campos_view['comentarios']['type'] = "inputs";
 
-        parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,campos_view: $campos_view, columnas_extra: $columnas_extra);
+        parent::__construct(link: $link, tabla: $tabla, campos_obligatorios: $campos_obligatorios,
+            columnas: $columnas, columnas_extra: $columnas_extra);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
 
-    public function alta_bd(): array|stdClass
+    public function alta_bd(array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
         if (!isset($this->registro['codigo'])) {
-            $this->registro['codigo'] = $this->registro['em_empleado_id'];
-            $this->registro['codigo'] .= $this->registro['em_tipo_anticipo_id'];
-            $this->registro['codigo'] .= $this->registro['descripcion'];
+            $codigo = $this->get_codigo_aleatorio();
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al generar codigo', data: $codigo);
+            }
         }
 
-        if (!isset($this->registro['descripcion_select'])) {
-            $this->registro['descripcion_select'] = $this->registro['descripcion'];
-            $this->registro['descripcion_select'] = $this->registro['descripcion'];
-        }
-
-        if (!isset($this->registro['codigo_bis'])) {
-            $this->registro['codigo_bis'] = $this->registro['codigo'];
-        }
-
-        if (!isset($this->registro['alias'])) {
-            $this->registro['alias'] = $this->registro['codigo'];
-            $this->registro['alias'] .= $this->registro['descripcion'];
-        }
-
-        $r_alta_bd = parent::alta_bd();
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al dar de alta anticipo',data: $r_alta_bd);
+        $r_alta_bd = parent::alta_bd($keys_integra_ds);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al insertar anticipo', data: $r_alta_bd);
         }
 
         return $r_alta_bd;
@@ -96,19 +69,19 @@ class em_anticipo extends modelo{
      * @return array|stdClass
      * @version 1.131.1
      */
-    public function get_anticipos_empleado( int $em_empleado_id, bool $con_saldo = false, string $fecha = ''): array|stdClass
+    public function get_anticipos_empleado(int $em_empleado_id, bool $con_saldo = false, string $fecha = ''): array|stdClass
     {
-        if($em_empleado_id <=0){
+        if ($em_empleado_id <= 0) {
             return $this->error->error(mensaje: 'Error $em_empleado_id debe ser mayor a 0', data: $em_empleado_id);
         }
 
-        if($fecha === ''){
+        if ($fecha === '') {
             $fecha = date('Y-m-d');
         }
 
         $filtro['em_empleado.id'] = $em_empleado_id;
 
-        if($con_saldo) {
+        if ($con_saldo) {
             $filtro['em_anticipo_tiene_saldo']['campo'] = 'em_empleado_tiene_saldo';
             $filtro['em_anticipo_tiene_saldo']['es_sq'] = true;
             $filtro['em_anticipo_tiene_saldo']['value'] = 'activo';
@@ -118,7 +91,7 @@ class em_anticipo extends modelo{
         $filtro_extra[0]['em_anticipo.fecha_inicio_descuento']['valor'] = $fecha;
         $filtro_extra[0]['em_anticipo.fecha_inicio_descuento']['comparacion'] = 'AND';
         $r_em_anticipo = $this->filtro_and(filtro: $filtro, filtro_extra: $filtro_extra);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener anticipos', data: $r_em_anticipo);
         }
 
@@ -127,24 +100,20 @@ class em_anticipo extends modelo{
 
     public function get_saldo_anticipo(int $em_anticipo_id): float|array
     {
-        if($em_anticipo_id <= 0){
+        if ($em_anticipo_id <= 0) {
             return $this->error->error(mensaje: 'Error $em_anticipo_id debe ser mayor a 0', data: $em_anticipo_id);
         }
 
         $r_em_anticipo = $this->registro(registro_id: $em_anticipo_id);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el anticipo', data: $r_em_anticipo);
         }
 
         $total_abonado = (new em_abono_anticipo(link: $this->link))->get_total_abonado($em_anticipo_id);
-        if(errores::$error){
+        if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener el total abonado', data: $total_abonado);
         }
 
-        return round(round($r_em_anticipo['em_anticipo_monto'],2) - round($total_abonado,2),2);
+        return round(round($r_em_anticipo['em_anticipo_monto'], 2) - round($total_abonado, 2), 2);
     }
-
-
-
-
 }

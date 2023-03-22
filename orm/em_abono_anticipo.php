@@ -81,10 +81,10 @@ class em_abono_anticipo extends _modelo_parent{
         /**
          * Validar si n pagos es obligatorio
          */
-        if ($n_pago > $em_anticipo['em_anticipo_n_pagos']){
+        /*if ($n_pago > $em_anticipo['em_anticipo_n_pagos']){
             return $this->error->error(mensaje: 'Error el numero de pago actual es mayor al total de pagos',
                 data: $n_pago);
-        }
+        }*/
 
         $r_alta_bd = parent::alta_bd();
         if (errores::$error) {

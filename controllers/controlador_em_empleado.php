@@ -265,6 +265,18 @@ class controlador_em_empleado extends _ctl_base {
         exit;
     }
 
+    public function get_empleado(bool $header, bool $ws = true): array|stdClass
+    {
+        $keys['em_empleado'] = array('id', 'descripcion', 'codigo', 'nss', 'rfc', 'curp');
+
+        $salida = $this->get_out(header: $header, keys: $keys, ws: $ws);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar salida', data: $salida, header: $header, ws: $ws);
+        }
+
+        return $salida;
+    }
+
     private function init_configuraciones(): controler
     {
         $this->seccion_titulo = 'Empleados';

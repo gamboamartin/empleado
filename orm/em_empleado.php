@@ -82,6 +82,12 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al inicializar campo base',data: $this->registro);
         }
 
+        $this->registro['descripcion_select'] = isset($this->registro['nss']) ? $this->registro['nss']." - " : "SIN NSS - ";
+        $this->registro['descripcion_select'] .= $this->registro['nombre']. ' ';
+        $this->registro['descripcion_select'] .= $this->registro['ap']. ' ';
+        $this->registro['descripcion_select'] .= isset($this->registro['am']) ? $this->registro['am']: "";
+        $this->registro['descripcion_select'] = strtoupper($this->registro['descripcion_select']);
+
         $this->registro = $this->limpia_campos_extras(registro: $this->registro, campos_limpiar: array("dp_pais_id",
             "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));
         if (errores::$error) {
@@ -353,6 +359,12 @@ class em_empleado extends _modelo_parent{
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al inicializar campo base',data: $this->registro);
         }
+
+        $registro['descripcion_select'] = isset($registro['nss']) ? $registro['nss']." - " : "SIN NSS - ";
+        $registro['descripcion_select'] .= $registro['nombre']. ' ';
+        $registro['descripcion_select'] .= $registro['ap']. ' ';
+        $registro['descripcion_select'] .= isset($registro['am']) ? $registro['am']: "";
+        $registro['descripcion_select'] = strtoupper($registro['descripcion_select']);
 
         $registro = $this->limpia_campos_extras(registro: $registro, campos_limpiar: array("dp_pais_id",
             "dp_estado_id","dp_municipio_id", "dp_cp_id","dp_colonia_postal_id"));

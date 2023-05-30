@@ -360,7 +360,13 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al inicializar campo base',data: $this->registro);
         }
 
-        $registro['descripcion_select'] = isset($registro['nss']) ? $registro['nss']." - " : "SIN NSS - ";
+        if ($registro['nss'] != ""){
+            $registro['descripcion_select'] = $registro['nss']." - ";
+        } else {
+            $registro['descripcion_select'] = "SIN NSS - ";
+        }
+
+        //$registro['descripcion_select'] = is_null($registro['nss']) ? $registro['nss']." - " : "SIN NSS - ";
         $registro['descripcion_select'] .= $registro['nombre']. ' ';
         $registro['descripcion_select'] .= $registro['ap']. ' ';
         $registro['descripcion_select'] .= isset($registro['am']) ? $registro['am']: "";

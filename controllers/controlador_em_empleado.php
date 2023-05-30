@@ -520,7 +520,7 @@ class controlador_em_empleado extends _ctl_base {
         }
 
         $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'nss',
-            keys_selects: $keys_selects, place_holder: 'NSS');
+            keys_selects: $keys_selects, place_holder: 'NSS', required: false);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }

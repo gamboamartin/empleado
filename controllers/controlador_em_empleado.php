@@ -298,7 +298,7 @@ class controlador_em_empleado extends _ctl_base {
         return $this;
     }
 
-    private function init_datatable(): stdClass
+    protected function init_datatable(): stdClass
     {
         $columns["em_empleado_id"]["titulo"] = "Id";
         $columns["em_empleado_nombre"]["titulo"] = "Nombre";

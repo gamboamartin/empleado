@@ -227,6 +227,17 @@ class controlador_em_registro_patronal extends system {
 
         return $row;
     }
+    public function get_registro_patronal(bool $header, bool $ws = true): array|stdClass
+    {
+        $keys['em_registro_patronal'] = array('id', 'descripcion', 'codigo');
+
+        $salida = $this->get_out(header: $header, keys: $keys, ws: $ws);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar salida', data: $salida, header: $header, ws: $ws);
+        }
+
+        return $salida;
+    }
 
     private function maqueta_registros_lista(array $registros): array
     {

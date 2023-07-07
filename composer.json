@@ -58,10 +58,10 @@
     "gamboa.martin/direccion_postal": "^10.0.0",
     "gamboa.martin/js_base": "^2.0.0",
     "gamboa.martin/documento": "^6.0.0",
-    "gamboa.martin/organigrama": "^7.0.0",
-    "gamboa.martin/comercial": "^9.0.0",
+    "gamboa.martin/organigrama": "^8.0.0",
+    "gamboa.martin/comercial": "^10.0.0",
     "gamboa.martin/proceso": "^7.0.0",
-    "gamboa.martin/facturacion": "^8.0.0",
+    "gamboa.martin/facturacion": "^10.0.0",
     "gamboa.martin/xml_cfdi_4": "^2.0.0",
     "syamsoul/laravel-datatable-ssp": "^2.3"
   },

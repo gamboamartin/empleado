@@ -324,6 +324,7 @@ class em_empleado extends _modelo_parent{
         $salida['numero_interior'] = $numero_interior;
         $salida['dp_calle_pertenece_id'] = $dp_calle_pertenece_id;
         $salida['es_empleado'] = true;
+        $salida['cat_sat_tipo_persona_id'] = 5;
 
         return $salida;
     }

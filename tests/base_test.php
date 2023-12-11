@@ -32,6 +32,19 @@ class base_test{
         return $alta;
     }
 
+    public function alta_cat_sat_conf_reg_tp(PDO $link, int $id = 1): array|stdClass
+    {
+
+
+        $alta = (new \gamboamartin\cat_sat\tests\base_test())->alta_cat_sat_conf_reg_tp(link: $link,
+            cat_sat_regimen_fiscal_id: 2, cat_sat_tipo_persona_id: 5, id: $id);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+        return $alta;
+    }
+
     public function alta_em_abono_anticipo(PDO $link, int $em_anticipo_id = 1, int $em_anticipo_n_pagos = 1,
                                            int $em_tipo_abono_anticipo_id = 1): array|\stdClass
     {

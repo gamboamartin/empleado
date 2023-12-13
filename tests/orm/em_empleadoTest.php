@@ -187,7 +187,7 @@ class em_empleadoTest extends test {
         }
 
 
-        $resultado = $modelo->registro(1);
+        $resultado = $modelo->registro(registro_id: 1);
         $this->assertIsArray($resultado);
         $this->assertTrue(errores::$error);
         $this->assertStringContainsStringIgnoringCase('Error al obtener registro', $resultado['mensaje']);
@@ -204,6 +204,7 @@ class em_empleadoTest extends test {
         }
 
         $resultado = $modelo->registro(registro_id: 1,columnas: array('em_empleado_nombre_completo'));
+        //print_r($resultado);exit;
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
         $this->assertEquals('NOMBRE AP AM', $resultado['em_empleado_nombre_completo']);

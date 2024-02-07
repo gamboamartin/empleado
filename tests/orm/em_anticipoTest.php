@@ -93,12 +93,6 @@ class em_anticipoTest extends test {
         $this->assertEquals(0, $resultado);
 
 
-        $alta = (new base_test())->alta_cat_sat_conf_reg_tp($this->link);
-        if(errores::$error){
-            $error = (new errores())->error('Error al insertar', $alta);
-            print_r($error);
-            exit;
-        }
 
 
         errores::$error = false;

@@ -206,6 +206,14 @@ class em_empleado extends _modelo_parent{
             }
         }
 
+        $dp_calle_pertenece = (new dp_calle_pertenece(link: $this->link))->registro(
+            registro_id: $data['dp_calle_pertenece_id'],retorno_obj: true);
+
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener datos de direccion', data: $dp_calle_pertenece);
+        }
+
+        $data['dp_municipio_id'] = $dp_calle_pertenece->dp_municipio_id;
 
         $respuesta = (new com_cliente($this->link))->alta_registro(registro: $data);
         if (errores::$error) {

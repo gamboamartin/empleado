@@ -47,6 +47,10 @@ class em_empleado_usuario extends _modelo_parent
             }
         }
 
+        if (!isset($registros['descripcion'])){
+            $registros['descripcion'] = 'Alta relacion de usuario';
+        }
+
         return $registros;
     }
 }

@@ -170,6 +170,7 @@ class controlador_em_empleado_usuario extends _ctl_base {
         }
 
         $keys_selects['em_empleado_id']->id_selected = $this->registro['em_empleado_id'];
+        $keys_selects['adm_usuario_id']->id_selected = $this->registro['adm_usuario_id'];
 
         $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
         if (errores::$error) {

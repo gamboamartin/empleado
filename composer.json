@@ -59,9 +59,9 @@
     "gamboa.martin/js_base": "^3.0.0",
     "gamboa.martin/documento": "^17.0.0",
     "gamboa.martin/organigrama": "^19.0.0",
-    "gamboa.martin/comercial": "^24.0.0",
+    "gamboa.martin/comercial": "^25.0.0",
     "gamboa.martin/proceso": "^18.0.0",
-    "gamboa.martin/facturacion": "^24.0.0",
+    "gamboa.martin/facturacion": "^25.0.0",
     "gamboa.martin/xml_cfdi_4": "^3.0.0",
     "gamboa.martin/notificaciones": "^14.0.0",
     "syamsoul/laravel-datatable-ssp": "^2.3"

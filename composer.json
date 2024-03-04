@@ -57,13 +57,13 @@
     "gamboa.martin/cat_sat": "^18.0.0",
     "gamboa.martin/direccion_postal": "^20.0.0",
     "gamboa.martin/js_base": "^3.0.0",
-    "gamboa.martin/documento": "^17.0.0",
-    "gamboa.martin/organigrama": "^19.0.0",
-    "gamboa.martin/comercial": "^25.0.0",
+    "gamboa.martin/documento": "^18.0.0",
+    "gamboa.martin/organigrama": "^20.0.0",
+    "gamboa.martin/comercial": "^26.0.0",
     "gamboa.martin/proceso": "^18.0.0",
-    "gamboa.martin/facturacion": "^25.0.0",
+    "gamboa.martin/facturacion": "^27.0.0",
     "gamboa.martin/xml_cfdi_4": "^3.0.0",
-    "gamboa.martin/notificaciones": "^14.0.0",
+    "gamboa.martin/notificaciones": "^15.0.0",
     "syamsoul/laravel-datatable-ssp": "^2.3"
   },
   "require-dev": {

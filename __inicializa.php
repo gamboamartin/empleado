@@ -113,6 +113,18 @@ if(errores::$error){
 
 print_r($instala);
 
+$empleado = new gamboamartin\empleado\instalacion\instalacion();
+
+$instala = $empleado->instala(link: $link);
+if(errores::$error){
+    $link->rollBack();
+    $error = (new errores())->error(mensaje: 'Error al instalar empleado', data: $instala);
+    print_r($error);
+    exit;
+}
+
+print_r($instala);
+
 $link->commit();
 
 

@@ -101,6 +101,24 @@ class controlador_em_abono_anticipo extends _ctl_base {
         return $this;
     }
 
+    /**
+     * POR DOCUMENTAR EN WIKI
+     * Función `init_datatable` en el controlador `controlador_em_abono_anticipo` (línea 27).
+     *
+     * Esta función se encarga de inicializar una tabla de datos utilizada en la
+     * sección 'em_abono_anticipo'. Configura la tabla con los parámetros adecuados,
+     * prepara la tabla para recibir y mostras los datos sobre los abonos y anticipos
+     * de cada empleado.
+     *
+     * @usage $objeto->init_datatable();
+     *
+     * @throws errores si occure algún error durante la inicialización de la tabla.
+     *
+     * @return Object la función retorna un objeto que representa la tabla de datos
+     * inicializada. Esta objeto contiene una propiedad `columns` que es un arreglo
+     * asociativo de las columnas y sus configuraciones.
+     * @version 8.1.0
+     */
     private function init_datatable(): stdClass
     {
         $columns["em_abono_anticipo_id"]["titulo"] = "Id";

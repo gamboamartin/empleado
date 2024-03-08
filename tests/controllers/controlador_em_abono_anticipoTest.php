@@ -24,6 +24,7 @@ class controlador_em_abono_anticipoTest extends test {
         $this->paths_conf->views = '/var/www/html/cat_sat/config/views.php';
     }
 
+
     public function test_init_datatable(): void
     {
         errores::$error = false;

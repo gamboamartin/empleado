@@ -102,7 +102,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
     }
 
     /**
-     * POR DOCUMENTAR EN WIKI
+     * TOTAL
      * Función `init_datatable` en el controlador `controlador_em_abono_anticipo` (línea 27).
      *
      * Esta función se encarga de inicializar una tabla de datos utilizada en la
@@ -118,6 +118,7 @@ class controlador_em_abono_anticipo extends _ctl_base {
      * inicializada. Esta objeto contiene una propiedad `columns` que es un arreglo
      * asociativo de las columnas y sus configuraciones.
      * @version 8.1.0
+     * @url https://github.com/gamboamartin/empleado/wiki/controllers.controlador_em_abono_anticipo.init_datatable.14.0.0
      */
     private function init_datatable(): stdClass
     {

@@ -14,6 +14,7 @@ use gamboamartin\comercial\models\com_cliente_documento;
 use gamboamartin\comercial\models\com_conf_tipo_doc_cliente;
 use gamboamartin\comercial\models\com_contacto;
 use gamboamartin\compresor\compresor;
+use gamboamartin\empleado\models\em_empleado_documento;
 use gamboamartin\errores\errores;
 use gamboamartin\system\_ctl_base;
 use gamboamartin\system\links_menu;
@@ -21,6 +22,7 @@ use gamboamartin\template\html;
 use html\com_cliente_documento_html;
 use html\com_conf_tipo_doc_cliente_html;
 use html\com_contacto_html;
+use html\em_empleado_documento_html;
 use PDO;
 use stdClass;
 
@@ -34,8 +36,8 @@ class controlador_em_empleado_documento extends _ctl_base
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass())
     {
-        $modelo = new com_cliente_documento(link: $link);
-        $html = new com_cliente_documento_html(html: $html);
+        $modelo = new em_empleado_documento(link: $link);
+        $html = new em_empleado_documento_html(html: $html);
         $obj_link = new links_menu(link: $link, registro_id: $this->registro_id);
 
         $datatables = $this->init_datatable();
@@ -89,7 +91,7 @@ class controlador_em_empleado_documento extends _ctl_base
 
         $init_data = array();
         $init_data['doc_documento'] = "gamboamartin\\documento";
-        $init_data['com_cliente'] = "gamboamartin\\comercial";
+        $init_data['em_empleado'] = "gamboamartin\\empleado";
         $campos_view = $this->campos_view_base(init_data: $init_data, keys: $keys);
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al inicializar campo view', data: $campos_view);
@@ -115,7 +117,7 @@ class controlador_em_empleado_documento extends _ctl_base
 
     private function init_configuraciones(): controler
     {
-        $this->titulo_lista = 'Registro Documento Cliente';
+        $this->titulo_lista = 'Registro Documentos Empleados';
 
         return $this;
     }
@@ -146,8 +148,8 @@ class controlador_em_empleado_documento extends _ctl_base
             return $this->errores->error(mensaje: 'Error al integrar selector', data: $keys_selects);
         }
 
-        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "com_cliente_id", label: "Cliente",
-            cols: 12, columns_ds: array('com_cliente_descripcion'));
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_empleado_id", label: "Empleado",
+            cols: 12, columns_ds: array('em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am'));
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al integrar selector', data: $keys_selects);
         }
@@ -160,13 +162,16 @@ class controlador_em_empleado_documento extends _ctl_base
         $datatables = new stdClass();
         $datatables->columns = array();
         $datatables->columns['com_cliente_documento_id']['titulo'] = 'Id';
-        $datatables->columns['com_cliente_razon_social']['titulo'] = 'Cliente';
+        $datatables->columns['em_empleado_nombre']['titulo'] = 'Empleado';
+        $datatables->columns['em_empleado_nombre']['campos'] = array('em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am');
         $datatables->columns['doc_documento_descripcion']['titulo'] = 'Documento';
 
         $datatables->filtro = array();
         $datatables->filtro[] = 'com_cliente_documento.id';
         $datatables->filtro[] = 'doc_documento.descripcion';
-        $datatables->filtro[] = 'com_cliente.razon_social';
+        $datatables->filtro[] = 'em_empleado.descripcion';
+        $datatables->filtro[] = 'em_empleado.ap';
+        $datatables->filtro[] = 'em_empleado.am';
 
         return $datatables;
     }
@@ -197,7 +202,7 @@ class controlador_em_empleado_documento extends _ctl_base
         }
 
         $keys_selects['doc_documento_id']->id_selected = $this->registro['doc_documento_id'];
-        $keys_selects['com_cliente_id']->id_selected = $this->registro['com_cliente_id'];
+        $keys_selects['em_empleado_id']->id_selected = $this->registro['em_empleado_id'];
 
         $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
         if (errores::$error) {

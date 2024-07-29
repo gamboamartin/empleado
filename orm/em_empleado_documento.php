@@ -99,7 +99,7 @@ class em_empleado_documento extends _modelo_parent_sin_codigo {
 
         $filtro['doc_tipo_documento_id'] = $documento['doc_tipo_documento_id'];
         $filtro['em_empleado_id'] = $registros['em_empleado_id'];
-        $existe = (new com_conf_tipo_doc_cliente(link: $this->link))->existe(filtro: $filtro);
+        $existe = (new em_conf_tipo_doc_empleado(link: $this->link))->existe(filtro: $filtro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al verificar si existe', data: $filtro);
         }

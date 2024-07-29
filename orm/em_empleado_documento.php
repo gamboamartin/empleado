@@ -121,7 +121,7 @@ class em_empleado_documento extends _modelo_parent_sin_codigo {
 
         if(!isset($registros['descripcion'])){
             $descripcion = trim($registros['doc_documento_id']);
-            $descripcion .= '-'.trim($registros['com_cliente_id']);
+            $descripcion .= '-'.trim($registros['em_empleado_id']);
             $descripcion .= '-'.trim($registros['codigo']);
             $registros['descripcion'] = $descripcion;
         }

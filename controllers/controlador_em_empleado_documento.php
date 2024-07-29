@@ -161,13 +161,13 @@ class controlador_em_empleado_documento extends _ctl_base
     {
         $datatables = new stdClass();
         $datatables->columns = array();
-        $datatables->columns['com_cliente_documento_id']['titulo'] = 'Id';
+        $datatables->columns['em_empleado_documento_id']['titulo'] = 'Id';
         $datatables->columns['em_empleado_nombre']['titulo'] = 'Empleado';
         $datatables->columns['em_empleado_nombre']['campos'] = array('em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am');
         $datatables->columns['doc_documento_descripcion']['titulo'] = 'Documento';
 
         $datatables->filtro = array();
-        $datatables->filtro[] = 'com_cliente_documento.id';
+        $datatables->filtro[] = 'em_empleado_documento.id';
         $datatables->filtro[] = 'doc_documento.descripcion';
         $datatables->filtro[] = 'em_empleado.descripcion';
         $datatables->filtro[] = 'em_empleado.ap';

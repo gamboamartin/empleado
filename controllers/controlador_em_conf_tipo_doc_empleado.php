@@ -138,7 +138,7 @@ class controlador_em_conf_tipo_doc_empleado extends _ctl_base {
         }
 
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_empleado_id", label: "Empleado",
-            cols: 12,columns_ds: array('em_empleado_nombre', 'em_empelado_ap', 'em_empleado_am'));
+            cols: 12,columns_ds: array('em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am'));
         if(errores::$error){
             return $this->errores->error(mensaje: 'Error al integrar selector',data:  $keys_selects);
         }
@@ -153,7 +153,7 @@ class controlador_em_conf_tipo_doc_empleado extends _ctl_base {
         $datatables->columns['em_conf_tipo_doc_empleado_id']['titulo'] = 'Id';
         $datatables->columns['doc_tipo_documento_descripcion']['titulo'] = 'Tipo de Documento';
         $datatables->columns['em_empleado_nombre']['titulo'] = 'Empleado';
-        $datatables->columns['em_empleado_nombre']['campos'] = array('em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am');
+        $datatables->columns['em_empleado_nombre']['campos'] = array('em_empleado_ap', 'em_empleado_am');
 
 
         $datatables->filtro = array();

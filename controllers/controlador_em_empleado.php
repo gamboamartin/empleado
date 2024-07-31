@@ -266,6 +266,81 @@ class controlador_em_empleado extends _ctl_base {
         exit;
     }
 
+    final public function documentos(bool $header, bool $ws = false): array|stdClass
+    {
+        $template = $this->modifica(header: false);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al integrar base', data: $template, header: $header, ws: $ws);
+        }
+
+        $keys_selects = $this->init_selects_inputs();
+        if (errores::$error) {return $this->errores->error(mensaje: 'Error al inicializar selects', data: $keys_selects);
+        }
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'nombre',
+            keys_selects: $keys_selects, place_holder: 'Nombre');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['nombre']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'ap',
+            keys_selects: $keys_selects, place_holder: 'Apellido Paterno');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['ap']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 4, key: 'am',
+            keys_selects: $keys_selects, place_holder: 'Apellido Materno');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['am']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'telefono',
+            keys_selects: $keys_selects, place_holder: 'Teléfono');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['telefono']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'correo',
+            keys_selects: $keys_selects, place_holder: 'Correo');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['correo']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'rfc',
+            keys_selects: $keys_selects, place_holder: 'RFC');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['rfc']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'nss',
+            keys_selects: $keys_selects, place_holder: 'NSS');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['nss']->disabled = true;
+
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 6, key: 'curp',
+            keys_selects: $keys_selects, place_holder: 'CURP');
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+        }
+        $keys_selects['curp']->disabled = true;
+
+        $base = $this->base_upd(keys_selects: $keys_selects, params: array(), params_ajustados: array());
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al integrar base', data: $base, header: $header, ws: $ws);
+        }
+
+        return $template;
+    }
+
     public function get_empleado(bool $header, bool $ws = true): array|stdClass
     {
         $keys['em_empleado'] = array('id', 'descripcion', 'codigo', 'nss', 'rfc', 'curp');

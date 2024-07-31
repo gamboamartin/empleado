@@ -135,9 +135,10 @@ class controlador_em_empleado extends _ctl_base {
     {
         $keys = new stdClass();
         $keys->inputs = array('codigo', 'descripcion', 'nombre', 'ap', 'am',  'rfc', 'curp', 'nss', 'salario_diario',
-            'salario_diario_integrado','com_sucursal','org_sucursal', 'salario_total','correo');
+            'salario_diario_integrado','com_sucursal','org_sucursal', 'salario_total');
         $keys->telefonos = array('telefono');
         $keys->fechas = array('fecha_inicio_rel_laboral', 'fecha_inicio', 'fecha_final');
+        $keys->emails = array('correo');
         $keys->selects = array();
 
         $init_data = array();

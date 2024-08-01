@@ -14,6 +14,7 @@ use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\documento\models\doc_documento;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
+use gamboamartin\empleado\models\em_conf_tipo_doc_empleado;
 use gamboamartin\errores\errores;
 use gamboamartin\plugins\exportador;
 use gamboamartin\system\_ctl_base;
@@ -21,6 +22,7 @@ use gamboamartin\system\actions;
 use gamboamartin\system\links_menu;
 use gamboamartin\template\html;
 
+use html\doc_tipo_documento_html;
 use html\em_empleado_html;
 use gamboamartin\empleado\models\em_empleado;
 use PDO;
@@ -43,6 +45,8 @@ class controlador_em_empleado extends _ctl_base {
     public string $link_em_empleado_reportes = '';
     public string $link_em_empleado_reporte_remunerado = '';
     public string $link_em_empleado_exportar = '';
+
+    public string $link_em_empleado_documento_alta_bd = '';
 
     public function __construct(PDO      $link, html $html = new \gamboamartin\template_1\html(),
                                 stdClass $paths_conf = new stdClass())
@@ -356,6 +360,101 @@ class controlador_em_empleado extends _ctl_base {
         header('Content-Type: application/json');
         echo json_encode($salida);
         exit;
+    }
+
+    final public function subir_documento(bool $header, bool $ws = false)
+    {
+        $em_empleado = (new em_empleado(link: $this->link))->registro(registro_id: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener empleado', data: $em_empleado,
+                header: $header, ws: $ws);
+        }
+
+        $em_conf_tipo_doc_empleado = (new em_conf_tipo_doc_empleado(link: $this->link))->filtro_and(
+            columnas: ['doc_tipo_documento_id'],
+            filtro: array('em_empleado_id' => $em_empleado['em_empleado_id']));
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al obtener em_conf_tipo_doc_empleado',
+                data: $em_conf_tipo_doc_empleado, header: $header, ws: $ws);
+        }
+
+        $this->inputs = new stdClass();
+
+        $filtro['em_empleado.id'] = $this->registro_id;
+        $em_empleado_id = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
+            cols: 12, con_registros: true, id_selected: $this->registro_id, link: $this->link, filtro: $filtro,disabled: true);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar input', data: $em_empleado_id, header: $header, ws: $ws);
+        }
+        $this->inputs->em_empleado_id = $em_empleado_id;
+
+        $doc_ids = array_map(function ($registro) {
+            return $registro['doc_tipo_documento_id'];
+        }, $em_conf_tipo_doc_empleado->registros);
+
+        $doc_tipos_documentos = array();
+
+        if (count($doc_ids) > 0) {
+            $doc_tipos_documentos = (new em_empleado($this->link))->documentos_de_empleado(em_empleado_id: $this->registro_id,
+                link: $this->link, todos: true, tipos_documentos: $doc_ids);
+            if (errores::$error) {
+                return $this->retorno_error(mensaje: 'Error al obtener tipos de documento', data: $doc_tipos_documentos,
+                    header: $header, ws: $ws);
+            }
+        }
+
+        $_doc_tipo_documento_id = -1;
+        $filtro = array();
+        if (isset($_GET['doc_tipo_documento_id'])) {
+            $_doc_tipo_documento_id = $_GET['doc_tipo_documento_id'];
+            $filtro['doc_tipo_documento.id'] = $_GET['doc_tipo_documento_id'];
+        }
+
+        $doc_tipo_documento_id = (new doc_tipo_documento_html(html: $this->html_base))->select_doc_tipo_documento_id(
+            cols: 12, con_registros: true, id_selected: $_doc_tipo_documento_id, link: $this->link, disabled: true,
+            filtro: $filtro, registros: $doc_tipos_documentos);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al generar input', data: $doc_tipo_documento_id, header: $header, ws: $ws);
+        }
+        $this->inputs->doc_tipo_documento_id = $doc_tipo_documento_id;
+
+        $documento = $this->html->input_file(cols: 12, name: 'documento', row_upd: new stdClass(), value_vacio: false);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $documento, header: $header, ws: $ws);
+        }
+
+        $this->inputs->documento = $documento;
+
+        $link_alta_doc = $this->obj_link->link_alta_bd(link: $this->link, seccion: 'em_empleado_documento');
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar link', data: $link_alta_doc, header: $header, ws: $ws);
+        }
+
+        $this->link_em_empleado_documento_alta_bd = $link_alta_doc;
+
+        $btn_action_next = $this->html->hidden('btn_action_next', value: 'documentos');
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar btn_action_next', data: $btn_action_next, header: $header, ws: $ws);
+        }
+
+        $id_retorno = $this->html->hidden('id_retorno', value: $this->registro_id);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar btn_action_next', data: $btn_action_next, header: $header, ws: $ws);
+        }
+
+        $seccion_retorno = $this->html->hidden('seccion_retorno', value: $this->seccion);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al generar btn_action_next', data: $btn_action_next, header: $header, ws: $ws);
+        }
+
+        $this->inputs->btn_action_next = $btn_action_next;
+        $this->inputs->id_retorno = $id_retorno;
+        $this->inputs->seccion_retorno = $seccion_retorno;
     }
 
     public function get_empleado(bool $header, bool $ws = true): array|stdClass

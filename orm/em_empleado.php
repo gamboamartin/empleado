@@ -6,6 +6,7 @@ use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
+use gamboamartin\documento\models\doc_tipo_documento;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
 
@@ -157,8 +158,200 @@ class em_empleado extends _modelo_parent{
 
     public function buttons_documentos(controlador_em_empleado $controler, array $empleados_documentos, array $tipos_documentos)
     {
+        $conf_docs = $this->documentos_de_empleado(em_empleado_id: $controler->registro_id,
+            link: $controler->link, todos: true, tipos_documentos: $tipos_documentos);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener configuraciones de documentos',
+                data: $conf_docs);
+        }
 
-        return array();
+        foreach ($conf_docs as $indice => $doc_tipo_documento) {
+            $conf_docs = $this->docs_empleado(controler: $controler,
+                doc_tipo_documento: $doc_tipo_documento, indice: $indice,
+                em_conf_tipo_doc_empleado: $conf_docs, empleados_documentos: $empleados_documentos);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al integrar buttons', data: $conf_docs);
+            }
+        }
+
+        return $conf_docs;
+    }
+
+    final public function documentos_de_empleado(int $em_empleado_id, PDO $link, bool $todos, array $tipos_documentos)
+    {
+        $in = array();
+
+        if (count($tipos_documentos) > 0) {
+            $in['llave'] = 'doc_tipo_documento.id';
+            $in['values'] = $tipos_documentos;
+        }
+
+        $r_doc_tipo_documento = (new doc_tipo_documento(link: $link))->filtro_and(in: $in);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener tipos de documento', data: $r_doc_tipo_documento);
+        }
+
+        return $r_doc_tipo_documento->registros;
+    }
+
+    private function docs_empleado(controlador_em_empleado $controler, array $doc_tipo_documento, int $indice,
+                                   array $em_conf_tipo_doc_empleado, array $empleados_documentos)
+    {
+        $existe = false;
+        foreach ($empleados_documentos as $empleado_documento) {
+            $existe_doc = $this->doc_existente(controler: $controler,
+                doc_tipo_documento: $doc_tipo_documento, indice: $indice,
+                em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado, empleado_documento: $empleado_documento);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al integrar datos', data: $existe_doc);
+            }
+
+            $em_conf_tipo_doc_empleado = $existe_doc->em_conf_tipo_doc_empleado;
+            $existe = $existe_doc->existe;
+            if ($existe) {
+                break;
+            }
+        }
+
+        if (!$existe) {
+            $em_conf_tipo_doc_empleado = $this->integra_data(controler: $controler,
+                doc_tipo_documento: $doc_tipo_documento, indice: $indice,
+                em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+            }
+        }
+
+        return $em_conf_tipo_doc_empleado;
+    }
+
+    private function integra_data(controlador_em_empleado $controler, array $doc_tipo_documento,
+                                  int $indice, array $em_conf_tipo_doc_empleado){
+        $params = array('doc_tipo_documento_id'=>$doc_tipo_documento['doc_tipo_documento_id']);
+
+        $button = $controler->html->button_href(accion: 'subir_documento',etiqueta:
+            'Subir Documento',registro_id:  $controler->registro_id,
+            seccion:  'em_empleado',style:  'warning', params: $params);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al integrar button',data:  $button);
+        }
+
+        $em_conf_tipo_doc_empleado = $this->integra_button_default(button: $button,
+            indice:  $indice, em_conf_tipo_doc_empleado:  $em_conf_tipo_doc_empleado);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al integrar button',data:  $em_conf_tipo_doc_empleado);
+        }
+
+        return $em_conf_tipo_doc_empleado;
+    }
+
+    private function integra_button_default(string $button, int $indice, array $em_conf_tipo_doc_empleado): array
+    {
+        $em_conf_tipo_doc_empleado[$indice]['descarga'] = $button;
+        $em_conf_tipo_doc_empleado[$indice]['vista_previa'] = $button;
+        $em_conf_tipo_doc_empleado[$indice]['descarga_zip'] = $button;
+        $em_conf_tipo_doc_empleado[$indice]['elimina_bd'] = $button;
+        return $em_conf_tipo_doc_empleado;
+    }
+
+    private function doc_existente(controlador_em_empleado $controler, array $doc_tipo_documento, int $indice,
+                                   array                   $em_conf_tipo_doc_empleado, array $empleado_documento)
+    {
+
+        $existe = false;
+        if ($doc_tipo_documento['doc_tipo_documento_id'] === $empleado_documento['doc_tipo_documento_id']) {
+
+            $existe = true;
+
+            $em_conf_tipo_doc_empleado = $this->buttons_base(controler: $controler, indice: $indice,
+                em_empleado_documento_id: $controler->registro_id, em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado,
+                empleado_documento: $empleado_documento);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+            }
+        }
+
+        $data = new stdClass();
+        $data->existe = $existe;
+        $data->em_conf_tipo_doc_empleado = $em_conf_tipo_doc_empleado;
+        return $data;
+    }
+
+    private function buttons_base(controlador_em_empleado $controler, int $indice, int $em_empleado_documento_id,
+                                  array $em_conf_tipo_doc_empleado, array $empleado_documento): array
+    {
+        $em_conf_tipo_doc_empleado = $this->buttons(controler: $controler, indice: $indice,
+            em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado, empleado_documento: $empleado_documento);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+        }
+
+        $em_conf_tipo_doc_empleado = $this->button_del(controler: $controler, indice: $indice,
+            em_empleado_documento_id: $em_empleado_documento_id, em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado,
+            empleado_documento: $empleado_documento);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+        }
+
+        return $em_conf_tipo_doc_empleado;
+    }
+
+    private function buttons(controlador_em_empleado $controler, int $indice, array $em_conf_tipo_doc_empleado,
+                             array $empleado_documento)
+    {
+
+        $em_conf_tipo_doc_empleado = $this->button(accion: 'descarga', controler: $controler,
+            etiqueta: 'Descarga', indice: $indice, em_empleado_documento_id: $empleado_documento['em_empleado_documento_id'],
+            em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+        }
+
+        $em_conf_tipo_doc_empleado = $this->button(accion: 'vista_previa', controler: $controler,
+            etiqueta: 'Vista Previa', indice: $indice, em_empleado_documento_id: $empleado_documento['em_empleado_documento_id'],
+            em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado, target: '_blank');
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+        }
+
+        $em_conf_tipo_doc_empleado = $this->button(accion: 'descarga_zip', controler: $controler,
+            etiqueta: 'ZIP', indice: $indice, em_empleado_documento_id: $empleado_documento['em_empleado_documento_id'],
+            em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado, target: '_blank');
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+        }
+
+        return $em_conf_tipo_doc_empleado;
+    }
+
+    private function button(string $accion, controlador_em_empleado $controler, string $etiqueta, int $indice,
+                            int    $em_empleado_documento_id, array $em_conf_tipo_doc_empleado, array $params = array(),
+                            string $style = 'success', string $target = ''): array
+    {
+        $button = $controler->html->button_href(accion: $accion, etiqueta: $etiqueta,
+            registro_id: $em_empleado_documento_id, seccion: 'em_epleado_documento', style: $style, params: $params,
+            target: $target);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $button);
+        }
+        $em_conf_tipo_doc_empleado[$indice][$accion] = $button;
+
+        return $em_conf_tipo_doc_empleado;
+    }
+
+    final public function button_del(controlador_em_empleado $controler, int $indice, int $em_empleado_documento_id,
+                                     array $em_conf_tipo_doc_empleado, array $empleado_documento){
+        $params = array('accion_retorno'=>'documentos','seccion_retorno'=>$controler->seccion,
+            'id_retorno'=>$em_empleado_documento_id);
+
+        $em_conf_tipo_doc_empleado = $this->button(accion: 'elimina_bd', controler: $controler,
+            etiqueta: 'Elimina', indice: $indice, em_empleado_documento_id: $empleado_documento['em_empleado_documento_id'],
+            em_conf_tipo_doc_empleado: $em_conf_tipo_doc_empleado, params: $params, style: 'danger');
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar button', data: $em_conf_tipo_doc_empleado);
+        }
+
+        return $em_conf_tipo_doc_empleado;
     }
 
 

@@ -6,6 +6,7 @@ use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
 use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
+use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
 
 use gamboamartin\organigrama\models\org_puesto;
@@ -115,6 +116,13 @@ class em_empleado extends _modelo_parent{
         }
 
         return $r_alta_bd;
+    }
+
+    final public function integra_documentos(controlador_em_empleado $controler)
+    {
+
+
+        return array();
     }
 
 

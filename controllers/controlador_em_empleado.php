@@ -341,6 +341,23 @@ class controlador_em_empleado extends _ctl_base {
         return $template;
     }
 
+    public function tipos_documentos(bool $header, bool $ws = false): array
+    {
+        $documentos = (new em_empleado($this->link))->integra_documentos(controler: $this);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al integrar buttons', data: $documentos, header: $header, ws: $ws);
+        }
+
+        $salida['draw'] = count($documentos);
+        $salida['recordsTotal'] = count($documentos);
+        $salida['recordsFiltered'] = count($documentos);
+        $salida['data'] = $documentos;
+
+        header('Content-Type: application/json');
+        echo json_encode($salida);
+        exit;
+    }
+
     public function get_empleado(bool $header, bool $ws = true): array|stdClass
     {
         $keys['em_empleado'] = array('id', 'descripcion', 'codigo', 'nss', 'rfc', 'curp');

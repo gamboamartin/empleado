@@ -120,7 +120,43 @@ class em_empleado extends _modelo_parent{
 
     final public function integra_documentos(controlador_em_empleado $controler)
     {
+        $empleado = $this->registro(registro_id: $controler->registro_id);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener empleado', data: $empleado);
+        }
 
+        $conf_tipos_docs = (new em_conf_tipo_doc_empleado(link: $controler->link))->filtro_and(
+            columnas: ['doc_tipo_documento_id'],
+            filtro: array('em_empleado_id' => $empleado['em_empleado_id']));
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener conf. de tipos de documentos', data: $conf_tipos_docs);
+        }
+
+        $doc_ids = array_map(function ($registro) {
+            return $registro['doc_tipo_documento_id'];
+        }, $conf_tipos_docs->registros);
+
+        if (count($doc_ids) <= 0) {
+            return array();
+        }
+
+        $empleados_documentos = (new em_empleado_documento(link: $controler->link))->documentos(
+            em_empleado: $controler->registro_id, tipos_documentos: $doc_ids);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener documentos', data: $empleados_documentos);
+        }
+
+        $buttons_documentos = $this->buttons_documentos(controler: $controler, empleados_documentos: $empleados_documentos,
+            tipos_documentos: $doc_ids);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al integrar buttons', data: $buttons_documentos);
+        }
+
+        return $buttons_documentos;
+    }
+
+    public function buttons_documentos(controlador_em_empleado $controler, array $empleados_documentos, array $tipos_documentos)
+    {
 
         return array();
     }

@@ -214,7 +214,7 @@ class controlador_em_empleado_documento extends _ctl_base
 
     private function name_doc(stdClass $registro): string
     {
-        $name = $registro->com_cliente_documento_id . "." . $registro->com_cliente_razon_social;
+        $name = $registro->em_empleado_documento_id . "." . $registro->em_empleado_nombre_completo;
         $name .= "." . $registro->doc_tipo_documento_codigo;
         return $name;
     }
@@ -302,7 +302,6 @@ class controlador_em_empleado_documento extends _ctl_base
             return $this->retorno_error(mensaje: 'Error al obtener name', data: $name, header: $header,
                 ws: $ws);
         }
-        $name_zip = $name . '.zip';
 
         $name_file = $this->name_file(registro: $registro);
         if (errores::$error) {
@@ -311,7 +310,7 @@ class controlador_em_empleado_documento extends _ctl_base
         }
 
         $archivos[$ruta_doc] = $name_file;
-        $comprime = compresor::descarga_zip_multiple(archivos: $archivos, name_zip: $name_zip);
+        $comprime = compresor::descarga_zip_multiple(archivos: $archivos, name_zip: $name);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al comprimir file', data: $comprime, header: $header,
                 ws: $ws);

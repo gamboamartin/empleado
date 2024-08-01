@@ -382,7 +382,7 @@ class controlador_em_empleado extends _ctl_base {
 
         $filtro['em_empleado.id'] = $this->registro_id;
         $em_empleado_id = (new em_empleado_html(html: $this->html_base))->select_em_empleado_id(
-            cols: 12, con_registros: true, id_selected: $this->registro_id, link: $this->link, filtro: $filtro,disabled: true);
+            cols: 12, con_registros: true, id_selected: $this->registro_id, link: $this->link, filtro: $filtro);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar input', data: $em_empleado_id, header: $header, ws: $ws);
         }
@@ -411,7 +411,7 @@ class controlador_em_empleado extends _ctl_base {
         }
 
         $doc_tipo_documento_id = (new doc_tipo_documento_html(html: $this->html_base))->select_doc_tipo_documento_id(
-            cols: 12, con_registros: true, id_selected: $_doc_tipo_documento_id, link: $this->link, disabled: true,
+            cols: 12, con_registros: true, id_selected: $_doc_tipo_documento_id, link: $this->link,
             filtro: $filtro, registros: $doc_tipos_documentos);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar input', data: $doc_tipo_documento_id, header: $header, ws: $ws);

@@ -15,7 +15,7 @@ class em_empleado_documento extends _modelo_parent_sin_codigo {
             'doc_tipo_documento' => 'doc_documento', 'doc_extension' => 'doc_documento');
         $campos_obligatorios = array('doc_documento_id','em_empleado_id');
 
-        $columnas_extra = array();
+        $columnas_extra['em_empleado_nombre_completo'] = 'CONCAT (IFNULL(em_empleado.nombre,"")," ",IFNULL(em_empleado.ap, "")," ",IFNULL(em_empleado.am,""))';
 
         $atributos_criticos =  array('doc_documento_id','em_empleado_id');
 

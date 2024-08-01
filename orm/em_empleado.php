@@ -329,7 +329,7 @@ class em_empleado extends _modelo_parent{
                             string $style = 'success', string $target = ''): array
     {
         $button = $controler->html->button_href(accion: $accion, etiqueta: $etiqueta,
-            registro_id: $em_empleado_documento_id, seccion: 'em_epleado_documento', style: $style, params: $params,
+            registro_id: $em_empleado_documento_id, seccion: 'em_empleado_documento', style: $style, params: $params,
             target: $target);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al integrar button', data: $button);

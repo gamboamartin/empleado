@@ -73,7 +73,7 @@ class em_empleado_documento extends _modelo_parent_sin_codigo {
         return $alta_documento;
     }
 
-    final public function documentos(int $com_cliente, array $tipos_documentos)
+    final public function documentos(int $em_empleado, array $tipos_documentos)
     {
         $in = array();
 
@@ -82,7 +82,7 @@ class em_empleado_documento extends _modelo_parent_sin_codigo {
             $in['values'] = $tipos_documentos;
         }
 
-        $documentos = $this->filtro_and(filtro: array('em_empleado.id' => $com_cliente), in: $in);
+        $documentos = $this->filtro_and(filtro: array('em_empleado.id' => $em_empleado), in: $in);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener documentos', data: $documentos);
         }

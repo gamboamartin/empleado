@@ -177,19 +177,19 @@ class controlador_em_cuenta_bancaria extends _ctl_base {
     {
         $keys_selects = $this->init_selects(keys_selects: array(), key: "em_empleado_id", label: "Empleado",
         cols: 12);
-        return $this->init_selects(keys_selects: $keys_selects, key: "bn_sucursal_id", label: "Banco SUcursal",
+        return $this->init_selects(keys_selects: $keys_selects, key: "bn_sucursal_id", label: "Banco Sucursal",
             cols: 12);
     }
 
     protected function key_selects_txt(array $keys_selects): array
     {
-        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'descripcion',
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 8, key: 'descripcion',
             keys_selects: $keys_selects, place_holder: 'Descripción');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
         }
 
-        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 8, key: 'num_cuenta',
+        $keys_selects = (new \base\controller\init())->key_select_txt(cols: 12, key: 'num_cuenta',
             keys_selects: $keys_selects, place_holder: 'Número  Cuenta');
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);

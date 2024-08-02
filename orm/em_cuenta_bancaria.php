@@ -36,6 +36,10 @@ class em_cuenta_bancaria extends _modelo_parent{
             }
         }
 
+        if(!isset($this->registro['num_cuenta'])){
+            $this->registro['num_cuenta'] = 'SIN CUENTA';
+        }
+
         $this->registro = $this->campos_base(data: $this->registro,modelo: $this);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al inicializar campos base',data: $this->registro);

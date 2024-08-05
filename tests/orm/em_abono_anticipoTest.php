@@ -42,6 +42,7 @@ class em_abono_anticipoTest extends test {
             exit;
         }
 
+
         $alta = (new base_test())->alta_em_abono_anticipo(link: $this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al dar de alta', $alta);

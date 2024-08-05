@@ -71,13 +71,13 @@ class em_anticipoTest extends test {
             exit;
         }
 
-
         $del = (new base_test())->del_org_clasificacion_dep($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al eliminar', $del);
             print_r($error);
             exit;
         }
+        
 
         $del = (new base_test())->del_com_cliente($this->link);
         if(errores::$error){

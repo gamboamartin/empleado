@@ -65,6 +65,7 @@
     "gamboa.martin/facturacion": "^33.0.0",
     "gamboa.martin/xml_cfdi_4": "^5.0.0",
     "gamboa.martin/notificaciones": "^20.0.0",
+    "gamboa.martin/banco": "^16.0.0",
     "syamsoul/laravel-datatable-ssp": "^2.3",
     "phpunit/phpunit": "^10.0.0"
   },

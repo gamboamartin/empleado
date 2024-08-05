@@ -2,7 +2,9 @@
 namespace gamboamartin\empleado\models;
 
 use base\orm\_modelo_parent;
+use gamboamartin\cat_sat\models\cat_sat_regimen_fiscal;
 use gamboamartin\cat_sat\models\cat_sat_tipo_jornada_nom;
+use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
 use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
@@ -79,6 +81,21 @@ class em_empleado extends _modelo_parent{
         $this->registro = $this->cat_sat_tipo_jornada_nom_id($this->registro);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al inicializar tipo jornada nomina',data: $this->registro);
+        }
+
+        $this->registro = $this->cat_sat_regimen_fiscal_id($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar tipo jornada nomina',data: $this->registro);
+        }
+
+        $this->registro = $this->cat_sat_tipo_regimen_nom_id($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar cat_sat_tipo_regimen_nom_id',data: $this->registro);
+        }
+
+        $this->registro = $this->em_centro_costo_id($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar em_centro_costo_id',data: $this->registro);
         }
 
         $this->registro = $this->campos_base(data:$this->registro,modelo: $this);
@@ -359,10 +376,136 @@ class em_empleado extends _modelo_parent{
      * Obtiene el tipo de jornada si no existe
      * @param array $registro Registro en proceso
      * @return array
-     * @version 0.126.1
      */
+    private function cat_sat_regimen_fiscal_id(array $registro): array
+    {
+        $existe = (new cat_sat_regimen_fiscal(link: $this->link))->existe_by_id(registro_id: 616);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cat_sat_regimen_fiscal',
+                data: $existe);
+        }
+
+        if(!$existe){
+            $cat_sat_rf_ins['id'] = 616;
+            $cat_sat_rf_ins['descripcion'] = 'Sin obligaciones fiscales';
+            $cat_sat_rf_ins['descripcion_select'] = '616 Sin obligaciones fiscales';
+            $cat_sat_rf_ins['codigo'] = '616';
+            $cat_sat_rf_ins['alias'] = 'Sin obligaciones fiscales';
+            $cat_sat_rf_ins['codigo_bis'] = '616';
+            $cat_sat_rf_ins['predeterminado'] = 'activo';
+            $inserta_tjn = (new cat_sat_regimen_fiscal(link: $this->link))->alta_registro(
+                registro:$cat_sat_rf_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al insertar cat_sat_rf_ins', data: $cat_sat_rf_ins);
+            }
+        }
+
+
+        if (!isset($registro['cat_sat_regimen_fiscal_id'])) {
+            $cat_sat_regimen_fiscal_id =  (new cat_sat_regimen_fiscal($this->link))->id_predeterminado();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener cat_sat_regimen_fiscal_id',
+                    data: $cat_sat_regimen_fiscal_id);
+            }
+            $registro['cat_sat_regimen_fiscal_id'] = $cat_sat_regimen_fiscal_id;
+        }
+        return $registro;
+    }
+
+    private function cat_sat_tipo_regimen_nom_id(array $registro): array
+    {
+        $existe = (new cat_sat_tipo_regimen_nom(link: $this->link))->existe_by_id(registro_id: 99);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cat_sat_regimen_fiscal',
+                data: $existe);
+        }
+
+        if(!$existe){
+            $cat_sat_trn_ins['id'] = 99;
+            $cat_sat_trn_ins['descripcion'] = 'Otro régimen';
+            $cat_sat_trn_ins['descripcion_select'] = '99 Otro régimen';
+            $cat_sat_trn_ins['codigo'] = '99';
+            $cat_sat_trn_ins['alias'] = 'Otro régimen';
+            $cat_sat_trn_ins['codigo_bis'] = '99';
+            $cat_sat_trn_ins['predeterminado'] = 'activo';
+            $inserta_cstrn = (new cat_sat_tipo_regimen_nom(link: $this->link))->alta_registro(
+                registro:$cat_sat_trn_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al insertar inserta_cstrn', data: $inserta_cstrn);
+            }
+        }
+
+
+        if (!isset($registro['cat_sat_tipo_regimen_nom_id'])) {
+            $cat_sat_tipo_regimen_nom_id =  (new cat_sat_tipo_regimen_nom($this->link))->id_predeterminado();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener cat_sat_tipo_regimen_nom_id',
+                    data: $cat_sat_tipo_regimen_nom_id);
+            }
+            $registro['cat_sat_tipo_regimen_nom_id'] = $cat_sat_tipo_regimen_nom_id;
+        }
+        return $registro;
+    }
+
+    private function em_centro_costo_id(array $registro): array
+    {
+        $existe = (new em_centro_costo(link: $this->link))->existe_by_id(registro_id: 99);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cat_sat_regimen_fiscal',
+                data: $existe);
+        }
+
+        if(!$existe){
+            $em_centro_costo_ins['id'] = 99;
+            $em_centro_costo_ins['descripcion'] = 'CC DEFAULT';
+            $em_centro_costo_ins['descripcion_select'] = 'CC DEFAULT';
+            $em_centro_costo_ins['codigo'] = '99';
+            $em_centro_costo_ins['alias'] = 'CC DEFAULT';
+            $em_centro_costo_ins['codigo_bis'] = '99';
+            $em_centro_costo_ins['predeterminado'] = 'activo';
+            $inst_em_centro_costo = (new em_centro_costo(link: $this->link))->alta_registro(
+                registro:$em_centro_costo_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al insertar inst_em_centro_costo', data: $inst_em_centro_costo);
+            }
+        }
+
+
+        if (!isset($registro['em_centro_costo_id'])) {
+            $em_centro_costo_id =  (new em_centro_costo($this->link))->id_predeterminado();
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al obtener em_centro_costo_id',
+                    data: $em_centro_costo_id);
+            }
+            $registro['em_centro_costo_id'] = $em_centro_costo_id;
+        }
+        return $registro;
+    }
+
     private function cat_sat_tipo_jornada_nom_id(array $registro): array
     {
+        $existe = (new cat_sat_tipo_jornada_nom(link: $this->link))->existe_by_id(registro_id: 99);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar cat_sat_tipo_jornada_nom',
+                data: $existe);
+        }
+
+        if(!$existe){
+            $tipo_jornada_nom_ins['id'] = 99;
+            $tipo_jornada_nom_ins['descripcion'] = 'Otra Jornada';
+            $tipo_jornada_nom_ins['descripcion_select'] = '99 Otra Jornada';
+            $tipo_jornada_nom_ins['codigo'] = '99';
+            $tipo_jornada_nom_ins['alias'] = 'Otra Jornada';
+            $tipo_jornada_nom_ins['codigo_bis'] = '99';
+            $tipo_jornada_nom_ins['predeterminado'] = 'activo';
+            $inserta_tjn = (new cat_sat_tipo_jornada_nom(link: $this->link))->alta_registro(
+                registro:$tipo_jornada_nom_ins);
+            if(errores::$error){
+                return $this->error->error(mensaje: 'Error al insertar inserta_tjn', data: $inserta_tjn);
+            }
+        }
+
+
         if (!isset($registro['cat_sat_tipo_jornada_nom_id'])) {
             $cat_tipo_jornada_nom_id =  (new cat_sat_tipo_jornada_nom($this->link))->id_predeterminado();
             if(errores::$error){

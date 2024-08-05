@@ -14,6 +14,7 @@ use gamboamartin\empleado\models\em_tipo_descuento;
 use gamboamartin\errores\errores;
 use gamboamartin\empleado\models\em_empleado;
 use gamboamartin\facturacion\models\fc_csd;
+use gamboamartin\organigrama\models\org_empresa;
 use gamboamartin\organigrama\models\org_puesto;
 use PDO;
 use stdClass;
@@ -202,7 +203,8 @@ class base_test{
 
 
     public function alta_em_empleado(PDO $link, string $am='1', string $ap = '1', int $cat_sat_uso_cfdi_id = 1,
-                                     string $codigo = '1', string $fecha_inicio_rel_laboral = '2020-01-01', int $id = 1,
+                                     string $codigo = '1', int $em_registro_patronal_id = 1,
+                                     string $fecha_inicio_rel_laboral = '2020-01-01', int $id = 1,
                                      string $nombre = '1', int $org_puesto_id = 1, float $salario_diario = 180,
                                      float $salario_diario_integrado = 180): array|stdClass
     {
@@ -215,6 +217,19 @@ class base_test{
         }
         if(!$existe) {
             $alta = (new base_test())->alta_org_puesto($link);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta ', $alta);
+
+            }
+        }
+
+        $existe = (new em_registro_patronal($link))->existe_by_id(registro_id: $em_registro_patronal_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe ', $existe);
+
+        }
+        if(!$existe) {
+            $alta = (new base_test())->alta_em_registro_patronal($link);
             if (errores::$error) {
                 return (new errores())->error('Error al dar de alta ', $alta);
 
@@ -235,8 +250,7 @@ class base_test{
         $registro['fecha_inicio_rel_laboral'] = $fecha_inicio_rel_laboral;
         $registro['cat_sat_uso_cfdi_id'] = $cat_sat_uso_cfdi_id;
         $registro['curp'] = 'abc';
-
-
+        $registro['em_registro_patronal_id'] = $em_registro_patronal_id;
 
 
         $alta = (new em_empleado($link))->alta_registro($registro);
@@ -246,6 +260,8 @@ class base_test{
         }
         return $alta;
     }
+
+
 
     public function alta_em_registro_patronal(PDO $link, int $cat_sat_isn_id = 1, int $em_clase_riesgo_id = 1,
                                               int $fc_csd_id = 1, int $id = 1): array|\stdClass
@@ -271,6 +287,19 @@ class base_test{
         }
         if(!$existe) {
             $alta = (new base_test())->alta_em_clase_riesgo(link: $link, id: $em_clase_riesgo_id);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta ', $alta);
+
+            }
+        }
+
+        $existe = (new fc_csd($link))->existe_by_id(registro_id: $fc_csd_id);
+        if(errores::$error){
+            return (new errores())->error('Error al verificar si existe ', $existe);
+
+        }
+        if(!$existe) {
+            $alta = (new \gamboamartin\facturacion\tests\base_test())->alta_fc_csd(link: $link,id: $fc_csd_id);
             if (errores::$error) {
                 return (new errores())->error('Error al dar de alta ', $alta);
 
@@ -362,6 +391,26 @@ class base_test{
 
     public function alta_org_puesto(PDO $link): array|\stdClass
     {
+
+        $existe = (new org_empresa(link: $link))->existe_by_id(registro_id: 1);
+        if(errores::$error){
+            return (new errores())->error('Error al validar si existe', $existe);
+
+        }
+
+        if(!$existe) {
+            $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_empresa($link);
+            if (errores::$error) {
+                return (new errores())->error('Error al dar de alta ', $alta);
+
+            }
+        }
+        $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_departamento($link);
+        if(errores::$error){
+            return (new errores())->error('Error al dar de alta ', $alta);
+
+        }
+
         $alta = (new \gamboamartin\organigrama\tests\base_test())->alta_org_puesto($link);
         if(errores::$error){
             return (new errores())->error('Error al dar de alta ', $alta);
@@ -369,7 +418,6 @@ class base_test{
         }
         return $alta;
     }
-
 
 
 

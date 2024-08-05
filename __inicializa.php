@@ -16,7 +16,7 @@ $administrador = new gamboamartin\administrador\instalacion\instalacion();
 $instala = $administrador->instala(link: $link);
 if(errores::$error){
 
-    $error = (new errores())->error(mensaje: 'Error al instalar administrador', data: $administrador);
+    $error = (new errores())->error(mensaje: 'Error al instalar administrador', data: $instala);
     print_r($error);
     exit;
 }
@@ -108,6 +108,16 @@ $instala = $facturacion->instala(link: $link);
 if(errores::$error){
 
     $error = (new errores())->error(mensaje: 'Error al instalar facturacion', data: $instala);
+    print_r($error);
+    exit;
+}
+
+$banco = new \gamboamartin\banco\instalacion\instalacion();
+
+$instala = $banco->instala(link: $link);
+if(errores::$error){
+
+    $error = (new errores())->error(mensaje: 'Error al instalar banco', data: $instala);
     print_r($error);
     exit;
 }

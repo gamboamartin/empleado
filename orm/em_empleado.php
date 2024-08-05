@@ -8,6 +8,7 @@ use gamboamartin\cat_sat\models\cat_sat_tipo_regimen_nom;
 use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
+use gamboamartin\direccion_postal\models\dp_municipio;
 use gamboamartin\documento\models\doc_tipo_documento;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
@@ -62,6 +63,16 @@ class em_empleado extends _modelo_parent{
             $this->registro['descripcion'] = $this->registro['nombre']. ' ';
             $this->registro['descripcion'] .= $this->registro['ap'];
         }
+
+        $dp_municipio_modelo = new dp_municipio(link: $this->link);
+        $dp_municipio = $dp_municipio_modelo->registro(registro_id: $this->registro['dp_municipio_id']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener dp_municipio', data: $dp_municipio);
+        }
+
+        $this->registro['pais'] = $dp_municipio['dp_pais_descripcion'];
+        $this->registro['estado'] = $dp_municipio['dp_estado_descripcion'];
+        $this->registro['municipio'] = $dp_municipio['dp_municipio_descripcion'];
 
         $this->registro = $this->fecha_inicio_rel_laboral_default($this->registro);
         if(errores::$error){

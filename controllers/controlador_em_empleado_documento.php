@@ -149,7 +149,7 @@ class controlador_em_empleado_documento extends _ctl_base
         }
 
         $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "em_empleado_id", label: "Empleado",
-            cols: 12, columns_ds: array('em_empleado_nombre', 'em_empleado_ap', 'em_empleado_am'));
+            cols: 12, columns_ds: array('em_empleado_nombre', 'em_empleado_ap'));
         if (errores::$error) {
             return $this->errores->error(mensaje: 'Error al integrar selector', data: $keys_selects);
         }

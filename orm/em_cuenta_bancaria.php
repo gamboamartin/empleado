@@ -1,6 +1,7 @@
 <?php
 namespace gamboamartin\empleado\models;
 use base\orm\_modelo_parent;
+use gamboamartin\banco\models\bn_sucursal;
 use gamboamartin\errores\errores;
 use PDO;
 use stdClass;
@@ -14,10 +15,8 @@ class em_cuenta_bancaria extends _modelo_parent{
         $campos_obligatorios = array('bn_sucursal_id','em_empleado_id','descripcion_select','clabe','num_cuenta',
             'alias','codigo_bis');
 
-        $no_duplicados = array('num_cuenta');
-
         parent::__construct(link: $link,tabla:  $tabla, campos_obligatorios: $campos_obligatorios,
-            columnas: $columnas,no_duplicados: $no_duplicados);
+            columnas: $columnas);
 
         $this->NAMESPACE = __NAMESPACE__;
     }
@@ -40,19 +39,26 @@ class em_cuenta_bancaria extends _modelo_parent{
             $this->registro['num_cuenta'] = 'SIN CUENTA';
         }
 
+        $validaciones = $this->validaciones($this->registro);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar campos',data: $validaciones);
+        }
+
         $this->registro = $this->campos_base(data: $this->registro,modelo: $this);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al inicializar campos base',data: $this->registro);
         }
 
-        $filtro['em_cuenta_bancaria.num_cuenta'] = $this->registro['num_cuenta'];
-        $existe = $this->existe(filtro: $filtro);
-        if (errores::$error) {
-            return $this->error->error(mensaje: 'Error al validar si existe numero de cuenta', data: $existe);
-        }
+        if (isset($this->registro['num_cuenta']) && $this->registro['num_cuenta'] !== 'SIN CUENTA'){
+            $filtro['em_cuenta_bancaria.num_cuenta'] = $this->registro['num_cuenta'];
+            $existe = $this->existe(filtro: $filtro);
+            if (errores::$error) {
+                return $this->error->error(mensaje: 'Error al validar si existe numero de cuenta', data: $existe);
+            }
 
-        if ($existe){
-            return $this->error->error(mensaje: "Error el numero de cuenta ya existe en el registro", data: $existe);
+            if ($existe){
+                return $this->error->error(mensaje: "Error el numero de cuenta ya existe en el registro", data: $existe);
+            }
         }
 
         $r_alta_bd =  parent::alta_bd();
@@ -61,6 +67,22 @@ class em_cuenta_bancaria extends _modelo_parent{
         }
 
         return $r_alta_bd;
+    }
+
+    public function validaciones(array $registros): array|stdClass
+    {
+        $banco = (new bn_sucursal(link: $this->link))->registro(registro_id: $registros['bn_sucursal_id']);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al obtener registro banco',data: $banco);
+        }
+
+        if (substr($registros['clabe'], 0, 3) !== $banco['bn_sucursal_codigo']) {
+            $mensaje = sprintf("Error la clabe %s no corresponde al codigo %s del banco %s", $registros['clabe'],
+                $banco['bn_sucursal_codigo'], $banco['bn_sucursal_descripcion']);
+            return $this->error->error(mensaje: $mensaje,data: $registros);
+        }
+
+        return $registros;
     }
 
     public function get_cuentas_bancarias_empleado(int $em_empleado_id): array|stdClass

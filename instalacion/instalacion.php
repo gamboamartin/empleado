@@ -882,17 +882,7 @@ class instalacion
         }
         $out->em_clase_riesgo = $em_clase_riesgo;
 
-        $em_anticipo = $this->em_anticipo(link: $link);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error integrar em_anticipo', data:  $em_anticipo);
-        }
-        $out->em_anticipo = $em_anticipo;
 
-        $em_abono_anticipo = $this->em_abono_anticipo(link: $link);
-        if(errores::$error){
-            return (new errores())->error(mensaje: 'Error integrar em_abono_anticipo', data:  $em_abono_anticipo);
-        }
-        $out->em_abono_anticipo = $em_abono_anticipo;
 
         $em_registro_patronal = $this->em_registro_patronal(link: $link);
         if(errores::$error){
@@ -906,8 +896,18 @@ class instalacion
         }
         $out->em_empleado = $em_empleado;
 
+        $em_anticipo = $this->em_anticipo(link: $link);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error integrar em_anticipo', data:  $em_anticipo);
+        }
+        $out->em_anticipo = $em_anticipo;
 
-
+        $em_abono_anticipo = $this->em_abono_anticipo(link: $link);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error integrar em_abono_anticipo', data:  $em_abono_anticipo);
+        }
+        $out->em_abono_anticipo = $em_abono_anticipo;
+        
         $em_cuenta_bancaria = $this->em_cuenta_bancaria(link: $link);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error integrar em_cuenta_bancaria', data:  $em_cuenta_bancaria);

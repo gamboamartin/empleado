@@ -105,6 +105,28 @@ class controlador_em_empleado extends _ctl_base {
         $this->row_upd->salario_diario = 0;
         $this->row_upd->salario_diario_integrado = 0;
 
+        $em_empleado_rfc = (new em_empleado_html(html: $this->html_base))->input_rfc(cols: 6, row_upd: $this->row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_rfc);
+        }
+
+        $em_empleado_curp = (new em_empleado_html(html: $this->html_base))->input_curp(cols: 12, row_upd: $this->row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_curp);
+        }
+
+        $em_empleado_nss = (new em_empleado_html(html: $this->html_base))->input_nss(cols: 6, row_upd: $this->row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_nss);
+        }
+
+        $this->inputs->em_empleado_rfc = $em_empleado_rfc;
+        $this->inputs->em_empleado_curp = $em_empleado_curp;
+        $this->inputs->em_empleado_nss = $em_empleado_nss;
+
         $inputs = $this->inputs(keys_selects: $keys_selects);
         if (errores::$error) {
             return $this->retorno_error(
@@ -880,6 +902,28 @@ class controlador_em_empleado extends _ctl_base {
             return $this->retorno_error(mensaje: 'Error al inicializar selects', data: $keys_selects, header: $header,
                 ws: $ws);
         }
+
+        $em_empleado_rfc = (new em_empleado_html(html: $this->html_base))->input_rfc(cols: 6, row_upd: $this->row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_rfc);
+        }
+
+        $em_empleado_curp = (new em_empleado_html(html: $this->html_base))->input_curp(cols: 12, row_upd: $this->row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_curp);
+        }
+
+        $em_empleado_nss = (new em_empleado_html(html: $this->html_base))->input_nss(cols: 6, row_upd: $this->row_upd,
+            value_vacio: false);
+        if (errores::$error) {
+            return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_nss);
+        }
+
+        $this->inputs->em_empleado_rfc = $em_empleado_rfc;
+        $this->inputs->em_empleado_curp = $em_empleado_curp;
+        $this->inputs->em_empleado_nss = $em_empleado_nss;
 
         $dp_municipio = (new dp_municipio($this->link))->get_municipio($this->registro['em_empleado_dp_municipio_id']);
         if (errores::$error) {

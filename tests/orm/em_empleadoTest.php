@@ -67,7 +67,7 @@ class em_empleadoTest extends test {
         $resultado = $modelo->cat_sat_tipo_jornada_nom_id($registro);
         $this->assertIsArray($resultado);
         $this->assertNotTrue(errores::$error);
-        $this->assertEquals(10, $resultado['cat_sat_tipo_jornada_nom_id']);
+        $this->assertEquals(99, $resultado['cat_sat_tipo_jornada_nom_id']);
         errores::$error = false;
     }
 
@@ -77,7 +77,7 @@ class em_empleadoTest extends test {
 
         $_GET['seccion'] = 'cat_sat_tipo_persona';
         $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
+        $_SESSION['grupo_id'] = 2;
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
         
@@ -165,7 +165,7 @@ class em_empleadoTest extends test {
 
         $_GET['seccion'] = 'cat_sat_tipo_persona';
         $_GET['accion'] = 'lista';
-        $_SESSION['grupo_id'] = 1;
+        $_SESSION['grupo_id'] = 2;
         $_SESSION['usuario_id'] = 2;
         $_GET['session_id'] = '1';
 

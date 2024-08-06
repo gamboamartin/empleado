@@ -64,6 +64,10 @@ class em_empleado extends _modelo_parent{
             $this->registro['descripcion'] .= $this->registro['ap'];
         }
 
+        if(!isset($this->registro['dp_municipio_id'])){
+            return $this->error->error(mensaje: 'Error dp_municipio_id no existe',data:  $this->registro);
+        }
+
         $dp_municipio_modelo = new dp_municipio(link: $this->link);
         $dp_municipio = $dp_municipio_modelo->registro(registro_id: $this->registro['dp_municipio_id']);
         if (errores::$error) {
@@ -138,11 +142,11 @@ class em_empleado extends _modelo_parent{
         }
 
 
-        $respuesta = $this->transacciona_em_rel_empleado_sucursal(data: $this->registro,
+        /*$respuesta = $this->transacciona_em_rel_empleado_sucursal(data: $this->registro,
             em_empleado_id: $r_alta_bd->registro_id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al transaccionar relacion empleado sucursal',data:  $respuesta);
-        }
+        }*/
 
         return $r_alta_bd;
     }

@@ -245,6 +245,7 @@ class base_test{
         $registro['am'] = $am;
         $registro['org_puesto_id'] = $org_puesto_id;
         $registro['dp_calle_pertenece_id'] = 1;
+        $registro['dp_municipio_id'] = 1;
         $registro['salario_diario'] = $salario_diario;
         $registro['salario_diario_integrado'] = $salario_diario_integrado;
         $registro['fecha_inicio_rel_laboral'] = $fecha_inicio_rel_laboral;
@@ -552,6 +553,11 @@ class base_test{
 
     public function del_em_registro_patronal(PDO $link): array
     {
+
+        $del = $this->del_em_empleado($link);
+        if(errores::$error){
+            return (new errores())->error('Error al eliminar', $del);
+        }
 
         $del = $this->del($link, 'gamboamartin\\empleado\\models\\em_registro_patronal');
         if(errores::$error){

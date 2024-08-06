@@ -56,6 +56,34 @@ class em_cuenta_bancariaTest extends test {
 
         errores::$error = false;
 
+        $del = (new base_test())->del_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $del = (new \gamboamartin\banco\tests\base_test())->del_bn_sucursal(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al eliminar', $del);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new base_test())->alta_em_empleado($this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
+        $alta = (new \gamboamartin\banco\tests\base_test())->alta_bn_sucursal(link: $this->link);
+        if(errores::$error){
+            $error = (new errores())->error('Error al insertar', $alta);
+            print_r($error);
+            exit;
+        }
+
         $alta = (new base_test())->alta_em_cuenta_bancaria($this->link);
         if(errores::$error){
             $error = (new errores())->error('Error al insertar', $alta);
@@ -72,7 +100,7 @@ class em_cuenta_bancariaTest extends test {
         $this->assertEquals('1', $resultado['em_cuenta_bancaria_descripcion']);
         $this->assertEquals('1', $resultado['em_cuenta_bancaria_codigo']);
         $this->assertEquals('1', $resultado['em_empleado_id']);
-        $this->assertEquals('x', $resultado['bn_sucursal_codigo']);
+        $this->assertEquals('SUCURSAL 1', $resultado['bn_sucursal_codigo']);
         errores::$error = false;
     }
 

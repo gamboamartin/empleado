@@ -163,6 +163,74 @@ class instalacion
         return $out;
     }
 
+    private function _add_em_emp_dir_pendiente(PDO $link): array|stdClass
+    {
+        $out = new stdClass();
+        $init = (new _instalacion(link: $link));
+
+        $create = $init->create_table_new(table: 'em_emp_dir_pendiente');
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al agregar tabla', data:  $create);
+        }
+        $out->create = $create;
+
+        $columnas = new stdClass();
+
+        $columnas->dp_direccion_pendiente_id = new stdClass();
+        $columnas->dp_direccion_pendiente_id->tipo_dato = 'BIGINT';
+        $columnas->dp_direccion_pendiente_id->default = '1';
+
+        $add_colums = $init->add_columns(campos: $columnas,table:  'em_emp_dir_pendiente');
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al agregar columnas', data:  $add_colums);
+        }
+        $out->add_colums_base = $add_colums;
+
+
+        $foraneas = array();
+        $foraneas['em_empleado_id'] = new stdClass();
+
+        $result = $init->foraneas(foraneas: $foraneas,table:  'em_emp_dir_pendiente');
+
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al ajustar foranea', data:  $result);
+        }
+
+        $out->foraneas = $result;
+
+
+        return $out;
+    }
+
+    private function _add_em_rel_empleado_sucursal(PDO $link): array|stdClass
+    {
+        $out = new stdClass();
+        $init = (new _instalacion(link: $link));
+
+        $create = $init->create_table_new(table: 'em_rel_empleado_sucursal');
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al agregar tabla', data:  $create);
+        }
+        $out->create = $create;
+
+
+
+        $foraneas = array();
+        $foraneas['em_empleado_id'] = new stdClass();
+        $foraneas['com_sucursal_id'] = new stdClass();
+
+        $result = $init->foraneas(foraneas: $foraneas,table:  'em_rel_empleado_sucursal');
+
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al ajustar foranea', data:  $result);
+        }
+
+        $out->foraneas = $result;
+
+
+        return $out;
+    }
+
     private function _add_em_registro_patronal(PDO $link): array|stdClass
     {
         $out = new stdClass();
@@ -704,6 +772,44 @@ class instalacion
 
     }
 
+    private function em_emp_dir_pendiente(PDO $link): array|stdClass
+    {
+        $out = new stdClass();
+
+        $create = $this->_add_em_emp_dir_pendiente(link: $link);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al agregar tabla', data:  $create);
+        }
+
+        $out->create = $create;
+
+
+
+
+
+        return $out;
+
+    }
+
+    private function em_rel_empleado_sucursal(PDO $link): array|stdClass
+    {
+        $out = new stdClass();
+
+        $create = $this->_add_em_rel_empleado_sucursal(link: $link);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error al agregar tabla', data:  $create);
+        }
+
+        $out->create = $create;
+
+
+
+
+
+        return $out;
+
+    }
+
     private function em_registro_patronal(PDO $link): array|stdClass
     {
         $out = new stdClass();
@@ -807,6 +913,18 @@ class instalacion
             return (new errores())->error(mensaje: 'Error integrar em_cuenta_bancaria', data:  $em_cuenta_bancaria);
         }
         $out->em_cuenta_bancaria = $em_cuenta_bancaria;
+
+        $em_emp_dir_pendiente = $this->em_emp_dir_pendiente(link: $link);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error integrar em_emp_dir_pendiente', data:  $em_emp_dir_pendiente);
+        }
+        $out->em_emp_dir_pendiente = $em_emp_dir_pendiente;
+
+        $em_rel_empleado_sucursal = $this->em_rel_empleado_sucursal(link: $link);
+        if(errores::$error){
+            return (new errores())->error(mensaje: 'Error integrar em_rel_empleado_sucursal', data:  $em_rel_empleado_sucursal);
+        }
+        $out->em_rel_empleado_sucursal = $em_rel_empleado_sucursal;
 
         return $out;
 

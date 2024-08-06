@@ -637,6 +637,14 @@ class controlador_em_empleado extends _ctl_base {
             $keys_selects['em_empleado_id']->filtro = array("em_empleado.id" => $this->registro_id);
             $keys_selects['em_empleado_id']->disabled = true;
 
+            $keys_selects = $this->controlador_em_cuenta_bancaria->key_selects_txt($keys_selects);
+            if (errores::$error) {
+                return $this->errores->error(mensaje: 'Error al maquetar key_selects', data: $keys_selects);
+            }
+
+            $keys_selects['clabe']->cols = 12;
+            $keys_selects['descripcion']->cols = 12;
+
             $inputs = $this->controlador_em_cuenta_bancaria->inputs(keys_selects: $keys_selects);
             if (errores::$error) {
                 return $this->errores->error(mensaje: 'Error al obtener inputs', data: $inputs);

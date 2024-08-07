@@ -176,9 +176,14 @@ class controlador_em_cuenta_bancaria extends _ctl_base {
     public function init_selects_inputs(): array
     {
         $keys_selects = $this->init_selects(keys_selects: array(), key: "em_empleado_id", label: "Empleado",
-        cols: 12);
-        return $this->init_selects(keys_selects: $keys_selects, key: "bn_sucursal_id", label: "Banco Sucursal",
             cols: 12);
+        $keys_selects = $this->init_selects(keys_selects: $keys_selects, key: "bn_sucursal_id", label: "Banco Sucursal",
+            cols: 12,);
+
+        $data_extra_bn_sucursal[] = 'bn_sucursal_codigo';
+        $keys_selects['bn_sucursal_id']->extra_params_keys = $data_extra_bn_sucursal;
+
+        return $keys_selects;
     }
 
     protected function key_selects_txt(array $keys_selects): array

@@ -185,11 +185,11 @@ class base_test{
 
         $registro = array();
         $registro['id'] = $id;
-        $registro['codigo'] = 1;
+        $registro['codigo'] = 'SUC';
         $registro['descripcion'] = 1;
         $registro['bn_sucursal_id'] = $bn_sucursal_id;
         $registro['em_empleado_id'] = $em_empleado_id;
-        $registro['clabe'] = 1;
+        $registro['clabe'] = '001';
         $registro['num_cuenta'] = 1;
 
 

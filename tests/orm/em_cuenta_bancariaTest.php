@@ -36,7 +36,6 @@ class em_cuenta_bancariaTest extends test {
         errores::$error = false;
 
 
-
         $modelo = new em_cuenta_bancaria($this->link);
         //$modelo = new liberator($modelo);
 
@@ -98,9 +97,9 @@ class em_cuenta_bancariaTest extends test {
         $this->assertNotTrue(errores::$error);
         $this->assertEquals('1', $resultado['em_cuenta_bancaria_id']);
         $this->assertEquals('1', $resultado['em_cuenta_bancaria_descripcion']);
-        $this->assertEquals('1', $resultado['em_cuenta_bancaria_codigo']);
+        $this->assertEquals('SUC', $resultado['em_cuenta_bancaria_codigo']);
         $this->assertEquals('1', $resultado['em_empleado_id']);
-        $this->assertEquals('SUCURSAL 1', $resultado['bn_sucursal_codigo']);
+        $this->assertEquals('001', $resultado['bn_sucursal_codigo']);
         errores::$error = false;
     }
 

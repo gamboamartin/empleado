@@ -907,7 +907,7 @@ class instalacion
             return (new errores())->error(mensaje: 'Error integrar em_abono_anticipo', data:  $em_abono_anticipo);
         }
         $out->em_abono_anticipo = $em_abono_anticipo;
-        
+
         $em_cuenta_bancaria = $this->em_cuenta_bancaria(link: $link);
         if(errores::$error){
             return (new errores())->error(mensaje: 'Error integrar em_cuenta_bancaria', data:  $em_cuenta_bancaria);

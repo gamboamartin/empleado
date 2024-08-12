@@ -7,6 +7,7 @@ use gamboamartin\errores\errores;
 use gamboamartin\organigrama\html\org_puesto_html;
 use gamboamartin\template\directivas;
 use gamboamartin\empleado\models\em_empleado;
+use gamboamartin\validacion\validacion;
 use PDO;
 use stdClass;
 
@@ -38,7 +39,7 @@ class em_empleado_html extends em_html {
 
     public function genera_inputs(controlador_em_empleado $controler, array $keys_selects = array()): array|stdClass
     {
-        $inputs = $this->init_alta2(row_upd: $controler->row_upd, modelo: $controler->modelo, link: $controler->link,
+        $inputs = $this->init_alta2(row_upd: $controler->row_upd, modelo: $controler->modelo,
             keys_selects:$keys_selects);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar inputs',data:  $inputs);
@@ -332,7 +333,7 @@ class em_empleado_html extends em_html {
         }
 
         $html =$this->directivas->input_text_required(disabled: $disabled,name: 'rfc',place_holder: 'Rfc',
-            row_upd: $row_upd, value_vacio: $value_vacio);
+            row_upd: $row_upd, value_vacio: $value_vacio,regex: (new validacion())->patterns['rfc_html']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
         }
@@ -353,7 +354,7 @@ class em_empleado_html extends em_html {
         }
 
         $html =$this->directivas->input_text_required(disabled: $disabled,name: 'curp',place_holder: 'Curp',
-            row_upd: $row_upd, value_vacio: $value_vacio);
+            row_upd: $row_upd, value_vacio: $value_vacio, regex: (new validacion())->patterns['curp_html']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
         }
@@ -374,7 +375,7 @@ class em_empleado_html extends em_html {
         }
 
         $html =$this->directivas->input_text_required(disabled: $disabled,name: 'nss',place_holder: 'Nss',
-            row_upd: $row_upd, value_vacio: $value_vacio);
+            row_upd: $row_upd, value_vacio: $value_vacio, regex: (new validacion())->patterns['nss_html']);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al generar input', data: $html);
         }

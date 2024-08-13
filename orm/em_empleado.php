@@ -159,8 +159,7 @@ class em_empleado extends _modelo_parent{
         }
 
         $conf_tipos_docs = (new em_conf_tipo_doc_empleado(link: $controler->link))->filtro_and(
-            columnas: ['doc_tipo_documento_id'],
-            filtro: array('em_empleado_id' => $empleado['em_empleado_id']));
+            columnas: ['doc_tipo_documento_id']);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener conf. de tipos de documentos', data: $conf_tipos_docs);
         }

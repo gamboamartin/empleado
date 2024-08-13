@@ -35,11 +35,6 @@ class em_empleado_documento extends _modelo_parent_sin_codigo {
             return $this->error->error(mensaje: 'Error en insertar documento', data: $inserta_documento);
         }
 
-        $validaciones = $this->validaciones($this->registro);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error en validaciones', data: $validaciones);
-        }
-
         $this->registro = $this->inicializa_campos($this->registro);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al inicializar campo base', data: $this->registro);

@@ -734,12 +734,30 @@ class em_empleado extends _modelo_parent{
     public function modifica_bd(array $registro, int $id, bool $reactiva = false,
                                 array $keys_integra_ds = array('codigo', 'descripcion')): array|stdClass
     {
-
         $em_empleado_previo = $this->registro(registro_id: $id, columnas_en_bruto: true,retorno_obj: true);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al obtener em_empleado_previo',data: $em_empleado_previo);
         }
 
+        $registro = $this->init_values(registro: $registro, em_empleado_previo: $em_empleado_previo);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al inicializar valores',data: $registro);
+        }
+
+
+        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al modificar empleado',data: $r_modifica_bd);
+        }
+
+        return $r_modifica_bd;
+    }
+
+    public function init_values(array $registro, stdClass $em_empleado_previo) : array
+    {
+        if (isset($registro['status'])){
+            return $registro;
+        }
 
         if(!isset($registro['codigo'])){
             if (isset($registro['rfc'])){
@@ -783,14 +801,7 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al limpiar campos', data: $registro);
         }
 
-
-
-        $r_modifica_bd = parent::modifica_bd($registro, $id, $reactiva, $keys_integra_ds);
-        if(errores::$error){
-            return $this->error->error(mensaje: 'Error al modificar empleado',data: $r_modifica_bd);
-        }
-
-        return $r_modifica_bd;
+        return $registro;
     }
 
 

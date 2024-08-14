@@ -9,6 +9,7 @@ use gamboamartin\comercial\models\com_cliente;
 use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\direccion_postal\models\dp_municipio;
+use gamboamartin\documento\models\doc_conf_tipo_documento_seccion;
 use gamboamartin\documento\models\doc_tipo_documento;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
@@ -158,8 +159,8 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al obtener empleado', data: $empleado);
         }
 
-        $conf_tipos_docs = (new em_conf_tipo_doc_empleado(link: $controler->link))->filtro_and(
-            columnas: ['doc_tipo_documento_id']);
+        $conf_tipos_docs = (new doc_conf_tipo_documento_seccion(link: $controler->link))->filtro_and(
+            columnas: ['doc_tipo_documento_id'],filtro: array('adm_seccion.descripcion' => $this->tabla));
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al obtener conf. de tipos de documentos', data: $conf_tipos_docs);
         }

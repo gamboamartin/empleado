@@ -739,7 +739,7 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al obtener em_empleado_previo',data: $em_empleado_previo);
         }
 
-        $registro = $this->init_values(registro: $registro, em_empleado_previo: $em_empleado_previo);
+        $registro = $this->init_values(registro: $registro, em_empleado_previo: $em_empleado_previo, id: $id);
         if(errores::$error){
             return $this->error->error(mensaje: 'Error al inicializar valores',data: $registro);
         }
@@ -753,7 +753,7 @@ class em_empleado extends _modelo_parent{
         return $r_modifica_bd;
     }
 
-    public function init_values(array $registro, stdClass $em_empleado_previo) : array
+    public function init_values(array $registro, stdClass $em_empleado_previo, int $id) : array
     {
         if (isset($registro['status'])){
             return $registro;

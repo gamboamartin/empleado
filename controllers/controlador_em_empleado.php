@@ -611,6 +611,15 @@ class controlador_em_empleado extends _ctl_base {
             exit;
         }
 
+        $this->link_envia_documentos = $this->obj_link->link_con_id(accion: "envia_documentos",link: $this->link,
+            registro_id: $this->registro_id,seccion: "em_empleado");
+        if (errores::$error) {
+            $error = $this->errores->error(mensaje: 'Error al obtener link',
+                data: $this->link_envia_documentos);
+            print_r($error);
+            exit;
+        }
+
         return $this->link_em_empleado_exportar;
     }
 
@@ -763,7 +772,7 @@ class controlador_em_empleado extends _ctl_base {
                 header: $header, ws: $ws);
         }
 
-        $emisor = (new _email($this->link))->emisor(correo: 'test@ivitec.mx');
+        $emisor = (new _email($this->link))->emisor(correo: 'factura@efacturacion.com.mx');
         if (errores::$error) {
             $this->link->rollBack();
             return $this->retorno_error(mensaje: 'Error al obtener emisor', data: $emisor,
@@ -787,6 +796,7 @@ class controlador_em_empleado extends _ctl_base {
         }
 
         $documentos = explode(',', $campos_necesarios['documentos']);
+
         $r_alta_doc_etapa = new stdClass();
 
         $mensaje_adjuntos = (new _email($this->link))->adjuntos(mensaje: $mensaje['not_mensaje_id'],
@@ -812,8 +822,6 @@ class controlador_em_empleado extends _ctl_base {
 
         return $r_alta_doc_etapa;
     }
-
-
 
     protected function key_selects_txt(array $keys_selects): array
     {

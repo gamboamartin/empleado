@@ -166,10 +166,10 @@ class controlador_em_empleado extends _ctl_base {
         $keys = new stdClass();
         $keys->inputs = array('codigo', 'descripcion', 'nombre', 'ap', 'am',  'rfc', 'curp', 'nss', 'salario_diario',
             'salario_diario_integrado','com_sucursal','org_sucursal', 'salario_total', 'numero_exterior',
-            'numero_interior', 'cp', 'colonia', 'calle', 'asunto', 'mensaje');
+            'numero_interior', 'cp', 'colonia', 'calle', 'asunto', 'mensaje', 'receptor');
         $keys->telefonos = array('telefono');
         $keys->fechas = array('fecha_inicio_rel_laboral', 'fecha_inicio', 'fecha_final');
-        $keys->emails = array('correo', 'receptor');
+        $keys->emails = array('correo');
         $keys->selects = array();
 
         $init_data = array();
@@ -745,6 +745,23 @@ class controlador_em_empleado extends _ctl_base {
         return $campos;
     }
 
+    function separar_correos(string $correos) :array {
+        return preg_split('/[;,]/', $correos);
+    }
+
+    public function valida_receptor(array $correos): array|bool
+    {
+        foreach ($correos as $receptor) {
+            $validacion = (new _email($this->link))->validar_correo(correo: $receptor);
+            if (!$validacion) {
+                $mensaje_error = sprintf(_email::ERROR_CORREO_NO_VALIDO, $receptor);
+                return $this->errores->error(mensaje: $mensaje_error, data: $mensaje_error);
+            }
+        }
+
+        return true;
+    }
+
     final public function envia_documentos(bool $header, bool $ws = false): array|stdClass
     {
         $campos_necesarios = $this->valida_campos($_POST);
@@ -753,10 +770,15 @@ class controlador_em_empleado extends _ctl_base {
                 header: $header, ws: $ws);
         }
 
-        $validacion = (new _email($this->link))->validar_correo(correo: $campos_necesarios['receptor']);
-        if (!$validacion) {
-            $mensaje_error = sprintf(_email::ERROR_CORREO_NO_VALIDO, $campos_necesarios['receptor']);
-            return $this->retorno_error(mensaje: $mensaje_error, data: $campos_necesarios,
+        $correos = $this->separar_correos(correos: $campos_necesarios['receptor']);
+        if (empty($correos)) {
+            $mensaje_error = 'No se encontraron correos válidos';
+            return $this->errores->error(mensaje: $mensaje_error, data: $correos);
+        }
+
+        $valida_correos = $this->valida_receptor(correos: $correos);
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al validar correos', data: $valida_correos,
                 header: $header, ws: $ws);
         }
 
@@ -766,13 +788,6 @@ class controlador_em_empleado extends _ctl_base {
         if (errores::$error) {
             $this->link->rollBack();
             return $this->retorno_error(mensaje: 'Error al obtener siguiente view', data: $siguiente_view,
-                header: $header, ws: $ws);
-        }
-
-        $receptor = (new _email($this->link))->receptor(correo: $campos_necesarios['receptor']);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener receptor', data: $receptor,
                 header: $header, ws: $ws);
         }
 
@@ -791,12 +806,21 @@ class controlador_em_empleado extends _ctl_base {
                 header: $header, ws: $ws);
         }
 
-        $mensaje_receptor = (new _email($this->link))->mensaje_receptor(mensaje: $mensaje['not_mensaje_id'],
-            receptor: $receptor['not_receptor_id']);
-        if (errores::$error) {
-            $this->link->rollBack();
-            return $this->retorno_error(mensaje: 'Error al obtener mensaje receptor', data: $mensaje_receptor,
-                header: $header, ws: $ws);
+        foreach ($correos as $correo) {
+            $receptor = (new _email($this->link))->receptor(correo: $correo);
+            if (errores::$error) {
+                $this->link->rollBack();
+                return $this->retorno_error(mensaje: 'Error al obtener receptor', data: $receptor,
+                    header: $header, ws: $ws);
+            }
+
+            $mensaje_receptor = (new _email($this->link))->mensaje_receptor(mensaje: $mensaje['not_mensaje_id'],
+                receptor: $receptor['not_receptor_id']);
+            if (errores::$error) {
+                $this->link->rollBack();
+                return $this->retorno_error(mensaje: 'Error al obtener mensaje receptor', data: $mensaje_receptor,
+                    header: $header, ws: $ws);
+            }
         }
 
         $documentos = explode(',', $campos_necesarios['documentos']);

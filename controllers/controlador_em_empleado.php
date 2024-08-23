@@ -17,7 +17,9 @@ use gamboamartin\empleado\models\_email;
 use gamboamartin\empleado\models\em_abono_anticipo;
 use gamboamartin\empleado\models\em_anticipo;
 use gamboamartin\empleado\models\em_conf_tipo_doc_empleado;
+use gamboamartin\empleado\models\em_empleado_documento;
 use gamboamartin\errores\errores;
+use gamboamartin\notificaciones\models\not_mensaje;
 use gamboamartin\plugins\exportador;
 use gamboamartin\system\_ctl_base;
 use gamboamartin\system\actions;
@@ -823,7 +825,18 @@ class controlador_em_empleado extends _ctl_base {
             }
         }
 
-        $documentos = explode(',', $campos_necesarios['documentos']);
+        $documentos_seleccionados = explode(',', $campos_necesarios['documentos']);
+        $documentos = array();
+
+        foreach ($documentos_seleccionados as $documento) {
+            $registro = (new em_empleado_documento($this->link))->registro(registro_id: $documento, columnas: ['doc_documento_id']);
+            if (errores::$error) {
+                $this->link->rollBack();
+                return $this->retorno_error(mensaje: 'Error al obtener documento', data: $registro,
+                    header: $header, ws: $ws);
+            }
+            $documentos[] = $registro['doc_documento_id'];
+        }
 
         $r_alta_doc_etapa = new stdClass();
 
@@ -832,6 +845,13 @@ class controlador_em_empleado extends _ctl_base {
         if (errores::$error) {
             $this->link->rollBack();
             return $this->retorno_error(mensaje: 'Error al obtener adjuntos', data: $mensaje_adjuntos,
+                header: $header, ws: $ws);
+        }
+
+        $mensaje_enviado = (new not_mensaje($this->link))->envia_mensaje(not_mensaje_id: $mensaje['not_mensaje_id']);
+        if (errores::$error) {
+            $this->link->rollBack();
+            return $this->retorno_error(mensaje: 'Error al enviar mensaje', data: $mensaje_enviado,
                 header: $header, ws: $ws);
         }
 

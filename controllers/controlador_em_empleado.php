@@ -731,6 +731,10 @@ class controlador_em_empleado extends _ctl_base {
     }
 
     function separar_correos(string $correos) :array {
+        if (trim($correos) === "") {
+            return [];
+        }
+
         return preg_split('/[;,]/', $correos);
     }
 
@@ -756,6 +760,18 @@ class controlador_em_empleado extends _ctl_base {
         }
 
         $correos = $this->separar_correos(correos: $campos_necesarios['receptor']);
+        if (empty($correos)) {
+            $mensaje_error = 'No se encontraron correos válidos';
+            return $this->errores->error(mensaje: $mensaje_error, data: $correos);
+        }
+
+        $cc = $this->separar_correos(correos: $campos_necesarios['cc'] ?? "");
+        if (empty($correos)) {
+            $mensaje_error = 'No se encontraron correos válidos';
+            return $this->errores->error(mensaje: $mensaje_error, data: $correos);
+        }
+
+        $cco = $this->separar_correos(correos: $campos_necesarios['cco'] ?? "");
         if (empty($correos)) {
             $mensaje_error = 'No se encontraron correos válidos';
             return $this->errores->error(mensaje: $mensaje_error, data: $correos);
@@ -831,7 +847,8 @@ class controlador_em_empleado extends _ctl_base {
                 header: $header, ws: $ws);
         }
 
-        $mensaje_enviado = (new not_mensaje($this->link))->envia_mensaje(not_mensaje_id: $mensaje['not_mensaje_id']);
+        $mensaje_enviado = (new not_mensaje($this->link))->envia_mensaje(not_mensaje_id: $mensaje['not_mensaje_id'],
+            cc: $cc, cco: $cco);
         if (errores::$error) {
             $this->link->rollBack();
             return $this->retorno_error(mensaje: 'Error al enviar mensaje', data: $mensaje_enviado,

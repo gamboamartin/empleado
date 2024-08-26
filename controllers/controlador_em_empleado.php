@@ -427,20 +427,6 @@ class controlador_em_empleado extends _ctl_base {
 
     final public function subir_documento(bool $header, bool $ws = false)
     {
-        $em_empleado = (new em_empleado(link: $this->link))->registro(registro_id: $this->registro_id);
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener empleado', data: $em_empleado,
-                header: $header, ws: $ws);
-        }
-
-        $em_conf_tipo_doc_empleado = (new em_conf_tipo_doc_empleado(link: $this->link))->filtro_and(
-            columnas: ['doc_tipo_documento_id'],
-            filtro: array('em_empleado_id' => $em_empleado['em_empleado_id']));
-        if (errores::$error) {
-            return $this->retorno_error(mensaje: 'Error al obtener em_conf_tipo_doc_empleado',
-                data: $em_conf_tipo_doc_empleado, header: $header, ws: $ws);
-        }
-
         $this->inputs = new stdClass();
 
         $filtro['em_empleado.id'] = $this->registro_id;
@@ -451,21 +437,6 @@ class controlador_em_empleado extends _ctl_base {
         }
         $this->inputs->em_empleado_id = $em_empleado_id;
 
-        $doc_ids = array_map(function ($registro) {
-            return $registro['doc_tipo_documento_id'];
-        }, $em_conf_tipo_doc_empleado->registros);
-
-        $doc_tipos_documentos = array();
-
-        if (count($doc_ids) > 0) {
-            $doc_tipos_documentos = (new em_empleado($this->link))->documentos_de_empleado(em_empleado_id: $this->registro_id,
-                link: $this->link, todos: true, tipos_documentos: $doc_ids);
-            if (errores::$error) {
-                return $this->retorno_error(mensaje: 'Error al obtener tipos de documento', data: $doc_tipos_documentos,
-                    header: $header, ws: $ws);
-            }
-        }
-
         $_doc_tipo_documento_id = -1;
         $filtro = array();
         if (isset($_GET['doc_tipo_documento_id'])) {
@@ -475,7 +446,7 @@ class controlador_em_empleado extends _ctl_base {
 
         $doc_tipo_documento_id = (new doc_tipo_documento_html(html: $this->html_base))->select_doc_tipo_documento_id(
             cols: 12, con_registros: true, id_selected: $_doc_tipo_documento_id, link: $this->link,
-            filtro: $filtro, registros: $doc_tipos_documentos);
+            filtro: $filtro);
         if (errores::$error) {
             return $this->retorno_error(mensaje: 'Error al generar input', data: $doc_tipo_documento_id, header: $header, ws: $ws);
         }

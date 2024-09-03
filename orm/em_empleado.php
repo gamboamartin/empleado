@@ -153,7 +153,32 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al transaccionar relacion empleado sucursal',data:  $respuesta);
         }*/
 
+        $inserta_documento = $this->registra_documento_empleado(em_empleado: $r_alta_bd->registro_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al insertar documento para empleado', data: $inserta_documento);
+        }
+
         return $r_alta_bd;
+    }
+
+    public function registra_documento_empleado(int $em_empleado) : array|stdClass {
+        $tipo_documento = (new doc_documento($this->link))->validar_permisos_documento(modelo: $this->tabla);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar permisos para el documento', data: $tipo_documento);
+        }
+
+        $_POST = array();
+        $em_empleado_documento = new em_empleado_documento($this->link);
+        $em_empleado_documento->registro['em_empleado_id'] = $em_empleado;
+        $em_empleado_documento->registro['doc_tipo_documento_id'] = $tipo_documento['doc_tipo_documento_id'];
+        $_POST['doc_tipo_documento_id'] = $tipo_documento['doc_tipo_documento_id'];
+
+        $alta_documento = $em_empleado_documento->alta_bd();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al insertar documento', data: $alta_documento );
+        }
+
+        return $alta_documento;
     }
 
     final public function integra_documentos(controlador_em_empleado $controler)
@@ -589,6 +614,8 @@ class em_empleado extends _modelo_parent{
 
         return get_object_vars($contenido_formateado);
     }
+
+
 
     private function dp_calle_pertenece_id(array $registro): array
     {

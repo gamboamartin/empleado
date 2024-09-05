@@ -587,7 +587,12 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al leer pdf', data: $contenido);
         }
 
-        $url = (new imagen())->leer_codigo_qr(ruta_qr: $nombre_directorio_imagen."imagen-003.png");
+        $ruta_qr = (new imagen())->obtener_qr($contenido['imagenes']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener qr', data: $ruta_qr);
+        }
+
+        $url = (new imagen())->leer_codigo_qr(ruta_qr: $ruta_qr);
         if (errores::$error) {
             return $this->error->error(mensaje: 'Error al leer código QR', data: $url);
         }

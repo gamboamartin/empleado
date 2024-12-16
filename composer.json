@@ -68,7 +68,7 @@
     "gamboa.martin/banco": "^17.0.0",
     "syamsoul/laravel-datatable-ssp": "^2.3",
     "phpunit/phpunit": "^10.0.0",
-    
+     
   },
   "require-dev": {
 

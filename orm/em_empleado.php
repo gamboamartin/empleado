@@ -10,11 +10,15 @@ use gamboamartin\comercial\models\com_sucursal;
 use gamboamartin\direccion_postal\models\dp_calle_pertenece;
 use gamboamartin\direccion_postal\models\dp_municipio;
 use gamboamartin\documento\models\doc_conf_tipo_documento_seccion;
+use gamboamartin\documento\models\doc_documento;
 use gamboamartin\documento\models\doc_tipo_documento;
 use gamboamartin\empleado\controllers\controlador_em_empleado;
 use gamboamartin\errores\errores;
 
 use gamboamartin\organigrama\models\org_puesto;
+use gamboamartin\plugins\imagen;
+use gamboamartin\plugins\pdf;
+use gamboamartin\plugins\web;
 use PDO;
 use stdClass;
 
@@ -149,7 +153,32 @@ class em_empleado extends _modelo_parent{
             return $this->error->error(mensaje: 'Error al transaccionar relacion empleado sucursal',data:  $respuesta);
         }*/
 
+        $inserta_documento = $this->registra_documento_empleado(em_empleado: $r_alta_bd->registro_id);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al insertar documento para empleado', data: $inserta_documento);
+        }
+
         return $r_alta_bd;
+    }
+
+    public function registra_documento_empleado(int $em_empleado) : array|stdClass {
+        $tipo_documento = (new doc_documento($this->link))->validar_permisos_documento(modelo: $this->tabla);
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al validar permisos para el documento', data: $tipo_documento);
+        }
+
+        $_POST = array();
+        $em_empleado_documento = new em_empleado_documento($this->link);
+        $em_empleado_documento->registro['em_empleado_id'] = $em_empleado;
+        $em_empleado_documento->registro['doc_tipo_documento_id'] = $tipo_documento['doc_tipo_documento_id'];
+        $_POST['doc_tipo_documento_id'] = $tipo_documento['doc_tipo_documento_id'];
+
+        $alta_documento = $em_empleado_documento->alta_bd();
+        if(errores::$error){
+            return $this->error->error(mensaje: 'Error al insertar documento', data: $alta_documento );
+        }
+
+        return $alta_documento;
     }
 
     final public function integra_documentos(controlador_em_empleado $controler)
@@ -530,6 +559,68 @@ class em_empleado extends _modelo_parent{
         }
         return $registro;
     }
+
+    public function leer_codigo_qr(): array|stdClass
+    {
+        if (!array_key_exists('documento', $_FILES)) {
+            return $this->error->error(mensaje: 'Error no existe documento', data: $_FILES);
+        }
+
+        $directorio_destino = 'archivos/temporales/pdf/empleado_'. $_GET['registro_id'].'/';
+
+        if (!file_exists($directorio_destino)) {
+            mkdir($directorio_destino, 0777, true);
+        }
+
+        $nombre_archivo = basename($_FILES['documento']['name']);
+        $ruta_destino = $directorio_destino . $nombre_archivo;
+
+        if (!move_uploaded_file($_FILES['documento']['tmp_name'], $ruta_destino)) {
+            return $this->error->error(mensaje: 'Error al mover archivo', data: $_FILES);
+        }
+
+        $nombre_directorio_imagen = 'archivos/temporales/imagenes/empleado_'.$_GET['registro_id'].'/';
+
+        $contenido = (new pdf())->leer_pdf(directorio: $nombre_directorio_imagen, prefijo_imagen: "imagen",
+            ruta_pdf: $ruta_destino);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al leer pdf', data: $contenido);
+        }
+
+        $ruta_qr = (new imagen())->obtener_qr($contenido['imagenes']);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al obtener qr', data: $ruta_qr);
+        }
+
+        $url = (new imagen())->leer_codigo_qr(ruta_qr: $ruta_qr);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al leer código QR', data: $url);
+        }
+
+        $directorio_borrado = (new doc_documento($this->link))->borrar_directorio($directorio_destino);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al borrar directorio', data: $directorio_borrado);
+        }
+
+        $directorio_borrado = (new doc_documento($this->link))->borrar_directorio($nombre_directorio_imagen);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al borrar directorio', data: $directorio_borrado);
+        }
+
+        $contenido = (new web())->leer_contenido(url: $url);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al leer contenido', data: $contenido);
+        }
+
+        $contenido_formateado = (new web())->contenido_web_formateado(html: $contenido);
+        if (errores::$error) {
+            return $this->error->error(mensaje: 'Error al formatear contenido', data: $contenido_formateado);
+        }
+
+        return get_object_vars($contenido_formateado);
+    }
+
+
 
     private function dp_calle_pertenece_id(array $registro): array
     {

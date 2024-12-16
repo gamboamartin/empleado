@@ -128,6 +128,14 @@ class controlador_em_empleado extends _ctl_base {
             return $this->errores->error(mensaje: 'Error al maquetar input', data: $em_empleado_nss);
         }
 
+        $documento = $this->html->input_file(cols: 12, name: 'documento', row_upd: new stdClass(), value_vacio: false,
+            place_holder: 'CIF', required: false);
+        if (errores::$error) {
+            return $this->retorno_error(
+                mensaje: 'Error al obtener inputs', data: $documento, header: $header, ws: $ws);
+        }
+
+        $this->inputs->documento = $documento;
         $this->inputs->em_empleado_rfc = $em_empleado_rfc;
         $this->inputs->em_empleado_curp = $em_empleado_curp;
         $this->inputs->em_empleado_nss = $em_empleado_nss;
@@ -501,6 +509,24 @@ class controlador_em_empleado extends _ctl_base {
         }
 
         return $salida;
+    }
+
+    public function leer_qr(bool $header, bool $ws = false) : array
+    {
+        $registros = (new em_empleado($this->link))->leer_codigo_qr();
+        if (errores::$error) {
+            return $this->retorno_error(mensaje: 'Error al leer el código QR del documento PDF', data: $registros,
+                header: $header, ws: $ws);
+        }
+
+        $salida['draw'] = count($registros);
+        $salida['recordsTotal'] = count($registros);
+        $salida['recordsFiltered'] = count($registros);
+        $salida['data'] = $registros;
+
+        header('Content-Type: application/json');
+        echo json_encode($salida);
+        exit;
     }
 
     private function init_configuraciones(): controler
